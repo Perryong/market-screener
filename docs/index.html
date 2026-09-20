@@ -1,0 +1,696 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desk Tape</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --plane:      #f7f7f4;
+    --surface:    #fcfcfb;
+    --sunk:       #f0efec;
+    --ink:        #0b0b0b;
+    --ink-2:      #52514e;
+    --ink-3:      #898781;
+    --hair:       #e1e0d9;
+    --rule:       #c3c2b7;
+    --accent:     #2a78d6;
+    --good:       #0ca30c;
+    --critical:   #d03b3b;
+    --warning:    #fab219;
+    --serious:    #ec835a;
+    --good-ink:   #006300;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --cond: "IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --plane:    #0d0d0d;
+      --surface:  #1a1a19;
+      --sunk:     #232322;
+      --ink:      #ffffff;
+      --ink-2:    #c3c2b7;
+      --ink-3:    #898781;
+      --hair:     #2c2c2a;
+      --rule:     #383835;
+      --accent:   #3987e5;
+      --good-ink: #0ca30c;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --plane: #0d0d0d; --surface: #1a1a19; --sunk: #232322;
+    --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #898781;
+    --hair: #2c2c2a; --rule: #383835; --accent: #3987e5; --good-ink: #0ca30c;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--plane); color: var(--ink);
+    font-family: var(--sans); font-size: 14px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 20px 72px; }
+
+  /* ── status strip ─────────────────────────────────────────── */
+  .strip {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px;
+    padding: 14px 20px; margin-bottom: 24px;
+    background: var(--surface); border-bottom: 1px solid var(--rule);
+  }
+  .strip h1 {
+    font-family: var(--cond); font-weight: 700; font-size: 19px;
+    letter-spacing: -0.01em; margin: 0; flex: 0 0 auto;
+  }
+  .strip h1 span { color: var(--ink-3); font-weight: 600; }
+  .stat { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+  .stat b { color: var(--ink); font-weight: 600; }
+  .strip .spacer { flex: 1 1 auto; }
+
+  .eyebrow {
+    font-family: var(--cond); font-weight: 700; font-size: 11px;
+    letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3);
+    margin: 36px 0 12px;
+  }
+  .eyebrow:first-of-type { margin-top: 8px; }
+
+  /* ── macro tiles ──────────────────────────────────────────── */
+  .tape { display: grid; grid-template-columns: repeat(auto-fit, minmax(178px, 1fr)); gap: 1px; background: var(--hair); border: 1px solid var(--hair); }
+  .tile { background: var(--surface); padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 2px; }
+  .tile .name { font-size: 12px; color: var(--ink-2); }
+  .tile .tick { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+  .tile .px { font-family: var(--mono); font-size: 25px; font-weight: 500; letter-spacing: -0.02em; margin-top: 6px; }
+  .tile .chg { font-family: var(--mono); font-size: 13px; font-weight: 600; }
+  .tile .sig { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px; }
+
+  .up { color: var(--good-ink); } .down { color: var(--critical); } .flat { color: var(--ink-3); }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+    padding: 2px 6px; border: 1px solid var(--hair); border-radius: 3px;
+    color: var(--ink-2); white-space: nowrap;
+  }
+  .chip.bull { color: var(--good-ink); border-color: color-mix(in srgb, var(--good) 40%, var(--hair)); }
+  .chip.bear { color: var(--critical); border-color: color-mix(in srgb, var(--critical) 40%, var(--hair)); }
+  .chip.warn { color: var(--ink-2); border-color: color-mix(in srgb, var(--warning) 55%, var(--hair)); }
+  .chip.stale { color: var(--ink-2); background: var(--sunk); border-style: dashed; }
+
+  /* ── change chart ─────────────────────────────────────────── */
+  .chart { background: var(--surface); border: 1px solid var(--hair); padding: 18px 20px 12px; }
+  .chart .caption { font-size: 12px; color: var(--ink-2); margin: 0 0 14px; }
+  .bars { display: grid; gap: 2px; }
+  .bar-row {
+    display: grid; grid-template-columns: 74px 1fr 66px; align-items: center;
+    gap: 10px; cursor: default;
+  }
+  .bar-row:hover .plot { background: var(--sunk); }
+  .bar-row .who { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); text-align: right; }
+  .plot { position: relative; height: 15px; }
+  .plot::before {
+    content: ""; position: absolute; left: var(--zero, 50%); top: -1px; bottom: -1px;
+    border-left: 1px solid var(--rule);
+  }
+  .bar { position: absolute; top: 2px; bottom: 2px; background: var(--good); }
+  .bar.neg { background: var(--critical); }
+  .bar.pos { left: var(--zero, 50%); border-radius: 0 4px 4px 0; }
+  .bar.neg { right: calc(100% - var(--zero, 50%)); border-radius: 4px 0 0 4px; }
+  .bar-row .val { font-family: var(--mono); font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .axis { display: grid; grid-template-columns: 74px 1fr 66px; gap: 10px; margin-top: 8px; }
+  .axis .ticks { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--ink-3); }
+
+  /* ── filters ──────────────────────────────────────────────── */
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+  .filters button {
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-2);
+    background: var(--surface); border: 1px solid var(--hair); border-radius: 3px;
+    padding: 5px 11px; cursor: pointer;
+  }
+  .filters button:hover { border-color: var(--rule); }
+  .filters button[aria-pressed="true"] { color: var(--surface); background: var(--ink); border-color: var(--ink); }
+  .filters button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ── instrument table ─────────────────────────────────────── */
+  .scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--hair); }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; }
+  th {
+    font-family: var(--cond); font-weight: 700; font-size: 10.5px; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--ink-3); text-align: left;
+    padding: 10px 12px; border-bottom: 1px solid var(--rule); white-space: nowrap;
+  }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--hair); vertical-align: middle; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: var(--sunk); }
+  td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+  td.sym { font-family: var(--mono); font-weight: 600; }
+  td.sym small { display: block; font-family: var(--sans); font-weight: 400; color: var(--ink-3); font-size: 11px; }
+  .grp { font-family: var(--cond); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); background: var(--sunk); }
+  .grp td { padding: 6px 12px; border-bottom: 1px solid var(--hair); }
+
+  /* ── panels ───────────────────────────────────────────────── */
+  .panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 16px; }
+  .panel { background: var(--surface); border: 1px solid var(--hair); display: flex; flex-direction: column; min-width: 0; }
+  .panel > header { display: flex; align-items: baseline; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--hair); }
+  .panel > header h3 { font-family: var(--cond); font-weight: 700; font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; margin: 0; }
+  .panel > header .when { font-family: var(--mono); font-size: 10px; color: var(--ink-3); margin-left: auto; }
+  .panel .body { padding: 4px 0; overflow-x: auto; }
+  .panel .body.pad { padding: 12px 14px; }
+  .mini { width: 100%; font-size: 12px; }
+  .mini td { padding: 6px 14px; border-bottom: 1px solid var(--hair); }
+  .mini tr:last-child td { border-bottom: 0; }
+  .empty { padding: 14px; font-size: 12px; color: var(--ink-3); }
+
+  .news { list-style: none; margin: 0; padding: 0; }
+  .news li { padding: 10px 14px; border-bottom: 1px solid var(--hair); }
+  .news li:last-child { border-bottom: 0; }
+  .news a { color: var(--ink); text-decoration: none; }
+  .news a:hover { text-decoration: underline; text-decoration-color: var(--accent); }
+  .news .meta { font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); margin-top: 3px; }
+
+  /* ── tabs ─────────────────────────────────────────────────── */
+  .tabs { display: flex; gap: 2px; margin-left: 4px; }
+  .tabs button {
+    font-family: var(--cond); font-weight: 700; font-size: 11.5px; letter-spacing: 0.07em;
+    text-transform: uppercase; color: var(--ink-3); background: none; border: 0;
+    border-bottom: 2px solid transparent; padding: 4px 10px 6px; cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+  .tabs button:hover { color: var(--ink-2); }
+  .tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ── strategy ─────────────────────────────────────────────── */
+  .strat-note { font-size: 12px; color: var(--ink-2); margin: 0 0 16px; max-width: 68ch; }
+  .strat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(390px, 1fr)); gap: 16px; }
+  .strat { background: var(--surface); border: 1px solid var(--hair); padding: 16px 18px 18px; min-width: 0; }
+  .strat > .head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+  .strat .id { font-family: var(--mono); font-size: 15px; font-weight: 600; }
+  .strat .venue { font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); }
+  .strat .venue a { color: var(--ink-3); }
+  .strat .act { margin-left: auto; }
+  .strat .quote { font-family: var(--mono); font-size: 22px; font-weight: 500; letter-spacing: -0.02em; }
+  .strat .sub { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+
+  .ladder { position: relative; height: 62px; margin: 20px 0 6px; }
+  .ladder .line { position: absolute; left: 0; right: 0; top: 30px; height: 1px; background: var(--rule); }
+  .ladder .band { position: absolute; top: 24px; height: 13px; background: color-mix(in srgb, var(--accent) 16%, transparent); border-left: 2px solid var(--accent); border-right: 2px solid var(--accent); }
+  .ladder .tick { position: absolute; top: 25px; width: 2px; height: 11px; }
+  .ladder .tick.bull { background: var(--good); } .ladder .tick.bear { background: var(--critical); }
+  .ladder .dot { position: absolute; top: 26px; width: 9px; height: 9px; border-radius: 50%; background: var(--ink); border: 2px solid var(--surface); transform: translateX(-50%); }
+  .ladder .lbl { position: absolute; font-family: var(--mono); font-size: 10px; color: var(--ink-3); white-space: nowrap; transform: translateX(-50%); }
+  .ladder .lbl.below { top: 44px; } .ladder .lbl.above { top: 6px; color: var(--ink); font-weight: 600; }
+
+  .levels { width: 100%; font-size: 11.5px; margin-top: 10px; }
+  .levels td { padding: 5px 0; border-bottom: 1px solid var(--hair); }
+  .levels tr:last-child td { border-bottom: 0; }
+  .levels td:first-child { color: var(--ink-2); }
+  .levels td.num { font-family: var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+
+  footer { margin-top: 44px; padding-top: 16px; border-top: 1px solid var(--hair); font-size: 11.5px; color: var(--ink-3); }
+  footer a { color: var(--ink-2); }
+  code { font-family: var(--mono); font-size: 11.5px; }
+
+  #tip {
+    position: fixed; z-index: 40; pointer-events: none; opacity: 0;
+    background: var(--ink); color: var(--plane); font-family: var(--mono); font-size: 11px;
+    padding: 6px 9px; border-radius: 3px; max-width: 260px; transition: opacity .1s;
+  }
+  #tip b { color: var(--plane); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="strip">
+  <h1>Desk&nbsp;Tape <span>/ 18 instruments</span></h1>
+  <span class="stat" id="s-updated">loading…</span>
+  <span class="stat" id="s-live"></span>
+  <span class="spacer"></span>
+  <span class="stat" id="s-tier"></span>
+</div>
+
+<div class="wrap">
+  <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="true" data-tab="markets">Markets</button>
+    <button role="tab" aria-selected="false" data-tab="strategy">Strategy</button>
+  </div>
+
+<section id="tab-markets">
+  <p class="eyebrow">Macro tape</p>
+  <div class="tape" id="tape"></div>
+
+  <p class="eyebrow">Daily change, ranked</p>
+  <div class="chart">
+    <p class="caption" id="chart-cap">Percent change on the daily candle. Green bars gained, red bars lost; the value is printed on every bar.</p>
+    <div class="bars" id="bars"></div>
+    <div class="axis"><span></span><div class="ticks" id="ticks"></div><span></span></div>
+  </div>
+
+  <p class="eyebrow">Instruments</p>
+  <div class="filters" id="filters"></div>
+  <div class="scroll">
+    <table id="instruments">
+      <thead><tr>
+        <th>Instrument</th><th style="text-align:right">Last</th><th style="text-align:right">Chg</th>
+        <th style="text-align:right">RSI</th><th>Daily bias</th><th>Multi-timeframe</th>
+        <th>Volume</th><th>Rule summary</th><th style="text-align:right">Setup R:R</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <p class="eyebrow">Scans &amp; cross-market</p>
+  <div class="panels" id="panels"></div>
+
+  <p class="eyebrow">Headlines</p>
+  <div class="panels" id="news-panels"></div>
+
+  <div id="bt-wrap" hidden>
+    <p class="eyebrow">Strategy backtests <span id="bt-when"></span></p>
+    <div class="scroll">
+      <table id="backtests">
+        <thead><tr>
+          <th>Instrument</th><th>Best strategy by return</th><th style="text-align:right">Return</th>
+          <th style="text-align:right">Win rate</th><th style="text-align:right">Trades</th>
+          <th style="text-align:right">Max DD</th><th style="text-align:right">Sharpe</th>
+          <th style="text-align:right">Walk-forward</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+</section>
+
+<section id="tab-strategy" hidden>
+  <p class="eyebrow">Four-hour pivot watch</p>
+  <p class="strat-note" id="strat-note"></p>
+  <div class="strat-grid" id="strat-grid"></div>
+</section>
+
+  <footer>
+    Built by the <a href="https://github.com/atilaahmettaner/tradingview-mcp">tradingview-mcp</a> tool suite,
+    refreshed hourly by GitHub Actions. Delayed third-party market data, indicator readings and rule-based
+    signal summaries — <strong>not investment advice, and nothing here is an order</strong>.
+    Raw snapshot: <a href="data.json"><code>data.json</code></a>.
+  </footer>
+</div>
+
+<div id="tip"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const g = (o, path, dflt = null) => path.split(".").reduce((a, k) => (a == null ? a : a[k]), o) ?? dflt;
+const num = (v, d = 2) => (typeof v === "number" && isFinite(v) ? v.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }) : "—");
+const px = (v) => (typeof v !== "number" ? "—" : v >= 1000 ? num(v, 0) : v >= 1 ? num(v, 2) : num(v, 5));
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const dirClass = (v) => (typeof v !== "number" ? "flat" : v > 0 ? "up" : v < 0 ? "down" : "flat");
+const signed = (v, d = 2) => (typeof v === "number" ? (v > 0 ? "+" : "") + num(v, d) : "—");
+const arrow = (v) => (typeof v !== "number" || v === 0 ? "" : v > 0 ? "▲ " : "▼ ");
+
+function ago(iso) {
+  const m = Math.round((Date.now() - new Date(iso)) / 60000);
+  if (!isFinite(m)) return "unknown";
+  if (m < 1) return "just now";
+  if (m < 60) return m + "m ago";
+  const h = Math.floor(m / 60);
+  return h < 24 ? h + "h " + (m % 60) + "m ago" : Math.floor(h / 24) + "d ago";
+}
+
+/* A section is a {ok, as_of, data, stale?} envelope from collect.py. */
+const sec = (S, sym, name) => g(S, `symbols.${sym}.sections.${name}`) || {};
+const dat = (S, sym, name) => g(sec(S, sym, name), "data") || {};
+
+function staleChip(s) {
+  if (!s || !s.stale) return "";
+  return `<span class="chip stale" title="Upstream failed at the last attempt; showing the previous value">stale ${esc(ago(s.as_of))}</span>`;
+}
+
+function biasChip(text) {
+  const t = String(text || "");
+  const cls = /BULL/i.test(t) ? "bull" : /BEAR/i.test(t) ? "bear" : /MIXED|RANG|NEUTRAL/i.test(t) ? "warn" : "";
+  const mark = cls === "bull" ? "▲" : cls === "bear" ? "▼" : cls === "warn" ? "◆" : "·";
+  return t ? `<span class="chip ${cls}">${mark} ${esc(t)}</span>` : "—";
+}
+
+let DATA = null, FILTER = "All";
+
+function rows(S) {
+  return Object.entries(S.symbols || {}).map(([key, s]) => {
+    const a = dat(S, key, "analysis"), m = dat(S, key, "mtf"), v = dat(S, key, "volume"), ag = dat(S, key, "agents");
+    return {
+      key, label: s.label, group: s.group,
+      venue: g(a, "symbol", key),
+      price: g(a, "price_data.current_price"),
+      chg: g(a, "price_data.change_percent"),
+      rsi: g(a, "rsi.value"),
+      rsiSignal: g(a, "rsi.signal"),
+      bias: g(a, "timeframe_context.bias"),
+      signal: g(a, "market_sentiment.buy_sell_signal"),
+      vol: g(a, "market_sentiment.volatility"),
+      align: g(m, "alignment.status"),
+      alignScore: g(m, "alignment.net_score"),
+      confidence: g(m, "alignment.confidence"),
+      volRatio: g(v, "volume_analysis.volume_ratio"),
+      volStrength: g(v, "volume_analysis.volume_strength"),
+      decision: g(ag, "consensus.decision"),
+      decisionWhy: g(ag, "consensus.confidence"),
+      rr: g(a, "trade_setup.risk_reward"),
+      stop: g(a, "trade_setup.stop_loss"),
+      grade: g(a, "grade"),
+      qPrice: g(dat(S, key, "quote"), "price"),
+      qChg: g(dat(S, key, "quote"), "change_percent"),
+      hasQuote: !!sec(S, key, "quote").ok,
+      stale: ["analysis", "mtf", "volume", "agents"].some((n) => sec(S, key, n).stale),
+      secs: { analysis: sec(S, key, "analysis"), mtf: sec(S, key, "mtf"), volume: sec(S, key, "volume") },
+      dead: !sec(S, key, "analysis").ok && !sec(S, key, "analysis").stale,
+    };
+  });
+}
+
+function renderStrip(S) {
+  const all = rows(S), live = all.filter((r) => !r.dead).length, stale = all.filter((r) => r.stale).length;
+  $("#s-updated").innerHTML = `updated <b>${esc(ago(S.generated_at))}</b>`;
+  $("#s-live").innerHTML = `<b>${live}</b>/${all.length} live` + (stale ? ` · <b>${stale}</b> stale` : "");
+  const errs = g(S, "meta.errors", []).length;
+  $("#s-tier").innerHTML = `${esc(S.tier || "hourly")} run · ${S.build_seconds ?? "?"}s`
+    + (errs ? ` · <b>${errs}</b> upstream errors` : "");
+}
+
+function renderTape(S) {
+  const want = ["BTCUSDT", "ETHUSDT", "XAUUSD", "USOIL", "SPY", "VOO"];
+  const byKey = Object.fromEntries(rows(S).map((r) => [r.key, r]));
+  $("#tape").innerHTML = want.map((k) => {
+    const r = byKey[k]; if (!r) return "";
+    return `<div class="tile">
+      <span class="name">${esc(r.label)}</span>
+      <span class="tick">${esc(r.venue)}</span>
+      <span class="px">${px(r.price)}</span>
+      <span class="chg ${dirClass(r.chg)}">${arrow(r.chg)}${signed(r.chg)}%</span>
+      <span class="sig">${biasChip(r.align || r.bias)}${r.signal ? `<span class="chip">${esc(r.signal)}</span>` : ""}${staleChip(r.secs.analysis)}</span>
+    </div>`;
+  }).join("");
+}
+
+function renderChart(S) {
+  const live = rows(S).map((r) => (typeof r.chg === "number" ? r : { ...r, chg: r.qChg, price: r.qPrice, quoteOnly: true }))
+    .filter((r) => typeof r.chg === "number").sort((a, b) => b.chg - a.chg);
+  if (!live.length) { $("#bars").innerHTML = `<p class="empty">No live prices in this snapshot.</p>`; return; }
+  const max = Math.max(...live.map((r) => Math.abs(r.chg)), 0.5);
+  // Centre the zero line only when both signs are on screen; an all-up or
+  // all-down day gets the full width instead of a half-empty plot.
+  const hasNeg = live.some((r) => r.chg < 0), hasPos = live.some((r) => r.chg > 0);
+  const twoSided = hasNeg && hasPos;
+  document.documentElement.style.setProperty("--zero", twoSided ? "50%" : hasNeg ? "100%" : "0%");
+  const scale = (v) => (Math.abs(v) / max) * (twoSided ? 50 : 100);
+  $("#bars").innerHTML = live.map((r) => {
+    const w = scale(r.chg), pos = r.chg >= 0;
+    return `<div class="bar-row" data-sym="${esc(r.key)}" data-tip="${esc(r.label)} · ${esc(r.venue)}|last ${px(r.price)} · RSI ${num(r.rsi, 1)}|${esc(r.quoteOnly ? "quote only — no indicator read" : (r.align || r.bias || "no read"))}">
+      <span class="who">${esc(r.key)}</span>
+      <span class="plot"><span class="bar ${pos ? "pos" : "neg"}" style="width:${w}%"></span></span>
+      <span class="val ${dirClass(r.chg)}">${signed(r.chg)}%</span>
+    </div>`;
+  }).join("");
+  const ticks = twoSided ? [-max, -max / 2, 0, max / 2, max]
+    : hasNeg ? [-max, -max / 2, 0] : [0, max / 2, max];
+  $("#ticks").innerHTML = ticks.map((t) => `<span>${t === 0 ? "0" : signed(t, 1)}%</span>`).join("");
+}
+
+function renderInstruments(S) {
+  const all = rows(S);
+  const groups = [...new Set(all.map((r) => r.group))];
+  $("#filters").innerHTML = ["All", ...groups].map((gname) =>
+    `<button aria-pressed="${gname === FILTER}" data-g="${esc(gname)}">${esc(gname)}${gname === "All" ? ` (${all.length})` : ` (${all.filter((r) => r.group === gname).length})`}</button>`).join("");
+
+  const shown = FILTER === "All" ? all : all.filter((r) => r.group === FILTER);
+  const body = [];
+  for (const gname of groups) {
+    const set = shown.filter((r) => r.group === gname);
+    if (!set.length) continue;
+    if (FILTER === "All") body.push(`<tr class="grp"><td colspan="9">${esc(gname)}</td></tr>`);
+    for (const r of set) {
+      if (r.dead) {
+        const why = esc(String(g(r.secs.analysis, "data.error.message", g(r.secs.analysis, "data.error", "upstream unavailable"))).replace(/^skipped: /, "").slice(0, 60));
+        body.push(r.hasQuote
+          ? `<tr><td class="sym">${esc(r.key)}<small>${esc(r.label)}</small></td>
+             <td class="num">${px(r.qPrice)}</td>
+             <td class="num ${dirClass(r.qChg)}">${arrow(r.qChg)}${signed(r.qChg)}%</td>
+             <td colspan="6" style="color:var(--ink-3)"><span class="chip">quote only · screener</span> indicators unavailable — ${why}</td></tr>`
+          : `<tr><td class="sym">${esc(r.key)}<small>${esc(r.label)}</small></td>
+             <td colspan="8" style="color:var(--ink-3)">${why}</td></tr>`);
+        continue;
+      }
+      body.push(`<tr>
+        <td class="sym">${esc(r.key)}<small>${esc(r.label)}${r.grade ? " · grade " + esc(r.grade) : ""}</small></td>
+        <td class="num">${px(r.price)}</td>
+        <td class="num ${dirClass(r.chg)}">${arrow(r.chg)}${signed(r.chg)}%</td>
+        <td class="num" title="${esc(r.rsiSignal || "")}">${num(r.rsi, 1)}</td>
+        <td>${biasChip(r.bias)}</td>
+        <td>${biasChip(r.align)}${typeof r.alignScore === "number" ? `<span class="chip">net ${signed(r.alignScore, 0)}</span>` : ""}</td>
+        <td>${typeof r.volRatio === "number" ? `<span class="chip${r.volRatio >= 2 ? " bull" : ""}">${num(r.volRatio, 2)}× ${esc(r.volStrength || "")}</span>` : "—"}</td>
+        <td>${biasChip(r.decision)}${r.decisionWhy ? `<span class="chip">${esc(r.decisionWhy)}</span>` : ""}</td>
+        <td class="num">${r.rr ? esc(r.rr) : "—"}${r.stale ? " " + staleChip({ stale: 1, as_of: r.secs.analysis.as_of }) : ""}</td>
+      </tr>`);
+    }
+  }
+  $("#instruments tbody").innerHTML = body.join("") || `<tr><td colspan="9" class="empty">Nothing in this group.</td></tr>`;
+}
+
+/* ── market panels ────────────────────────────────────────────── */
+const listPanel = (title, s, cols, pick) => {
+  const items = pick(g(s, "data")) || [];
+  const rowsHtml = items.slice(0, 10).map((it) => `<tr>${cols.map((c) => {
+    const v = c.get(it);
+    return `<td class="${c.num ? "num" : ""}${c.cls ? " " + c.cls(it) : ""}">${c.raw ? v : esc(v ?? "—")}</td>`;
+  }).join("")}</tr>`).join("");
+  return `<section class="panel">
+    <header><h3>${esc(title)}</h3><span class="when">${s && s.as_of ? esc(ago(s.as_of)) : ""}${s && s.stale ? " · stale" : ""}</span></header>
+    <div class="body">${rowsHtml ? `<table class="mini"><tbody>${rowsHtml}</tbody></table>`
+      : `<p class="empty">${s && s.ok ? "Nothing matched the filter this run." : esc(String(g(s, "data.error.message", g(s, "data.error", "unavailable"))).slice(0, 140))}</p>`}</div>
+  </section>`;
+};
+
+const asList = (d) => (Array.isArray(d) ? d : d && (d.rows || d.results || d.contracts || d.coins || d.matches || d.patterns || d.stocks || d.data)) || [];
+const tName = (it) => it.ticker || it.symbol || it.name || it.coin || "—";
+const tChg = (it) => (typeof it.change === "number" ? it.change : it.change_percent ?? it.change_pct ?? it.price_change);
+
+function renderPanels(S) {
+  const M = S.market || {};
+  const trunc = (t, n) => (String(t).length > n ? String(t).slice(0, n - 1) + "…" : String(t));
+  const chgCol = { get: (it) => `${arrow(tChg(it))}${signed(tChg(it))}%`, num: true, cls: (it) => dirClass(tChg(it)) };
+  const nameCol = { get: tName };
+  const panels = [
+    listPanel("Crypto gainers · 4h", M.gainers, [nameCol, { get: (it) => px(it.close ?? it.price), num: true }, chgCol], asList),
+    listPanel("Crypto losers · 4h", M.losers, [nameCol, { get: (it) => px(it.close ?? it.price), num: true }, chgCol], asList),
+    listPanel("Bollinger squeeze · 4h", M.squeeze, [nameCol, { get: (it) => (typeof it.bbw === "number" ? "BBW " + num(it.bbw, 4) : "—"), num: true }, chgCol], asList),
+    listPanel("Volume surge · 1h", M.smart_volume, [nameCol, { get: (it) => (it.volume_ratio ? num(it.volume_ratio, 1) + "×" : "—"), num: true }, chgCol], asList),
+    M.vol_breakout && listPanel("Volume breakouts · 1h", M.vol_breakout, [nameCol, { get: (it) => (it.volume_ratio ? num(it.volume_ratio, 1) + "×" : "—"), num: true }, chgCol], asList),
+    M.strong_rated && listPanel("Strong rated · 1h", M.strong_rated, [nameCol, { get: (it) => (typeof it.rating === "number" ? "rating " + it.rating : "—") }, chgCol], asList),
+    M.streaks && listPanel("Bullish streaks · 1h", M.streaks, [nameCol, { get: (it) => (it.consecutive_count ? it.consecutive_count + " candles" : it.pattern || "—") }, chgCol], asList),
+    listPanel("Energy futures", M.energy, [{ get: (it) => trunc(it.description || tName(it), 30) }, { get: (it) => px(it.close), num: true }, chgCol], asList),
+    listPanel("Metals futures", M.metals, [{ get: (it) => trunc(it.description || tName(it), 30) }, { get: (it) => px(it.close), num: true }, chgCol], asList),
+    listPanel("Futures movers", M.futures_movers, [{ get: (it) => trunc(it.description || tName(it), 30) }, { get: (it) => px(it.close), num: true }, chgCol], asList),
+    listPanel("Equity quotes", M.equity_quotes, [nameCol, { get: (it) => px(it.price ?? it.close), num: true }, chgCol], asList),
+    listPanel("US large caps", M.us_screener, [nameCol, { get: (it) => px(it.price ?? it.close), num: true }, chgCol], asList),
+  ].filter(Boolean);
+
+  const quoteRows = (items) => items.map((it) => `<tr>
+      <td>${esc(it.name)}</td>
+      <td class="num">${px(it.price)}</td>
+      <td class="num ${dirClass(it.chg)}">${arrow(it.chg)}${signed(it.chg)}%</td></tr>`).join("");
+
+  const wrapPanel = (title, s2, inner) => `<section class="panel">
+      <header><h3>${esc(title)}</h3><span class="when">${s2 && s2.as_of ? esc(ago(s2.as_of)) : ""}${s2 && s2.stale ? " · stale" : ""}</span></header>
+      <div class="body">${inner || `<p class="empty">${esc(String(g(s2, "data.error.message", g(s2, "data.error", "unavailable"))).slice(0, 140))}</p>`}</div></section>`;
+
+  // market_snapshot returns four Yahoo-backed buckets; flatten them into one quote list
+  const snapItems = ["indices", "crypto", "fx", "etfs"].flatMap((bucket) =>
+    (g(M, `snapshot.data.${bucket}`) || []).map((q) => ({ name: q.symbol, price: q.price, chg: q.change_pct })));
+  panels.unshift(wrapPanel("Market snapshot", M.snapshot,
+    snapItems.length ? `<table class="mini"><tbody>${quoteRows(snapItems.slice(0, 14))}</tbody></table>` : ""));
+
+  const bp = g(M, "btc_pulse.data");
+  const pulseRows = bp && bp.bitcoin ? [
+    ["Bitcoin", px(g(bp, "bitcoin.price_usd")), g(bp, "bitcoin.change_24h_pct")],
+    ["BTC dominance", num(g(bp, "dominance.btc_pct"), 1) + "%", null],
+    ["ETH dominance", num(g(bp, "dominance.eth_pct"), 1) + "%", null],
+    ["Total market cap", "$" + num((g(bp, "total_market.market_cap_usd") || 0) / 1e12, 2) + "T", g(bp, "total_market.change_24h_pct")],
+    ["Read", trunc(g(bp, "assessment.summary", g(bp, "assessment.phase", "—")), 34), null],
+  ] : [];
+  panels.unshift(wrapPanel("Bitcoin pulse", M.btc_pulse, pulseRows.length
+    ? `<table class="mini"><tbody>${pulseRows.map(([k, v, c]) => `<tr><td style="color:var(--ink-2)">${esc(k)}</td>
+        <td class="num">${esc(v)}</td><td class="num ${dirClass(c)}">${c == null ? "" : arrow(c) + signed(c) + "%"}</td></tr>`).join("")}</tbody></table>` : ""));
+
+  $("#panels").innerHTML = panels.join("");
+}
+
+function renderNews(S) {
+  const n = g(S, "market.news") || {};
+  const items = (g(n, "data.items") || []).slice(0, 8);
+  const feed = `<section class="panel"><header><h3>Market wire</h3><span class="when">${n.as_of ? esc(ago(n.as_of)) : ""}${n.stale ? " · stale" : ""}</span></header>
+    ${items.length ? `<ul class="news">${items.map((it) => `<li><a href="${esc(it.url || "#")}" target="_blank" rel="noopener">${esc(it.title || "untitled")}</a>
+      <div class="meta">${esc(it.source || "")}${it.sentiment ? " · " + esc(it.sentiment) : ""}${it.published ? " · " + esc(String(it.published).slice(0, 10)) : ""}</div></li>`).join("")}</ul>`
+      : `<p class="empty">${g(S, "meta.news_enabled") ? esc(String(g(n, "data.note", g(n, "data.error.message", "no headlines this run"))).slice(0, 160)) : "No Marketaux token configured, so news is off."}</p>`}</section>`;
+
+  const sents = Object.entries(S.symbols || {})
+    .map(([k, s]) => [k, s.sections.sentiment]).filter(([, x]) => x)
+    .map(([k, x]) => ({ key: k, s: x, score: g(x, "data.sentiment_score"), label: g(x, "data.sentiment_label"), n: g(x, "data.posts_analyzed") }));
+  const sentPanel = `<section class="panel"><header><h3>News sentiment</h3><span class="when">${sents.length} of ${Object.keys(S.symbols || {}).length} symbols</span></header>
+    <div class="body">${sents.length ? `<table class="mini"><tbody>${sents.map((r) => `<tr>
+      <td class="sym">${esc(r.key)}</td><td>${biasChip(r.label)}</td>
+      <td class="num ${dirClass(r.score)}">${signed(r.score, 3)}</td>
+      <td class="num" style="color:var(--ink-3)">${r.n ?? 0} art.</td></tr>`).join("")}</tbody></table>`
+      : `<p class="empty">Sentiment rotates two symbols per run to stay inside the 90-call daily news budget.</p>`}
+      <p class="empty">Keyword scoring over a handful of headlines. Confluence input, not a trigger.</p></div></section>`;
+  $("#news-panels").innerHTML = feed + sentPanel;
+}
+
+function renderBacktests(S) {
+  const out = [];
+  for (const [key, s] of Object.entries(S.symbols || {})) {
+    const cs = s.sections.strategies, wf = s.sections.walk_forward;
+    if (!cs) continue;
+    const list = g(cs, "data.results") || g(cs, "data.strategies") || [];
+    const best = [...list].sort((a, b) => (b.total_return_pct ?? -1e9) - (a.total_return_pct ?? -1e9))[0];
+    if (!best) continue;
+    const wfv = g(wf, "data.out_of_sample_return_pct") ?? g(wf, "data.avg_test_return_pct") ?? g(wf, "data.verdict");
+    out.push(`<tr>
+      <td class="sym">${esc(key)}<small>${esc(s.label)}</small></td>
+      <td>${esc(best.strategy_label || best.strategy || "—")}</td>
+      <td class="num ${dirClass(best.total_return_pct)}">${signed(best.total_return_pct)}%</td>
+      <td class="num">${num(best.win_rate_pct, 1)}%</td>
+      <td class="num${(best.total_trades ?? 0) < 10 ? " down" : ""}" title="${(best.total_trades ?? 0) < 10 ? "fewer than 10 trades — not a usable sample" : ""}">${best.total_trades ?? "—"}</td>
+      <td class="num">${num(best.max_drawdown_pct, 1)}%</td>
+      <td class="num">${num(best.sharpe_ratio, 2)}</td>
+      <td class="num">${typeof wfv === "number" ? signed(wfv) + "%" : esc(wfv || "—")}</td>
+    </tr>`);
+  }
+  if (!out.length) return;
+  $("#bt-wrap").hidden = false;
+  $("#bt-when").innerHTML = `<span style="font-family:var(--mono);text-transform:none;letter-spacing:0">— 1y daily, 0.1% commission, 0.05% slippage; a row under 10 trades is noise, not an edge</span>`;
+  $("#backtests tbody").innerHTML = out.join("");
+}
+
+/* ── strategy tab: market-pivot-watch's published 4H report ───────────── */
+function renderStrategy(S) {
+  const sct = g(S, "strategy.pivot_watch") || {};
+  const rep = g(sct, "data") || {};
+  const markets = rep.markets || [];
+  const checked = rep.checked_at ? new Date(rep.checked_at * 1000).toISOString() : sct.as_of;
+
+  $("#strat-note").innerHTML = markets.length
+    ? `Fixed pivots frozen from six completed 4H candles, a breakout on a completed close, then a
+       <strong>later</strong> completed retest before entry is eligible. Levels and decisions come straight from
+       the <a href="${esc(rep.feed_url || "#")}" target="_blank" rel="noopener">market-pivot-watch</a> report
+       — this page reads them, it does not recompute them. Report run ${esc(ago(checked))}.
+       Observation only: a decision is not a fill, and nothing here places an order.`
+    : `<strong>No pivot report.</strong> ${esc(String(g(sct, "data.error.message", g(sct, "data.error", "feed unavailable"))).slice(0, 180))}`;
+
+  $("#strat-grid").innerHTML = markets.map((m) => {
+    const chart = `<span class="venue"><a href="${esc(m.chart || "#")}" target="_blank" rel="noopener">${esc(m.tradingview_symbol || "")}</a></span>`;
+    const act = biasChipFor(m.action, m.signal);
+
+    if (m.status === "DATA UNAVAILABLE" || m.lower == null || m.upper == null) {
+      return `<article class="strat">
+        <div class="head"><span class="id">${esc(m.id)}</span>${chart}<span class="act">${act}</span></div>
+        <p class="sub" style="margin:10px 0 0">${esc(m.error || m.status || "no levels yet")}</p>
+        ${m.baseline ? `<p class="sub">Baseline only — first reading establishes levels, it is not a signal.</p>` : ""}
+      </article>`;
+    }
+
+    const L = m.lower, U = m.upper, W = U - L;
+    const bull = m.bullish_targets || [], bear = m.bearish_targets || [];
+    const price = g(m, "quote.price", m.close);
+    const pts = [L, U, ...bull, ...bear, price, m.close].filter((v) => typeof v === "number");
+    const lo = Math.min(...pts), hi = Math.max(...pts), span = (hi - lo) || 1;
+    const pad = span * 0.06;
+    const at = (v) => ((v - (lo - pad)) / (span + pad * 2)) * 100;
+    const clamp = (x) => Math.max(4, Math.min(96, x));
+
+    const ticks = [...bull.map((v) => [v, "bull"]), ...bear.map((v) => [v, "bear"])]
+      .filter(([v]) => typeof v === "number")
+      .map(([v, cls]) => `<span class="tick ${cls}" style="left:${at(v)}%" title="${cls === "bull" ? "bullish" : "bearish"} target ${px(v)}"></span>`).join("");
+
+    return `<article class="strat">
+      <div class="head"><span class="id">${esc(m.id)}</span>${chart}<span class="act">${act}</span></div>
+      <div class="head" style="margin-top:2px">
+        <span class="quote">${px(price)}</span>
+        <span class="sub">4H close ${px(m.close)}${m.close_time ? " · " + esc(ago(new Date(m.close_time * 1000).toISOString())) : ""}</span>
+      </div>
+
+      <div class="ladder">
+        <span class="line"></span>
+        <span class="band" style="left:${at(L)}%; width:${Math.max(0, at(U) - at(L))}%"></span>
+        ${ticks}
+        <span class="dot" style="left:${clamp(at(price))}%" title="current quote ${px(price)}"></span>
+        <span class="lbl above" style="left:${clamp(at(price))}%">${px(price)}</span>
+        <span class="lbl below" style="left:${clamp(at(L))}%">L ${px(L)}</span>
+        <span class="lbl below" style="left:${clamp(at(U))}%">U ${px(U)}</span>
+      </div>
+
+      <table class="levels"><tbody>
+        <tr><td>State / setup</td><td class="num">${esc(m.state || "—")}${m.setup && m.setup.side ? " · tracking " + esc(m.setup.side) : ""}</td></tr>
+        <tr><td>Retest confirmed</td><td class="num">${m.retest_confirmed ? "yes" : "not yet"}</td></tr>
+        <tr><td>Pivot range (U − L)</td><td class="num">${px(W)}</td></tr>
+        <tr><td>Bullish targets</td><td class="num up">${bull.map(px).join("  ·  ") || "—"}</td></tr>
+        <tr><td>Bearish targets</td><td class="num down">${bear.map(px).join("  ·  ") || "—"}</td></tr>
+        <tr><td>Feed</td><td class="num">${esc(m.source || "—")}</td></tr>
+      </tbody></table>
+      ${(m.notes && m.notes.length) ? `<p class="sub" style="margin-top:8px">${esc(m.notes.join(" · ").slice(0, 160))}</p>` : ""}
+    </article>`;
+  }).join("");
+}
+
+/* BUY/SELL read as orders if they are styled like everything else — the report
+   means "entry eligible", so the chip carries the report's own wording. */
+function biasChipFor(action, signal) {
+  const t = String(action || signal || "—");
+  const cls = /^BUY|ENTRY SETUP CONFIRMED/i.test(t) ? "bull" : /^SELL|EXIT/i.test(t) ? "bear" : /WAIT|NO NEW|UNAVAIL/i.test(t) ? "warn" : "";
+  const mark = cls === "bull" ? "▲" : cls === "bear" ? "▼" : cls === "warn" ? "◆" : "·";
+  return `<span class="chip ${cls}">${mark} ${esc(t)}</span>`;
+}
+
+function render(S) {
+  DATA = S;
+  renderStrip(S); renderTape(S); renderChart(S); renderInstruments(S);
+  renderPanels(S); renderNews(S); renderBacktests(S); renderStrategy(S);
+}
+
+/* interaction: group filter + bar tooltip */
+document.addEventListener("click", (e) => {
+  const t = e.target.closest(".tabs button");
+  if (t) {
+    document.querySelectorAll(".tabs button").forEach((x) => x.setAttribute("aria-selected", String(x === t)));
+    $("#tab-markets").hidden = t.dataset.tab !== "markets";
+    $("#tab-strategy").hidden = t.dataset.tab !== "strategy";
+    return;
+  }
+  const b = e.target.closest("#filters button");
+  if (!b || !DATA) return;
+  FILTER = b.dataset.g;
+  renderInstruments(DATA);
+});
+const tip = $("#tip");
+document.addEventListener("pointermove", (e) => {
+  const row = e.target.closest(".bar-row");
+  if (!row) { tip.style.opacity = 0; return; }
+  tip.innerHTML = row.dataset.tip.split("|").map((l, i) => (i ? l : "<b>" + l + "</b>")).join("<br>");
+  tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect();
+  tip.style.left = Math.min(e.clientX + 14, innerWidth - r.width - 8) + "px";
+  tip.style.top = Math.max(8, e.clientY - r.height - 10) + "px";
+}, { passive: true });
+
+(async function boot() {
+  try {
+    const S = window.__DATA__ || (await (await fetch("data.json", { cache: "no-store" })).json());
+    render(S);
+  } catch (err) {
+    $("#s-updated").textContent = "snapshot unavailable";
+    $("#tape").innerHTML = `<div class="tile"><span class="name">No snapshot yet</span>
+      <span class="tick">docs/data.json is missing or unreadable</span>
+      <span class="chg">Run <code>python dashboard/collect.py</code>, or trigger the Market dashboard workflow.</span></div>`;
+    console.error(err);
+  }
+})();
+</script>
