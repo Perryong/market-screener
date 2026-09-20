@@ -368,9 +368,12 @@ def main() -> int:
     snap["build_seconds"] = round(time.time() - t0, 1)
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(snap, indent=1, default=str))
-    ok = sum(1 for s in snap["symbols"].values() if s["sections"]["analysis"]["ok"])
-    print(f"wrote {OUT} tier={tier} {ok}/{len(UNIVERSE)} symbols live "
-          f"{len(_errors)} errors {snap['build_seconds']}s")
+    secs = [s["sections"]["analysis"] for s in snap["symbols"].values()]
+    fresh = sum(1 for a in secs if a["ok"] and not a.get("stale"))
+    stale = sum(1 for a in secs if a.get("stale"))
+    quotes = sum(1 for s in snap["symbols"].values() if s["sections"].get("quote"))
+    print(f"wrote {OUT} tier={tier} {fresh}/{len(UNIVERSE)} fresh, {stale} stale, "
+          f"{quotes} quote-only, {len(_errors)} errors, {snap['build_seconds']}s")
     return 0
 
 
