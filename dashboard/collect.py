@@ -250,29 +250,16 @@ def collect(tier: str) -> dict:
     # keeps the 0.5s default gets throttled to empty bodies about 40 calls in.
     os.environ.setdefault("TRADINGVIEW_MCP_MIN_INTERVAL_S", "2.0")
 
-    symbols: dict[str, dict] = {}
-    for i, sym in enumerate(UNIVERSE):
-        print(f"[{i+1}/{len(UNIVERSE)}] {sym['key']}"
-              + (" (budget spent, skipping)" if over_budget() else ""), flush=True)
-        sec = {
-            "analysis": first_venue("coin_analysis", sym, "1D"),
-            "volume":   first_venue("volume_confirmation_analysis", sym, "1D"),
-        }
-        if sym["key"] in MACRO or daily:
-            sec["mtf"] = first_venue("multi_timeframe_analysis", sym)
-            sec["agents"] = first_venue("multi_agent_analysis", sym, "1D")
-        # news rotates: (hour + index) picks NEWS_PER_RUN symbols each run
-        if (i - hour) % (len(UNIVERSE) // NEWS_PER_RUN) == 0:
-            sec["sentiment"] = section("market_sentiment", sym["key"], sym["cat"], 20)
-        if daily and sym["key"] in DAILY_SYMBOLS:
-            sec["strategies"] = section("compare_strategies", sym["yahoo"], "1y")
-            sec["walk_forward"] = section("walk_forward_backtest_strategy", sym["yahoo"], "supertrend", "2y")
-            sec["smart_money"] = section("smart_money_analysis", sym["key"], sym["venues"][0], "6mo")
-            sec["yahoo"] = section("yahoo_price", sym["yahoo"])
-        symbols[sym["key"]] = {"label": sym["label"], "group": sym["group"], "sections": sec}
-
+    # ORDER MATTERS. The per-symbol loop makes 2-8 TradingView calls per symbol
+    # and drains the process's allowance; whatever runs after it gets empty
+    # bodies. Measured: these scans take ~7s and all succeed when they run
+    # first, and burned 164s failing when they ran last. They also have no
+    # fallback — a failed scan is an empty panel — whereas a symbol degrades to
+    # a screener quote and then to its last-good value. So the cheap,
+    # all-or-nothing work goes first and the expensive, gracefully-degrading
+    # work takes what is left.
     print("market-wide scans", flush=True)
-    market = {
+    market: dict[str, dict] = {
         "snapshot":       section("market_snapshot"),
         "btc_pulse":      section("bitcoin_market_pulse"),
         "gainers":        section("top_gainers", "KUCOIN", "4h", 10),
@@ -299,6 +286,28 @@ def collect(tier: str) -> dict:
         market["nvda_hours"] = section("stock_extended_hours", "NVDA")
         market["nvda_options"] = section("stock_options_unusual_activity", "NVDA", 10, 100, 4)
         market["nvda_chain"] = section("stock_options_chain", "NVDA")
+
+
+    symbols: dict[str, dict] = {}
+    for i, sym in enumerate(UNIVERSE):
+        print(f"[{i+1}/{len(UNIVERSE)}] {sym['key']}"
+              + (" (budget spent, skipping)" if over_budget() else ""), flush=True)
+        sec = {
+            "analysis": first_venue("coin_analysis", sym, "1D"),
+            "volume":   first_venue("volume_confirmation_analysis", sym, "1D"),
+        }
+        if sym["key"] in MACRO or daily:
+            sec["mtf"] = first_venue("multi_timeframe_analysis", sym)
+            sec["agents"] = first_venue("multi_agent_analysis", sym, "1D")
+        # news rotates: (hour + index) picks NEWS_PER_RUN symbols each run
+        if (i - hour) % (len(UNIVERSE) // NEWS_PER_RUN) == 0:
+            sec["sentiment"] = section("market_sentiment", sym["key"], sym["cat"], 20)
+        if daily and sym["key"] in DAILY_SYMBOLS:
+            sec["strategies"] = section("compare_strategies", sym["yahoo"], "1y")
+            sec["walk_forward"] = section("walk_forward_backtest_strategy", sym["yahoo"], "supertrend", "2y")
+            sec["smart_money"] = section("smart_money_analysis", sym["key"], sym["venues"][0], "6mo")
+            sec["yahoo"] = section("yahoo_price", sym["yahoo"])
+        symbols[sym["key"]] = {"label": sym["label"], "group": sym["group"], "sections": sec}
 
     # tradingview_ta and the screener are separate upstreams: when the first is
     # throttled the second still answers, so a symbol with no analysis can still
@@ -348,6 +357,25 @@ def selftest() -> None:
     assert "stale" not in m["symbols"]["BTC"]["sections"]["b"]
     # a section with no previous value stays failed rather than vanishing
     assert merge({}, {"x": bad})["x"]["ok"] is False
+
+    # Ordering regression guard. The market scans must run before the per-symbol
+    # loop: the loop drains the TradingView allowance, and a starved scan has no
+    # fallback to degrade to. Swapping these back silently empties four panels.
+    order: list[str] = []
+    real = globals()["section"]
+
+    def recorder(name, *a, **k):
+        order.append(_label(name))
+        return {"ok": True, "as_of": "t", "took_s": 0.0, "data": {}}
+
+    globals()["section"] = recorder
+    try:
+        collect("hourly")
+    finally:
+        globals()["section"] = real
+    assert "top_gainers" in order and "coin_analysis" in order, order[:8]
+    assert order.index("top_gainers") < order.index("coin_analysis"), \
+        f"market scans must precede the symbol loop, got {order[:8]}"
     print("selftest ok")
 
 

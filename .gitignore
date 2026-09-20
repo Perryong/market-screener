@@ -245,3 +245,6 @@ dist/
 
 # Remotion promo video project (source + renders kept out of the repo)
 promo/
+
+# Playwright MCP scratch output (screenshots, page snapshots)
+.playwright-mcp/
