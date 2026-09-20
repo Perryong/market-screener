@@ -208,6 +208,23 @@
   .levels td:first-child { color: var(--ink-2); }
   .levels td.num { font-family: var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
 
+  /* ── live widgets ─────────────────────────────────────────── */
+  .tape-wrap { border: 1px solid var(--hair); background: var(--surface); margin-bottom: 4px; min-height: 46px; }
+  .widget-fallback { padding: 12px 14px; font-size: 12px; color: var(--ink-3); }
+  .widget-fallback a { color: var(--accent); }
+  .live-note { font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); margin: 6px 2px 0; }
+  .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--good); margin-right: 5px; vertical-align: middle; }
+
+  .tv-chart { height: 460px; border: 1px solid var(--hair); background: var(--surface); margin-top: 14px; }
+  .tv-chart .tradingview-widget-container, .tv-chart .tradingview-widget-container__widget { height: 100%; }
+
+  /* ── pivot candles ────────────────────────────────────────── */
+  .candles { width: 100%; height: auto; display: block; margin-top: 6px; }
+  .candles text { font-family: var(--mono); font-size: 9px; fill: var(--ink-3); }
+  .candles text.strong { fill: var(--ink); font-weight: 600; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 8px; font-family: var(--mono); font-size: 10px; color: var(--ink-3); }
+  .legend i { display: inline-block; width: 14px; height: 0; border-top-width: 2px; margin-right: 4px; vertical-align: middle; }
+
   footer { margin-top: 44px; padding-top: 16px; border-top: 1px solid var(--hair); font-size: 11.5px; color: var(--ink-3); }
   footer a { color: var(--ink-2); }
   code { font-family: var(--mono); font-size: 11.5px; }
@@ -236,7 +253,13 @@
   </div>
 
 <section id="tab-markets">
-  <p class="eyebrow">Macro tape</p>
+  <p class="eyebrow">Live prices</p>
+  <div class="tape-wrap" id="tape-widget">
+    <p class="widget-fallback">Loading live quotes from TradingView…</p>
+  </div>
+  <p class="live-note"><span class="live-dot"></span>Streaming from TradingView. Everything below is the hourly snapshot, timestamped per panel.</p>
+
+  <p class="eyebrow">Snapshot tape</p>
   <div class="tape" id="tape"></div>
 
   <p class="eyebrow">Daily change, ranked</p>
@@ -285,7 +308,8 @@
 <section id="tab-strategy" hidden>
   <p class="eyebrow">Four-hour pivot watch</p>
   <p class="strat-note" id="strat-note"></p>
-  <div class="strat-grid" id="strat-grid"></div>
+  <div class="filters" id="strat-markets"></div>
+  <div id="strat-detail"></div>
 </section>
 
   <footer>
@@ -369,9 +393,15 @@ function rows(S) {
 }
 
 function renderStrip(S) {
-  const all = rows(S), live = all.filter((r) => !r.dead).length, stale = all.filter((r) => r.stale).length;
+  // "live" once counted stale fallbacks too, which overstated freshness
+  const all = rows(S);
+  const fresh = all.filter((r) => !r.dead && !r.stale).length;
+  const stale = all.filter((r) => r.stale).length;
+  const quoteOnly = all.filter((r) => r.dead && r.hasQuote).length;
   $("#s-updated").innerHTML = `updated <b>${esc(ago(S.generated_at))}</b>`;
-  $("#s-live").innerHTML = `<b>${live}</b>/${all.length} live` + (stale ? ` · <b>${stale}</b> stale` : "");
+  $("#s-live").innerHTML = `<b>${fresh}</b>/${all.length} fresh`
+    + (stale ? ` · <b>${stale}</b> stale` : "")
+    + (quoteOnly ? ` · <b>${quoteOnly}</b> quote-only` : "");
   const errs = g(S, "meta.errors", []).length;
   $("#s-tier").innerHTML = `${esc(S.tier || "hourly")} run · ${S.build_seconds ?? "?"}s`
     + (errs ? ` · <b>${errs}</b> upstream errors` : "");
@@ -571,7 +601,126 @@ function renderBacktests(S) {
   $("#backtests tbody").innerHTML = out.join("");
 }
 
+/* ── TradingView embeds ───────────────────────────────────────────────────
+   Same widgets market-pivot-watch uses. They stream live, which is the only
+   way a static Pages site gets a moving price. They need s3.tradingview.com,
+   so anywhere that host is blocked the fallback text stands in. */
+function tvWidget(host, kind, config, fallbackHref) {
+  if (!host || host.dataset.loaded === kind) return;
+  host.dataset.loaded = kind;
+  const container = document.createElement("div");
+  container.className = "tradingview-widget-container";
+  const inner = document.createElement("div");
+  inner.className = "tradingview-widget-container__widget";
+  container.appendChild(inner);
+  const credit = document.createElement("div");
+  credit.className = "tradingview-widget-copyright";
+  const a = document.createElement("a");
+  a.href = "https://www.tradingview.com/";
+  a.target = "_blank"; a.rel = "noopener noreferrer";
+  a.textContent = "Track all markets on TradingView";
+  credit.appendChild(a);
+  container.appendChild(credit);
+
+  const script = document.createElement("script");
+  script.src = `https://s3.tradingview.com/external-embedding/embed-widget-${kind}.js`;
+  script.async = true;
+  script.textContent = JSON.stringify(config);
+  const giveUp = () => {
+    host.innerHTML = `<p class="widget-fallback">TradingView quotes are blocked here — the snapshot values below still apply.
+      ${fallbackHref ? `<a href="${fallbackHref}" target="_blank" rel="noopener">Open the live chart ↗</a>` : ""}</p>`;
+  };
+  script.onerror = giveUp;
+  container.appendChild(script);
+  host.replaceChildren(container);
+  // the script can be fetched and still render nothing when framing is blocked
+  setTimeout(() => { if (!host.querySelector("iframe")) giveUp(); }, 5000);
+}
+
+function tvSymbolFor(r) {
+  if (r.venue && r.venue.includes(":")) return r.venue;
+  return (r.group === "Semis" && r.key === "TSM" ? "NYSE:" : r.group === "Semis" ? "NASDAQ:"
+    : r.group === "Index ETFs" ? "AMEX:" : "KUCOIN:") + r.key;
+}
+
+function renderLiveTape(S2) {
+  const syms = rows(S2).map((r) => ({ proName: tvSymbolFor(r), title: r.label }));
+  tvWidget($("#tape-widget"), "ticker-tape", {
+    symbols: syms, showSymbolLogo: true, isTransparent: true,
+    displayMode: "adaptive", colorTheme: themeNow(), locale: "en",
+  });
+}
+
+const themeNow = () => (document.documentElement.dataset.theme
+  || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+
+/* ── pivot candles: completed 4H candles from the report, with the fixed
+      pivots and targets drawn on the same price scale ──────────────────── */
+function pivotChart(m) {
+  const all = (m.analysis_candles || []).filter((c) => c.complete);
+  if (all.length < 4 || m.lower == null || m.upper == null) return "";
+  const cs = all.slice(-56);
+  const L = m.lower, U = m.upper;
+  const price = g(m, "quote.price", m.close);
+  const bull = (m.bullish_targets || []).filter((v) => typeof v === "number");
+  const bear = (m.bearish_targets || []).filter((v) => typeof v === "number");
+
+  // scale spans the candles and both pivots; targets only widen it when close
+  let lo = Math.min(L, ...cs.map((c) => c.low));
+  let hi = Math.max(U, ...cs.map((c) => c.high));
+  if (typeof price === "number") { lo = Math.min(lo, price); hi = Math.max(hi, price); }
+  const pad = (hi - lo) * 0.08 || 1;
+  lo -= pad; hi += pad;
+
+  const W = 720, H = 250, padL = 4, padR = 62, padT = 10, padB = 20;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const y = (v) => padT + (1 - (v - lo) / (hi - lo)) * plotH;
+  const step = plotW / cs.length;
+  const bodyW = Math.max(1.5, Math.min(9, step * 0.62));
+  const inView = (v) => v >= lo && v <= hi;
+
+  const candles = cs.map((c, i) => {
+    const cx = padL + i * step + step / 2;
+    const up = c.close >= c.open;
+    const col = up ? "var(--good)" : "var(--critical)";
+    const yo = y(c.open), yc = y(c.close);
+    const top = Math.min(yo, yc), h = Math.max(1, Math.abs(yc - yo));
+    return `<line x1="${cx.toFixed(1)}" x2="${cx.toFixed(1)}" y1="${y(c.high).toFixed(1)}" y2="${y(c.low).toFixed(1)}" stroke="${col}" stroke-width="1"/>`
+      + `<rect x="${(cx - bodyW / 2).toFixed(1)}" y="${top.toFixed(1)}" width="${bodyW.toFixed(1)}" height="${h.toFixed(1)}" fill="${col}"/>`;
+  }).join("");
+
+  const level = (v, color, dash, label, strong) => !inView(v) ? "" :
+    `<line x1="${padL}" x2="${padL + plotW}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" stroke="${color}" stroke-width="${strong ? 1.5 : 1}"${dash ? ` stroke-dasharray="${dash}"` : ""}/>`
+    + `<text x="${padL + plotW + 5}" y="${(y(v) + 3).toFixed(1)}"${strong ? ' class="strong"' : ""}>${esc(label)}</text>`;
+
+  const band = inView(L) || inView(U)
+    ? `<rect x="${padL}" y="${y(U).toFixed(1)}" width="${plotW}" height="${Math.max(1, y(L) - y(U)).toFixed(1)}" fill="var(--accent)" fill-opacity="0.07"/>` : "";
+
+  const first = new Date(cs[0].start * 1000).toISOString().slice(5, 10);
+  const last = new Date(cs[cs.length - 1].start * 1000).toISOString().slice(5, 10);
+
+  return `<svg class="candles" viewBox="0 0 ${W} ${H}" role="img"
+      aria-label="Completed 4H candles for ${esc(m.id)} with pivots at ${px(L)} and ${px(U)}">
+    ${band}${candles}
+    ${level(U, "var(--accent)", "", "U " + px(U), true)}
+    ${level(L, "var(--accent)", "", "L " + px(L), true)}
+    ${bull.map((v, i) => level(v, "var(--good)", "4 3", "T" + (i + 1) + " " + px(v))).join("")}
+    ${bear.map((v, i) => level(v, "var(--critical)", "4 3", "T" + (i + 1) + " " + px(v))).join("")}
+    ${typeof price === "number" ? level(price, "var(--ink)", "2 2", px(price), true) : ""}
+    <text x="${padL}" y="${H - 6}">${esc(first)}</text>
+    <text x="${(padL + plotW).toFixed(0)}" y="${H - 6}" text-anchor="end">${esc(last)} · ${cs.length} completed 4H candles</text>
+  </svg>
+  <div class="legend">
+    <span><i style="border-top:2px solid var(--accent)"></i>fixed pivots (U / L)</span>
+    <span><i style="border-top:2px dashed var(--good)"></i>bullish targets</span>
+    <span><i style="border-top:2px dashed var(--critical)"></i>bearish targets</span>
+    <span><i style="border-top:2px dashed var(--ink)"></i>current quote</span>
+  </div>`;
+}
+
 /* ── strategy tab: market-pivot-watch's published 4H report ───────────── */
+let STRAT_PICK = 0;
+
 function renderStrategy(S) {
   const sct = g(S, "strategy.pivot_watch") || {};
   const rep = g(sct, "data") || {};
@@ -586,59 +735,48 @@ function renderStrategy(S) {
        Observation only: a decision is not a fill, and nothing here places an order.`
     : `<strong>No pivot report.</strong> ${esc(String(g(sct, "data.error.message", g(sct, "data.error", "feed unavailable"))).slice(0, 180))}`;
 
-  $("#strat-grid").innerHTML = markets.map((m) => {
-    const chart = `<span class="venue"><a href="${esc(m.chart || "#")}" target="_blank" rel="noopener">${esc(m.tradingview_symbol || "")}</a></span>`;
-    const act = biasChipFor(m.action, m.signal);
+  $("#strat-markets").innerHTML = markets.map((m, i) =>
+    `<button aria-pressed="${i === STRAT_PICK}" data-strat="${i}">${esc(m.id)}</button>`).join("");
 
-    if (m.status === "DATA UNAVAILABLE" || m.lower == null || m.upper == null) {
-      return `<article class="strat">
-        <div class="head"><span class="id">${esc(m.id)}</span>${chart}<span class="act">${act}</span></div>
-        <p class="sub" style="margin:10px 0 0">${esc(m.error || m.status || "no levels yet")}</p>
-        ${m.baseline ? `<p class="sub">Baseline only — first reading establishes levels, it is not a signal.</p>` : ""}
-      </article>`;
-    }
+  const m = markets[STRAT_PICK];
+  if (!m) { $("#strat-detail").innerHTML = ""; return; }
 
-    const L = m.lower, U = m.upper, W = U - L;
-    const bull = m.bullish_targets || [], bear = m.bearish_targets || [];
+  const chart = `<span class="venue"><a href="${esc(m.chart || "#")}" target="_blank" rel="noopener">${esc(m.tradingview_symbol || "")}</a></span>`;
+  const act = biasChipFor(m.action, m.signal);
+  const head = `<div class="head"><span class="id">${esc(m.id)}</span>${chart}<span class="act">${act}</span></div>`;
+  const tvHost = `<div class="tv-chart" id="tv-strat"><p class="widget-fallback">Loading the live 4H chart…</p></div>`;
+
+  if (m.status === "DATA UNAVAILABLE" || m.lower == null || m.upper == null) {
+    $("#strat-detail").innerHTML = `<article class="strat">${head}
+      <p class="sub" style="margin:10px 0 0">${esc(m.error || m.status || "no levels yet")}</p>
+      <p class="sub">No pivots means no chart overlay — the live chart below still tracks the instrument.</p>
+      ${tvHost}</article>`;
+  } else {
     const price = g(m, "quote.price", m.close);
-    const pts = [L, U, ...bull, ...bear, price, m.close].filter((v) => typeof v === "number");
-    const lo = Math.min(...pts), hi = Math.max(...pts), span = (hi - lo) || 1;
-    const pad = span * 0.06;
-    const at = (v) => ((v - (lo - pad)) / (span + pad * 2)) * 100;
-    const clamp = (x) => Math.max(4, Math.min(96, x));
-
-    const ticks = [...bull.map((v) => [v, "bull"]), ...bear.map((v) => [v, "bear"])]
-      .filter(([v]) => typeof v === "number")
-      .map(([v, cls]) => `<span class="tick ${cls}" style="left:${at(v)}%" title="${cls === "bull" ? "bullish" : "bearish"} target ${px(v)}"></span>`).join("");
-
-    return `<article class="strat">
-      <div class="head"><span class="id">${esc(m.id)}</span>${chart}<span class="act">${act}</span></div>
+    $("#strat-detail").innerHTML = `<article class="strat">${head}
       <div class="head" style="margin-top:2px">
         <span class="quote">${px(price)}</span>
         <span class="sub">4H close ${px(m.close)}${m.close_time ? " · " + esc(ago(new Date(m.close_time * 1000).toISOString())) : ""}</span>
       </div>
-
-      <div class="ladder">
-        <span class="line"></span>
-        <span class="band" style="left:${at(L)}%; width:${Math.max(0, at(U) - at(L))}%"></span>
-        ${ticks}
-        <span class="dot" style="left:${clamp(at(price))}%" title="current quote ${px(price)}"></span>
-        <span class="lbl above" style="left:${clamp(at(price))}%">${px(price)}</span>
-        <span class="lbl below" style="left:${clamp(at(L))}%">L ${px(L)}</span>
-        <span class="lbl below" style="left:${clamp(at(U))}%">U ${px(U)}</span>
-      </div>
-
+      ${pivotChart(m)}
       <table class="levels"><tbody>
         <tr><td>State / setup</td><td class="num">${esc(m.state || "—")}${m.setup && m.setup.side ? " · tracking " + esc(m.setup.side) : ""}</td></tr>
         <tr><td>Retest confirmed</td><td class="num">${m.retest_confirmed ? "yes" : "not yet"}</td></tr>
-        <tr><td>Pivot range (U − L)</td><td class="num">${px(W)}</td></tr>
-        <tr><td>Bullish targets</td><td class="num up">${bull.map(px).join("  ·  ") || "—"}</td></tr>
-        <tr><td>Bearish targets</td><td class="num down">${bear.map(px).join("  ·  ") || "—"}</td></tr>
+        <tr><td>Pivot range (U − L)</td><td class="num">${px(m.upper - m.lower)}</td></tr>
+        <tr><td>Bullish targets</td><td class="num up">${(m.bullish_targets || []).map(px).join("  ·  ") || "—"}</td></tr>
+        <tr><td>Bearish targets</td><td class="num down">${(m.bearish_targets || []).map(px).join("  ·  ") || "—"}</td></tr>
         <tr><td>Feed</td><td class="num">${esc(m.source || "—")}</td></tr>
       </tbody></table>
       ${(m.notes && m.notes.length) ? `<p class="sub" style="margin-top:8px">${esc(m.notes.join(" · ").slice(0, 160))}</p>` : ""}
-    </article>`;
-  }).join("");
+      ${tvHost}</article>`;
+  }
+
+  tvWidget($("#tv-strat"), "advanced-chart", {
+    autosize: true, symbol: m.tradingview_symbol, interval: "240",
+    timezone: "Etc/UTC", theme: themeNow(), style: "1", locale: "en",
+    allow_symbol_change: false, calendar: false,
+    support_host: "https://www.tradingview.com",
+  }, m.chart);
 }
 
 /* BUY/SELL read as orders if they are styled like everything else — the report
@@ -653,7 +791,7 @@ function biasChipFor(action, signal) {
 function render(S) {
   DATA = S;
   renderStrip(S); renderTape(S); renderChart(S); renderInstruments(S);
-  renderPanels(S); renderNews(S); renderBacktests(S); renderStrategy(S);
+  renderPanels(S); renderNews(S); renderBacktests(S); renderStrategy(S); renderLiveTape(S);
 }
 
 /* interaction: group filter + bar tooltip */
@@ -665,6 +803,8 @@ document.addEventListener("click", (e) => {
     $("#tab-strategy").hidden = t.dataset.tab !== "strategy";
     return;
   }
+  const sm = e.target.closest("#strat-markets button");
+  if (sm && DATA) { STRAT_PICK = Number(sm.dataset.strat); renderStrategy(DATA); return; }
   const b = e.target.closest("#filters button");
   if (!b || !DATA) return;
   FILTER = b.dataset.g;
