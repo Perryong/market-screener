@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-22T00:06:59+00:00",
+ "generated_at": "2026-09-22T04:45:42+00:00",
  "tier": "hourly",
  "symbols": {
   "BTCUSDT": {
@@ -8,28 +8,27 @@
    "sections": {
     "analysis": {
      "ok": true,
-     "as_of": "2026-09-21T23:59:59+00:00",
-     "took_s": 0.31,
+     "as_of": "2026-09-22T04:38:38+00:00",
+     "took_s": 0.13,
      "data": {
       "symbol": "KUCOIN:BTCUSDT",
       "exchange": "kucoin",
       "timeframe": "1D",
       "timestamp": "real-time",
       "price_data": {
-       "current_price": 86615.8,
-       "open": 81170.3,
-       "high": 87396,
-       "low": 80868.1,
-       "close": 86615.8,
-       "change_percent": 6.709,
-       "volume": 4826.06843718
+       "current_price": 85566.6,
+       "open": 86612.3,
+       "high": 86612.3,
+       "low": 85317.9,
+       "close": 85566.6,
+       "change_percent": -1.207,
+       "volume": 785.05334307
       },
       "timeframe_context": {
        "timeframe": "1D",
        "bias": "Bullish",
        "bias_reasons": [
-        "Golden Cross: EMA50 > EMA200",
-        "RSI 73.8 overbought - avoid new longs"
+        "Golden Cross: EMA50 > EMA200"
        ],
        "key_indicators_for_timeframe": [
         "50 EMA",
@@ -41,24 +40,24 @@
        "advice": "Trade pullbacks in trend (not extremes). Look for confluence: EMA + support + RSI."
       },
       "rsi": {
-       "value": 73.8,
-       "signal": "Overbought",
-       "direction": "Rising",
-       "previous": 63.92
+       "value": 69.83,
+       "signal": "Bullish",
+       "direction": "Falling",
+       "previous": 73.8
       },
       "macd": {
-       "macd_line": 1969.177681,
-       "signal_line": 1571.355226,
-       "histogram": 397.822455,
+       "macd_line": 2272.518807,
+       "signal_line": 1711.586666,
+       "histogram": 560.932142,
        "crossover": "Bullish"
       },
       "sma": {
-       "sma10": 79054.32,
-       "sma20": 78930.625,
-       "sma30": 78762.8,
-       "sma50": 73697.448,
-       "sma100": 68551.93,
-       "sma200": 70618.545,
+       "sma10": 79882.88,
+       "sma20": 79342.79,
+       "sma30": 79024.0333,
+       "sma50": 74138.33,
+       "sma100": 68750.092,
+       "sma200": 70705.7805,
        "signals": [
         "Price above SMA50 (bullish)",
         "Price above SMA200 (long-term bullish)",
@@ -67,12 +66,12 @@
       },
       "ema": {
        "ema9": null,
-       "ema10": 80309.2915,
-       "ema20": 78795.0195,
-       "ema30": 77413.3516,
-       "ema50": 75013.7521,
-       "ema100": 72343.5845,
-       "ema200": 73523.1167,
+       "ema10": 81265.1509,
+       "ema20": 79439.9233,
+       "ema30": 77939.3616,
+       "ema50": 75427.5855,
+       "ema100": 72605.4245,
+       "ema200": 73642.9514,
        "signals": [
         "Price above EMA20 (short-term bullish)",
         "Price above EMA50 (mid-term bullish)",
@@ -81,27 +80,27 @@
        ]
       },
       "bollinger_bands": {
-       "upper": 83951.3789,
-       "middle": 78930.625,
-       "lower": 73909.8711,
-       "width": 0.1272,
+       "upper": 85071.5431,
+       "middle": 79342.79,
+       "lower": 73614.0369,
+       "width": 0.1444,
        "squeeze": false,
        "position": "Above Upper Band"
       },
       "atr": {
-       "value": 2491.1913,
-       "percent_of_price": 2.88,
+       "value": 2405.9491,
+       "percent_of_price": 2.81,
        "volatility": "Medium"
       },
       "volume_analysis": {
-       "current": 4826.0,
+       "current": 785.0,
        "average_20": null,
        "ratio": null,
        "signal": "Normal"
       },
       "obv": {
-       "current_volume": 4826.0,
-       "direction": "accumulation",
+       "current_volume": 785.0,
+       "direction": "distribution",
        "note": "OBV direction inferred from current candle (close vs open)"
       },
       "support_resistance": {
@@ -112,21 +111,21 @@
        "support_1": 66744.6667,
        "support_2": 54911.5333,
        "support_3": 35716.2333,
-       "nearest_resistance": 93302.1333,
-       "distance_to_resistance_pct": 7.72,
+       "nearest_resistance": 85939.9667,
+       "distance_to_resistance_pct": 0.44,
        "nearest_support": 66744.6667,
-       "distance_to_support_pct": 22.94
+       "distance_to_support_pct": 22.0
       },
       "stochastic": {
-       "k": 91.0,
-       "d": 83.25,
+       "k": 89.33,
+       "d": 90.26,
        "signal": "Overbought"
       },
       "adx": {
-       "value": 43.7,
+       "value": 44.89,
        "trend_strength": "Strong Trend",
-       "plus_di": 46.19,
-       "minus_di": 11.4,
+       "plus_di": 44.42,
+       "minus_di": 10.96,
        "di_signal": "Bullish (+DI > -DI)"
       },
       "market_structure": {
@@ -138,44 +137,44 @@
         "Above 200 EMA (bullish structure)"
        ],
        "candle": {
-        "type": "Bullish",
-        "body_ratio": 0.83,
+        "type": "Bearish",
+        "body_ratio": 0.81,
         "strength": "Strong",
-        "upper_wick_pct": 12.0,
-        "lower_wick_pct": 4.6
+        "upper_wick_pct": 0.0,
+        "lower_wick_pct": 19.2
        }
       },
       "market_sentiment": {
        "overall_rating": 3,
        "buy_sell_signal": "BUY",
        "volatility": "High",
-       "momentum": "Bullish"
+       "momentum": "Bearish"
       }
      },
      "venue": "KUCOIN"
     },
     "volume": {
      "ok": true,
-     "as_of": "2026-09-21T23:59:59+00:00",
+     "as_of": "2026-09-22T04:38:38+00:00",
      "took_s": 0.0,
      "data": {
       "symbol": "BTCUSDT",
       "price_data": {
-       "close": 86615.8,
-       "change_percent": 6.71,
-       "candle_range_percent": 8.07
+       "close": 85566.6,
+       "change_percent": -1.21,
+       "candle_range_percent": 1.52
       },
       "volume_analysis": {
-       "current_volume": 4826.06843718,
+       "current_volume": 785.05334307,
        "volume_ratio": 1,
        "volume_strength": "NORMAL",
        "average_volume": 0
       },
       "technical_indicators": {
-       "RSI": 73.8,
+       "RSI": 69.8,
        "BB_position": "ABOVE",
-       "BB_upper": 83951.37887122923,
-       "BB_lower": 73909.87112877083
+       "BB_upper": 85071.54308383675,
+       "BB_lower": 73614.0369161633
       },
       "signals": [],
       "overall_assessment": {
@@ -188,8 +187,8 @@
     },
     "mtf": {
      "ok": true,
-     "as_of": "2026-09-22T00:00:07+00:00",
-     "took_s": 7.9,
+     "as_of": "2026-09-22T04:38:47+00:00",
+     "took_s": 8.05,
      "data": {
       "symbol": "KUCOIN:BTCUSDT",
       "exchange": "kucoin",
@@ -199,8 +198,8 @@
         "label": "Weekly (Trend Bias)",
         "bias": "Bullish",
         "bias_reasons": [
-         "Price (86615.8) above 200 EMA (68853.6)",
-         "RSI 63.2 above 50 (bullish bias)",
+         "Price (85566.6) above 200 EMA (68843.16)",
+         "RSI 62.4 above 50 (bullish bias)",
          "MACD bullish (momentum shift up)"
         ],
         "key_indicators": [
@@ -210,19 +209,19 @@
          "RSI(14)"
         ],
         "advice": "Weekly sets your BIAS, not entries. Only look for buy setups in uptrends.",
-        "price": 86615.8,
-        "change_pct": 6.709,
+        "price": 85566.6,
+        "change_pct": 5.416,
         "rsi": {
-         "value": 63.24,
+         "value": 62.45,
          "signal": "Bullish",
          "direction": "Rising",
          "previous": 58.73
         },
         "macd_crossover": "Bullish",
         "ema_trend": {
-         "ema20": 73885.938,
-         "ema50": 77898.2226,
-         "ema200": 68853.6003
+         "ema20": 73786.0142,
+         "ema50": 77857.0775,
+         "ema200": 68843.1605
         },
         "volume_signal": "Normal",
         "market_structure": "Bullish",
@@ -233,8 +232,7 @@
         "label": "Daily (Swing Setup)",
         "bias": "Bullish",
         "bias_reasons": [
-         "Golden Cross: EMA50 > EMA200",
-         "RSI 73.8 overbought - avoid new longs"
+         "Golden Cross: EMA50 > EMA200"
         ],
         "key_indicators": [
          "50 EMA",
@@ -244,19 +242,19 @@
          "MACD"
         ],
         "advice": "Trade pullbacks in trend (not extremes). Look for confluence: EMA + support + RSI.",
-        "price": 86615.8,
-        "change_pct": 6.709,
+        "price": 85566.6,
+        "change_pct": -1.207,
         "rsi": {
-         "value": 73.8,
-         "signal": "Overbought",
-         "direction": "Rising",
-         "previous": 63.92
+         "value": 69.83,
+         "signal": "Bullish",
+         "direction": "Falling",
+         "previous": 73.8
         },
         "macd_crossover": "Bullish",
         "ema_trend": {
-         "ema20": 78795.0195,
-         "ema50": 75013.7521,
-         "ema200": 73523.1167
+         "ema20": 79439.9233,
+         "ema50": 75427.5855,
+         "ema200": 73642.9514
         },
         "volume_signal": "Normal",
         "market_structure": "Bullish",
@@ -277,19 +275,19 @@
          "MACD"
         ],
         "advice": "Align with daily direction. Enter on pullbacks or breakouts.",
-        "price": 86622.4,
-        "change_pct": 0.143,
+        "price": 85557.9,
+        "change_pct": -0.162,
         "rsi": {
-         "value": 86.66,
+         "value": 75.19,
          "signal": "Overbought",
-         "direction": "Rising",
-         "previous": 86.44
+         "direction": "Falling",
+         "previous": 76.61
         },
         "macd_crossover": "Bullish",
         "ema_trend": {
-         "ema20": 82229.4958,
-         "ema50": 80140.3403,
-         "ema200": 76747.1913
+         "ema20": 82844.4701,
+         "ema50": 80561.7834,
+         "ema200": 76922.9263
         },
         "volume_signal": "Normal",
         "market_structure": "Bullish",
@@ -300,7 +298,7 @@
         "label": "1-Hour (Entry Timing)",
         "bias": "Bullish",
         "bias_reasons": [
-         "Price above 20 EMA (dynamic support at 85078.88)"
+         "Price above 20 EMA (dynamic support at 85317.85)"
         ],
         "key_indicators": [
          "20 EMA",
@@ -309,24 +307,24 @@
          "VWAP"
         ],
         "advice": "Look for trend continuation setups. Avoid trading against higher TF trend.",
-        "price": 86622.4,
-        "change_pct": 0.219,
+        "price": 85557.9,
+        "change_pct": -0.162,
         "rsi": {
-         "value": 77.91,
-         "signal": "Overbought",
-         "direction": "Rising",
-         "previous": 76.84
+         "value": 59.65,
+         "signal": "Neutral",
+         "direction": "Falling",
+         "previous": 61.88
         },
-        "macd_crossover": "Bullish",
+        "macd_crossover": "Bearish",
         "ema_trend": {
-         "ema20": 85078.8762,
-         "ema50": 83199.4461,
-         "ema200": 80079.6056
+         "ema20": 85317.8487,
+         "ema50": 83651.4452,
+         "ema200": 80353.5286
         },
         "volume_signal": "Normal",
         "market_structure": "Bullish",
         "trend_strength": "Very Strong",
-        "momentum_aligned": true
+        "momentum_aligned": false
        },
        "15m": {
         "label": "15-Min (Execution)",
@@ -340,23 +338,23 @@
          "Volume"
         ],
         "advice": "Only enter when aligned with 1H & 4H. Use tight stop losses.",
-        "price": 86622.4,
-        "change_pct": 0.173,
+        "price": 85577.6,
+        "change_pct": 0.009,
         "rsi": {
-         "value": 57.02,
-         "signal": "Neutral",
+         "value": 40.0,
+         "signal": "Bearish",
          "direction": "Rising",
-         "previous": 53.62
+         "previous": 39.71
         },
         "macd_crossover": "Bearish",
         "ema_trend": {
-         "ema20": 86475.1981,
-         "ema50": 85784.8056,
-         "ema200": 83154.3237
+         "ema20": 85806.0012,
+         "ema50": 85762.1079,
+         "ema200": 83607.8532
         },
         "volume_signal": "Normal",
-        "market_structure": "Bullish",
-        "trend_strength": "Very Strong",
+        "market_structure": "Neutral/Ranging",
+        "trend_strength": "Strong",
         "momentum_aligned": false
        }
       },
@@ -389,7 +387,7 @@
     },
     "agents": {
      "ok": true,
-     "as_of": "2026-09-22T00:00:07+00:00",
+     "as_of": "2026-09-22T04:38:47+00:00",
      "took_s": 0.0,
      "data": {
       "framework_name": "Rule-Based Signal Summary",
@@ -402,17 +400,17 @@
         "stance": "Bullish",
         "score": 3,
         "key_observations": [
-         "Price is 86615.8 (+6.71%)",
+         "Price is 85566.6 (-1.21%)",
          "Bollinger Rating: 3 (BUY)",
-         "RSI: 73.8"
+         "RSI: 69.8"
         ]
        },
        "sentiment_analyst": {
         "role": "Momentum (RSI/MACD rule set)",
         "stance": "Bullish",
-        "score": 3,
+        "score": 1,
         "key_observations": [
-         "Positive price momentum",
+         "Negative price momentum",
          "Bullish RSI (>60)",
          "MACD bullish crossover"
         ]
@@ -430,8 +428,8 @@
       "consensus": {
        "decision": "BUY (mixed rules)",
        "confidence": "rules partially aligned",
-       "net_score": 3,
-       "summary": "Bands score: 3, Momentum score: 3, Volatility adjustment: -3"
+       "net_score": 1,
+       "summary": "Bands score: 3, Momentum score: 1, Volatility adjustment: -3"
       }
      },
      "venue": "KUCOIN"
@@ -444,28 +442,27 @@
    "sections": {
     "analysis": {
      "ok": true,
-     "as_of": "2026-09-22T00:00:09+00:00",
-     "took_s": 2.05,
+     "as_of": "2026-09-22T04:38:49+00:00",
+     "took_s": 2.0,
      "data": {
       "symbol": "KUCOIN:ETHUSDT",
       "exchange": "kucoin",
       "timeframe": "1D",
       "timestamp": "real-time",
       "price_data": {
-       "current_price": 2777.24,
-       "open": 2644.89,
-       "high": 2806.81,
-       "low": 2644.02,
-       "close": 2777.24,
-       "change_percent": 5.004,
-       "volume": 53199.7677029
+       "current_price": 2732.44,
+       "open": 2776.26,
+       "high": 2777.69,
+       "low": 2726.03,
+       "close": 2732.44,
+       "change_percent": -1.578,
+       "volume": 6687.70501926
       },
       "timeframe_context": {
        "timeframe": "1D",
        "bias": "Bullish",
        "bias_reasons": [
-        "Golden Cross: EMA50 > EMA200",
-        "RSI 72.1 overbought - avoid new longs"
+        "Golden Cross: EMA50 > EMA200"
        ],
        "key_indicators_for_timeframe": [
         "50 EMA",
@@ -477,24 +474,24 @@
        "advice": "Trade pullbacks in trend (not extremes). Look for confluence: EMA + support + RSI."
       },
       "rsi": {
-       "value": 72.07,
-       "signal": "Overbought",
-       "direction": "Rising",
-       "previous": 66.11
+       "value": 67.77,
+       "signal": "Bullish",
+       "direction": "Falling",
+       "previous": 72.03
       },
       "macd": {
-       "macd_line": 89.144666,
-       "signal_line": 76.441453,
-       "histogram": 12.703213,
+       "macd_line": 95.833703,
+       "signal_line": 80.307394,
+       "histogram": 15.526309,
        "crossover": "Bullish"
       },
       "sma": {
-       "sma10": 2545.008,
-       "sma20": 2509.9225,
-       "sma30": 2493.5603,
-       "sma50": 2292.0934,
-       "sma100": 2037.2299,
-       "sma200": 2080.6564,
+       "sma10": 2565.533,
+       "sma20": 2526.9365,
+       "sma30": 2502.509,
+       "sma50": 2309.5132,
+       "sma100": 2047.284,
+       "sma200": 2084.4198,
        "signals": [
         "Price above SMA50 (bullish)",
         "Price above SMA200 (long-term bullish)",
@@ -503,12 +500,12 @@
       },
       "ema": {
        "ema9": null,
-       "ema10": 2580.7761,
-       "ema20": 2513.4928,
-       "ema30": 2450.9395,
-       "ema50": 2339.9538,
-       "ema100": 2201.1304,
-       "ema200": 2228.0714,
+       "ema10": 2608.2056,
+       "ema20": 2534.2605,
+       "ema30": 2469.0416,
+       "ema50": 2355.3085,
+       "ema100": 2211.6324,
+       "ema200": 2233.0803,
        "signals": [
         "Price above EMA20 (short-term bullish)",
         "Price above EMA50 (mid-term bullish)",
@@ -517,27 +514,27 @@
        ]
       },
       "bollinger_bands": {
-       "upper": 2692.8782,
-       "middle": 2509.9225,
-       "lower": 2326.9668,
-       "width": 0.1458,
+       "upper": 2725.1614,
+       "middle": 2526.9365,
+       "lower": 2328.7116,
+       "width": 0.1569,
        "squeeze": false,
        "position": "Above Upper Band"
       },
       "atr": {
-       "value": 105.141,
-       "percent_of_price": 3.79,
+       "value": 101.3209,
+       "percent_of_price": 3.71,
        "volatility": "High"
       },
       "volume_analysis": {
-       "current": 53200.0,
+       "current": 6688.0,
        "average_20": null,
        "ratio": null,
        "signal": "Normal"
       },
       "obv": {
-       "current_volume": 53200.0,
-       "direction": "accumulation",
+       "current_volume": 6688.0,
+       "direction": "distribution",
        "note": "OBV direction inferred from current candle (close vs open)"
       },
       "support_resistance": {
@@ -548,21 +545,21 @@
        "support_1": 2004.4667,
        "support_2": 1541.4133,
        "support_3": 797.6633,
-       "nearest_resistance": 3028.9133,
-       "distance_to_resistance_pct": 9.06,
+       "nearest_resistance": 2748.2167,
+       "distance_to_resistance_pct": 0.58,
        "nearest_support": 2004.4667,
-       "distance_to_support_pct": 27.83
+       "distance_to_support_pct": 26.64
       },
       "stochastic": {
-       "k": 91.63,
-       "d": 82.01,
+       "k": 89.79,
+       "d": 89.75,
        "signal": "Overbought"
       },
       "adx": {
-       "value": 47.27,
+       "value": 47.69,
        "trend_strength": "Strong Trend",
-       "plus_di": 42.83,
-       "minus_di": 13.08,
+       "plus_di": 41.27,
+       "minus_di": 12.6,
        "di_signal": "Bullish (+DI > -DI)"
       },
       "market_structure": {
@@ -574,44 +571,44 @@
         "Above 200 EMA (bullish structure)"
        ],
        "candle": {
-        "type": "Bullish",
-        "body_ratio": 0.81,
+        "type": "Bearish",
+        "body_ratio": 0.85,
         "strength": "Strong",
-        "upper_wick_pct": 18.2,
-        "lower_wick_pct": 0.5
+        "upper_wick_pct": 2.8,
+        "lower_wick_pct": 12.4
        }
       },
       "market_sentiment": {
        "overall_rating": 3,
        "buy_sell_signal": "BUY",
        "volatility": "High",
-       "momentum": "Bullish"
+       "momentum": "Bearish"
       }
      },
      "venue": "KUCOIN"
     },
     "volume": {
      "ok": true,
-     "as_of": "2026-09-22T00:00:09+00:00",
+     "as_of": "2026-09-22T04:38:49+00:00",
      "took_s": 0.0,
      "data": {
       "symbol": "ETHUSDT",
       "price_data": {
-       "close": 2777.24,
-       "change_percent": 5.0,
-       "candle_range_percent": 6.16
+       "close": 2732.44,
+       "change_percent": -1.58,
+       "candle_range_percent": 1.9
       },
       "volume_analysis": {
-       "current_volume": 53199.7677029,
+       "current_volume": 6687.70501926,
        "volume_ratio": 1,
        "volume_strength": "NORMAL",
        "average_volume": 0
       },
       "technical_indicators": {
-       "RSI": 72.1,
+       "RSI": 67.8,
        "BB_position": "ABOVE",
-       "BB_upper": 2692.87816663816,
-       "BB_lower": 2326.9668333618383
+       "BB_upper": 2725.1614381158224,
+       "BB_lower": 2328.7115618841754
       },
       "signals": [],
       "overall_assessment": {
@@ -624,8 +621,8 @@
     },
     "mtf": {
      "ok": true,
-     "as_of": "2026-09-22T00:00:41+00:00",
-     "took_s": 32.08,
+     "as_of": "2026-09-22T04:39:21+00:00",
+     "took_s": 32.3,
      "data": {
       "symbol": "KUCOIN:ETHUSDT",
       "exchange": "kucoin",
@@ -635,8 +632,8 @@
         "label": "Weekly (Trend Bias)",
         "bias": "Bullish",
         "bias_reasons": [
-         "Price (2776.26) above 200 EMA (2458.29)",
-         "RSI 65.4 above 50 (bullish bias)",
+         "Price (2732.44) above 200 EMA (2457.84)",
+         "RSI 64.5 above 50 (bullish bias)",
          "MACD bullish (momentum shift up)"
         ],
         "key_indicators": [
@@ -646,19 +643,19 @@
          "RSI(14)"
         ],
         "advice": "Weekly sets your BIAS, not entries. Only look for buy setups in uptrends.",
-        "price": 2776.26,
-        "change_pct": 4.967,
+        "price": 2732.44,
+        "change_pct": 3.31,
         "rsi": {
-         "value": 65.36,
+         "value": 64.48,
          "signal": "Bullish",
          "direction": "Rising",
          "previous": 62.61
         },
         "macd_crossover": "Bullish",
         "ema_trend": {
-         "ema20": 2254.3449,
-         "ema50": 2406.6215,
-         "ema200": 2458.2871
+         "ema20": 2250.0783,
+         "ema50": 2404.8647,
+         "ema200": 2457.8414
         },
         "volume_signal": "Normal",
         "market_structure": "Bullish",
@@ -669,8 +666,7 @@
         "label": "Daily (Swing Setup)",
         "bias": "Bullish",
         "bias_reasons": [
-         "Golden Cross: EMA50 > EMA200",
-         "RSI 72.1 overbought - avoid new longs"
+         "Golden Cross: EMA50 > EMA200"
         ],
         "key_indicators": [
          "50 EMA",
@@ -680,19 +676,19 @@
          "MACD"
         ],
         "advice": "Trade pullbacks in trend (not extremes). Look for confluence: EMA + support + RSI.",
-        "price": 2777.24,
-        "change_pct": 5.004,
+        "price": 2732.44,
+        "change_pct": -1.578,
         "rsi": {
-         "value": 72.07,
-         "signal": "Overbought",
-         "direction": "Rising",
-         "previous": 66.11
+         "value": 67.77,
+         "signal": "Bullish",
+         "direction": "Falling",
+         "previous": 72.03
         },
         "macd_crossover": "Bullish",
         "ema_trend": {
-         "ema20": 2513.4928,
-         "ema50": 2339.9538,
-         "ema200": 2228.0714
+         "ema20": 2534.2605,
+         "ema50": 2355.3085,
+         "ema200": 2233.0803
         },
         "volume_signal": "Normal",
         "market_structure": "Bullish",
@@ -713,19 +709,19 @@
          "MACD"
         ],
         "advice": "Align with daily direction. Enter on pullbacks or breakouts.",
-        "price": 2776.91,
-        "change_pct": 0.542,
+        "price": 2732.09,
+        "change_pct": -0.279,
         "rsi": {
-         "value": 79.42,
-         "signal": "Overbought",
-         "direction": "Rising",
-         "previous": 78.25
+         "value": 67.62,
+         "signal": "Bullish",
+         "direction": "Falling",
+         "previous": 69.57
         },
         "macd_crossover": "Bullish",
         "ema_trend": {
-         "ema20": 2649.8513,
-         "ema50": 2576.1629,
-         "ema200": 2421.0481
+         "ema20": 2665.3982,
+         "ema50": 2588.4261,
+         "ema200": 2427.2785
         },
         "volume_signal": "Normal",
         "market_structure": "Bullish",
@@ -766,7 +762,7 @@
     },
     "agents": {
      "ok": true,
-     "as_of": "2026-09-22T00:00:41+00:00",
+     "as_of": "2026-09-22T04:39:21+00:00",
      "took_s": 0.0,
      "data": {
       "framework_name": "Rule-Based Signal Summary",
@@ -779,17 +775,17 @@
         "stance": "Bullish",
         "score": 3,
         "key_observations": [
-         "Price is 2777.24 (+5.00%)",
+         "Price is 2732.44 (-1.58%)",
          "Bollinger Rating: 3 (BUY)",
-         "RSI: 72.1"
+         "RSI: 67.8"
         ]
        },
        "sentiment_analyst": {
         "role": "Momentum (RSI/MACD rule set)",
         "stance": "Bullish",
-        "score": 3,
+        "score": 1,
         "key_observations": [
-         "Positive price momentum",
+         "Negative price momentum",
          "Bullish RSI (>60)",
          "MACD bullish crossover"
         ]
@@ -807,8 +803,8 @@
       "consensus": {
        "decision": "BUY (mixed rules)",
        "confidence": "rules partially aligned",
-       "net_score": 3,
-       "summary": "Bands score: 3, Momentum score: 3, Volatility adjustment: -3"
+       "net_score": 1,
+       "summary": "Bands score: 3, Momentum score: 1, Volatility adjustment: -3"
       }
      },
      "venue": "KUCOIN"
@@ -969,14 +965,14 @@
      "stale": true,
      "last_error": {
       "code": "UPSTREAM_ERROR",
-      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
+      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 6s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
       "retryable": true,
       "retry_after_s": 60,
       "symbol": "XAUUSD",
       "exchange": "tvc",
       "timeframe": "1D"
      },
-     "last_try": "2026-09-22T00:01:23+00:00"
+     "last_try": "2026-09-22T04:40:04+00:00"
     },
     "volume": {
      "ok": true,
@@ -1012,19 +1008,19 @@
      "stale": true,
      "last_error": {
       "code": "UPSTREAM_ERROR",
-      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 4s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
+      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
       "retryable": true,
       "retry_after_s": 60,
       "symbol": "XAUUSD",
       "exchange": "tvc",
       "timeframe": "1D"
      },
-     "last_try": "2026-09-22T00:02:04+00:00"
+     "last_try": "2026-09-22T04:40:46+00:00"
     },
     "mtf": {
      "ok": true,
-     "as_of": "2026-09-22T00:02:46+00:00",
-     "took_s": 42.44,
+     "as_of": "2026-09-22T04:41:29+00:00",
+     "took_s": 42.94,
      "data": {
       "symbol": "TVC:GOLD",
       "exchange": "oanda",
@@ -1034,7 +1030,7 @@
         "error": "Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying."
        },
        "1D": {
-        "error": "Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying."
+        "error": "Upstream TradingView scanner returned transient errors on all 3 attempts spanning 6s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying."
        },
        "4h": {
         "error": "skipped: upstream cliff"
@@ -1069,8 +1065,8 @@
     },
     "agents": {
      "ok": false,
-     "as_of": "2026-09-22T00:03:28+00:00",
-     "took_s": 20.9,
+     "as_of": "2026-09-22T04:42:11+00:00",
+     "took_s": 20.85,
      "data": {
       "error": {
        "code": "INTERNAL_ERROR",
@@ -1088,8 +1084,8 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:04:10+00:00",
-     "took_s": 20.97,
+     "as_of": "2026-09-22T04:42:53+00:00",
+     "took_s": 21.37,
      "data": {
       "error": {
        "code": "UPSTREAM_ERROR",
@@ -1105,12 +1101,12 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:04:52+00:00",
-     "took_s": 21.83,
+     "as_of": "2026-09-22T04:43:35+00:00",
+     "took_s": 20.88,
      "data": {
       "error": {
        "code": "UPSTREAM_ERROR",
-       "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 6s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
+       "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
        "retryable": true,
        "retry_after_s": 60,
        "symbol": "USOIL",
@@ -1122,7 +1118,7 @@
     },
     "mtf": {
      "ok": false,
-     "as_of": "2026-09-22T00:04:52+00:00",
+     "as_of": "2026-09-22T04:43:35+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -1131,7 +1127,7 @@
     },
     "agents": {
      "ok": false,
-     "as_of": "2026-09-22T00:04:52+00:00",
+     "as_of": "2026-09-22T04:43:35+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -1146,7 +1142,7 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:04:52+00:00",
+     "as_of": "2026-09-22T04:43:35+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -1155,7 +1151,7 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:04:52+00:00",
+     "as_of": "2026-09-22T04:43:35+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -1209,20 +1205,62 @@
      "venue": "AMEX",
      "stale": true,
      "last_error": "skipped: tradingview_ta throttled (6 consecutive failures)",
-     "last_try": "2026-09-22T00:04:52+00:00"
+     "last_try": "2026-09-22T04:43:35+00:00"
     },
     "agents": {
      "ok": false,
-     "as_of": "2026-09-22T00:04:52+00:00",
+     "as_of": "2026-09-22T04:43:35+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
      },
      "venue": "AMEX"
     },
+    "sentiment": {
+     "ok": true,
+     "as_of": "2026-09-22T04:43:35+00:00",
+     "took_s": 0.22,
+     "data": {
+      "symbol": "SPY",
+      "sentiment_score": 0.687,
+      "sentiment_label": "Strongly Bullish",
+      "posts_analyzed": 3,
+      "bullish_count": 3,
+      "bearish_count": 0,
+      "neutral_count": 0,
+      "top_posts": [
+       {
+        "title": "MEITAV INVESTMENT HOUSE LTD Trims Nayax Ltd (NYAX) Stake -- Shares Look 18% Undervalued on GF Value",
+        "url": "https://www.gurufocus.com/news/9090856/meitav-investment-house-ltd-trims-nayax-ltd-nyax-stake-shares-look-18-undervalued-on-gf-value",
+        "sentiment": "bullish",
+        "source": "gurufocus.com",
+        "published": "2026-09-22T03:36:07.000000Z"
+       },
+       {
+        "title": "HRT Financial LP Trims Generation Income Properties Inc (GIPR) Stake -- Shares Trade 91% Below GF Value",
+        "url": "https://www.gurufocus.com/news/9090851/hrt-financial-lp-trims-generation-income-properties-inc-gipr-stake-shares-trade-91-below-gf-value",
+        "sentiment": "bullish",
+        "source": "gurufocus.com",
+        "published": "2026-09-22T03:33:31.000000Z"
+       },
+       {
+        "title": "Tech and Energy Sectors Diverge as Markets Hold Steady Ahead of Key Economic Data",
+        "url": "https://www2.stockmarketwatch.com/stock-market-news/tech-and-energy-sectors-diverge-as-markets-hold-steady-ahead-of-key-economic-data/72066/",
+        "sentiment": "bullish",
+        "source": "thestockmarketwatch.com",
+        "published": "2026-09-21T21:07:13.000000Z"
+       }
+      ],
+      "sources": [
+       "Marketaux news"
+      ],
+      "provider": "marketaux",
+      "timestamp": "2026-09-22T04:43:35.359277+00:00"
+     }
+    },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 773.5,
@@ -1239,7 +1277,7 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:04:52+00:00",
+     "as_of": "2026-09-22T04:43:35+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -1248,7 +1286,7 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:04:52+00:00",
+     "as_of": "2026-09-22T04:43:35+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -1302,62 +1340,20 @@
      "venue": "AMEX",
      "stale": true,
      "last_error": "skipped: tradingview_ta throttled (6 consecutive failures)",
-     "last_try": "2026-09-22T00:04:52+00:00"
+     "last_try": "2026-09-22T04:43:35+00:00"
     },
     "agents": {
      "ok": false,
-     "as_of": "2026-09-22T00:04:52+00:00",
+     "as_of": "2026-09-22T04:43:35+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
      },
      "venue": "AMEX"
     },
-    "sentiment": {
-     "ok": true,
-     "as_of": "2026-09-22T00:04:52+00:00",
-     "took_s": 0.29,
-     "data": {
-      "symbol": "VOO",
-      "sentiment_score": 0.456,
-      "sentiment_label": "Strongly Bullish",
-      "posts_analyzed": 3,
-      "bullish_count": 3,
-      "bearish_count": 0,
-      "neutral_count": 0,
-      "top_posts": [
-       {
-        "title": "Prediction: These 2 Vanguard ETFs Could Be Fantastic Long-Term Buys",
-        "url": "https://finance.yahoo.com/markets/stocks/articles/prediction-2-vanguard-etfs-could-163500704.html",
-        "sentiment": "bullish",
-        "source": "finance.yahoo.com",
-        "published": "2026-09-21T16:35:00.000000Z"
-       },
-       {
-        "title": "Warren Buffett Has Endorsed the Same Investment for Decades. History Backs Him Up.",
-        "url": "https://finance.yahoo.com/markets/stocks/articles/warren-buffett-endorsed-same-investment-182100163.html",
-        "sentiment": "bullish",
-        "source": "finance.yahoo.com",
-        "published": "2026-09-20T18:21:00.000000Z"
-       },
-       {
-        "title": "If You Had Invested $500 a Month in VOO Since Its 2010 Launch, You Would Have About $330,000 Today",
-        "url": "https://finance.yahoo.com/markets/stocks/articles/had-invested-500-month-voo-095902010.html",
-        "sentiment": "bullish",
-        "source": "finance.yahoo.com",
-        "published": "2026-09-20T09:59:02.000000Z"
-       }
-      ],
-      "sources": [
-       "Marketaux news"
-      ],
-      "provider": "marketaux",
-      "timestamp": "2026-09-22T00:04:52.773189+00:00"
-     }
-    },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 712.78,
@@ -1594,14 +1590,14 @@
      "stale": true,
      "last_error": {
       "code": "UPSTREAM_ERROR",
-      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
+      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 6s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
       "retryable": true,
       "retry_after_s": 60,
       "symbol": "NVDA",
       "exchange": "nasdaq",
       "timeframe": "1D"
      },
-     "last_try": "2026-09-22T00:05:13+00:00"
+     "last_try": "2026-09-22T04:43:57+00:00"
     },
     "volume": {
      "ok": true,
@@ -1637,18 +1633,18 @@
      "stale": true,
      "last_error": {
       "code": "UPSTREAM_ERROR",
-      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
+      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 4s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
       "retryable": true,
       "retry_after_s": 60,
       "symbol": "NVDA",
       "exchange": "nasdaq",
       "timeframe": "1D"
      },
-     "last_try": "2026-09-22T00:05:33+00:00"
+     "last_try": "2026-09-22T04:44:17+00:00"
     },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 227.38,
@@ -1892,7 +1888,7 @@
       "exchange": "nasdaq",
       "timeframe": "1D"
      },
-     "last_try": "2026-09-22T00:05:55+00:00"
+     "last_try": "2026-09-22T04:44:38+00:00"
     },
     "volume": {
      "ok": true,
@@ -1928,18 +1924,18 @@
      "stale": true,
      "last_error": {
       "code": "UPSTREAM_ERROR",
-      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 6s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
+      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 4s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
       "retryable": true,
       "retry_after_s": 60,
       "symbol": "AMD",
       "exchange": "nasdaq",
       "timeframe": "1D"
      },
-     "last_try": "2026-09-22T00:06:16+00:00"
+     "last_try": "2026-09-22T04:44:59+00:00"
     },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 615.52,
@@ -2177,14 +2173,14 @@
      "stale": true,
      "last_error": {
       "code": "UPSTREAM_ERROR",
-      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 4s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
+      "message": "Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 6s (JSONDecodeError('Expecting value: line 1 column 1 (char 0)')). This is typically a 30-90s empty-body outage at scanner.tradingview.com. Wait ~60s before retrying.",
       "retryable": true,
       "retry_after_s": 60,
       "symbol": "AVGO",
       "exchange": "nasdaq",
       "timeframe": "1D"
      },
-     "last_try": "2026-09-22T00:06:37+00:00"
+     "last_try": "2026-09-22T04:45:20+00:00"
     },
     "volume": {
      "ok": true,
@@ -2227,11 +2223,11 @@
       "exchange": "nasdaq",
       "timeframe": "1D"
      },
-     "last_try": "2026-09-22T00:06:58+00:00"
+     "last_try": "2026-09-22T04:45:41+00:00"
     },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 362.66,
@@ -2248,7 +2244,7 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2257,7 +2253,7 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2266,7 +2262,7 @@
     },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 1711.32,
@@ -2283,7 +2279,7 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2292,7 +2288,7 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2301,7 +2297,7 @@
     },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 445.14,
@@ -2318,7 +2314,7 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2327,7 +2323,7 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2336,7 +2332,7 @@
     },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 1043.96,
@@ -2353,7 +2349,7 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2362,7 +2358,7 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2371,7 +2367,7 @@
     },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 121.78,
@@ -2388,7 +2384,7 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2397,16 +2393,58 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
      },
      "venue": "NASDAQ"
     },
+    "sentiment": {
+     "ok": true,
+     "as_of": "2026-09-22T04:45:41+00:00",
+     "took_s": 0.39,
+     "data": {
+      "symbol": "QCOM",
+      "sentiment_score": 0.313,
+      "sentiment_label": "Strongly Bullish",
+      "posts_analyzed": 3,
+      "bullish_count": 2,
+      "bearish_count": 1,
+      "neutral_count": 0,
+      "top_posts": [
+       {
+        "title": "QUALCOMM Incorporated (QCOM) is Attracting Investor Attention: Here is What You Should Know",
+        "url": "https://www.zacks.com/stock/news/2992762/qualcomm-incorporated-qcom-is-attracting-investor-attention-here-is-what-you-should-know?cid=CS-ZC-FT-fundamental_analysis|most_searched_stocks-2992762",
+        "sentiment": "bullish",
+        "source": "zacks.com",
+        "published": "2026-09-21T13:00:05.000000Z"
+       },
+       {
+        "title": "Qualcomm\u2019s AI Pivot Has A Problem (NASDAQ:QCOM)",
+        "url": "https://seekingalpha.com/article/4947634-qualcomms-ai-pivot-has-a-problem",
+        "sentiment": "bearish",
+        "source": "seekingalpha.com",
+        "published": "2026-09-17T20:58:28.000000Z"
+       },
+       {
+        "title": "Qualcomm\u2019s Datacenter Pivot Is Real, but The Market Already Knows This",
+        "url": "https://www.insidermonkey.com/blog/qualcomms-datacenter-pivot-is-real-but-the-market-already-knows-this-1837908/",
+        "sentiment": "bullish",
+        "source": "insidermonkey.com",
+        "published": "2026-09-15T11:43:40.000000Z"
+       }
+      ],
+      "sources": [
+       "Marketaux news"
+      ],
+      "provider": "marketaux",
+      "timestamp": "2026-09-22T04:45:41.934112+00:00"
+     }
+    },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 194.23,
@@ -2423,7 +2461,7 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2432,58 +2470,16 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
      },
      "venue": "NASDAQ"
     },
-    "sentiment": {
-     "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
-     "took_s": 0.17,
-     "data": {
-      "symbol": "AMAT",
-      "sentiment_score": 0.572,
-      "sentiment_label": "Strongly Bullish",
-      "posts_analyzed": 3,
-      "bullish_count": 3,
-      "bearish_count": 0,
-      "neutral_count": 0,
-      "top_posts": [
-       {
-        "title": "Applied Materials Inc (AMAT) Shares Surge 4.4% -- What GF Score of 85 Tells Investors",
-        "url": "https://www.gurufocus.com/news/9090515/applied-materials-inc-amat-shares-surge-44-what-gf-score-of-85-tells-investors",
-        "sentiment": "bullish",
-        "source": "gurufocus.com",
-        "published": "2026-09-21T22:07:30.000000Z"
-       },
-       {
-        "title": "Is AMAT Overvalued? DCF Says Worth $341",
-        "url": "https://www.gurufocus.com/news/9089606/is-amat-overvalued-dcf-says-worth-341",
-        "sentiment": "bullish",
-        "source": "gurufocus.com",
-        "published": "2026-09-21T12:11:17.000000Z"
-       },
-       {
-        "title": "Congress Stock Trades: Gottheimer\u2019s MSFT Calls Look Like a Roll",
-        "url": "https://financefeeds.com/congress-stock-trades-gottheimer-msft-calls-roll/",
-        "sentiment": "bullish",
-        "source": "financefeeds.com",
-        "published": "2026-09-21T10:09:55.000000Z"
-       }
-      ],
-      "sources": [
-       "Marketaux news"
-      ],
-      "provider": "marketaux",
-      "timestamp": "2026-09-22T00:06:58.929253+00:00"
-     }
-    },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 464.24,
@@ -2500,7 +2496,7 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2509,7 +2505,7 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2518,7 +2514,7 @@
     },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 302.28,
@@ -2535,7 +2531,7 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2544,7 +2540,7 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2553,7 +2549,7 @@
     },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 183.97,
@@ -2570,7 +2566,7 @@
    "sections": {
     "analysis": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2579,7 +2575,7 @@
     },
     "volume": {
      "ok": false,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "error": "skipped: tradingview_ta throttled (6 consecutive failures)"
@@ -2588,7 +2584,7 @@
     },
     "quote": {
      "ok": true,
-     "as_of": "2026-09-22T00:06:58+00:00",
+     "as_of": "2026-09-22T04:45:41+00:00",
      "took_s": 0.0,
      "data": {
       "price": 322.9,
@@ -2603,8 +2599,8 @@
  "market": {
   "snapshot": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:36+00:00",
-   "took_s": 3.61,
+   "as_of": "2026-09-22T04:38:16+00:00",
+   "took_s": 3.65,
    "data": {
     "indices": [
      {
@@ -2635,40 +2631,40 @@
     "crypto": [
      {
       "symbol": "BTC-USD",
-      "price": 86610.93,
-      "change_pct": 6.74,
+      "price": 85561.52,
+      "change_pct": 5.45,
       "currency": "USD"
      },
      {
       "symbol": "ETH-USD",
-      "price": 2776.29,
-      "change_pct": 5.04,
+      "price": 2731.41,
+      "change_pct": 3.35,
       "currency": "USD"
      },
      {
       "symbol": "SOL-USD",
-      "price": 118.95,
-      "change_pct": 7.03,
+      "price": 116.68,
+      "change_pct": 4.99,
       "currency": "USD"
      },
      {
       "symbol": "BNB-USD",
-      "price": 799.59,
-      "change_pct": 3.53,
+      "price": 787.39,
+      "change_pct": 1.95,
       "currency": "USD"
      }
     ],
     "fx": [
      {
       "symbol": "EURUSD=X",
-      "price": 1.1468,
-      "change_pct": -0.1,
+      "price": 1.148,
+      "change_pct": 0.0,
       "currency": "USD"
      },
      {
       "symbol": "GBPUSD=X",
-      "price": 1.3368,
-      "change_pct": -0.16,
+      "price": 1.3385,
+      "change_pct": -0.03,
       "currency": "USD"
      },
      {
@@ -2698,516 +2694,516 @@
       "currency": "USD"
      }
     ],
-    "timestamp": "2026-09-21T23:59:36.738030+00:00"
+    "timestamp": "2026-09-22T04:38:16.541237+00:00"
    }
   },
   "btc_pulse": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:36+00:00",
-   "took_s": 0.26,
+   "as_of": "2026-09-22T04:38:16+00:00",
+   "took_s": 0.16,
    "data": {
     "source": "CoinGecko",
     "tool": "bitcoin_market_pulse",
     "bitcoin": {
-     "price_usd": 86566,
-     "change_24h_pct": 6.677730433797933,
-     "volume_24h_usd": 60002774332.025536,
-     "market_cap_usd": 1738775201621.353
+     "price_usd": 85476,
+     "change_24h_pct": 5.090089650646202,
+     "volume_24h_usd": 61811803868.91769,
+     "market_cap_usd": 1716788291613.8105
     },
     "dominance": {
-     "btc_pct": 58.913612548382886,
-     "eth_pct": 11.475016211759339
+     "btc_pct": 58.789122202146146,
+     "eth_pct": 11.429841811256946
     },
     "total_market": {
-     "market_cap_usd": 2943868268256.923,
-     "change_24h_pct": 2.533726291923335,
+     "market_cap_usd": 2914418212201.4746,
+     "change_24h_pct": 1.1153265276035,
      "active_cryptocurrencies": 21358
     },
     "assessment": {
      "label": "OPPORTUNITY_WITH_CAUTION",
-     "summary": "BTC is up 6.7% in 24h - strong move. Dominance at 58.9%: BTC is leading, alts may lag this leg. Total market cap +2.5%."
+     "summary": "BTC is up 5.1% in 24h - strong move. Dominance at 58.8%: BTC is leading, alts may lag this leg. Total market cap +1.1%."
     }
    }
   },
   "gainers": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:47+00:00",
-   "took_s": 10.09,
+   "as_of": "2026-09-22T04:38:26+00:00",
+   "took_s": 10.07,
    "data": [
     {
-     "symbol": "KUCOIN:AURORAUSDT",
-     "changePercent": 34.408,
+     "symbol": "KUCOIN:MUBARAKUSDT",
+     "changePercent": 8.874,
      "indicators": {
-      "open": 0.0431,
-      "close": 0.0579,
-      "SMA20": 0.024198999999999995,
-      "BB_upper": 0.04307842679214603,
-      "BB_lower": 0.005319573207853957,
-      "EMA50": 0.02126375023140921,
-      "RSI": 92.0832389547675,
-      "volume": 4803346.4259
+      "open": 0.0469,
+      "close": 0.051,
+      "SMA20": 0.036559999999999995,
+      "BB_upper": 0.04899369776052167,
+      "BB_lower": 0.02412630223947832,
+      "EMA50": 0.03440824907535442,
+      "RSI": 85.46137570216719,
+      "volume": 660329.9
      }
     },
     {
-     "symbol": "KUCOIN:PAALUSDT",
-     "changePercent": 15.59,
+     "symbol": "KUCOIN:OORTUSDT",
+     "changePercent": 6.316,
      "indicators": {
-      "open": 0.0071,
-      "close": 0.0082,
-      "SMA20": 0.006473000000000002,
-      "BB_upper": 0.0074525733765266455,
-      "BB_lower": 0.005493426623473359,
-      "EMA50": 0.006058047462465004,
-      "RSI": 85.26386525061764,
-      "volume": 2560473.3
+      "open": 0.0021,
+      "close": 0.0023,
+      "SMA20": 0.001893804999999999,
+      "BB_upper": 0.002143268516170242,
+      "BB_lower": 0.0016443414838297563,
+      "EMA50": 0.0018836200402718806,
+      "RSI": 87.92281698531386,
+      "volume": 97406
+     }
+    },
+    {
+     "symbol": "KUCOIN:STRAXUSDT",
+     "changePercent": 3.804,
+     "indicators": {
+      "open": 0.011,
+      "close": 0.0115,
+      "SMA20": 0.010791500000000004,
+      "BB_upper": 0.01130931367305203,
+      "BB_lower": 0.010273686326947978,
+      "EMA50": 0.010634441348928938,
+      "RSI": 71.23405099961002,
+      "volume": 200946.5
+     }
+    },
+    {
+     "symbol": "KUCOIN:GIGAUSDT",
+     "changePercent": 3.782,
+     "indicators": {
+      "open": 0.0024,
+      "close": 0.0025,
+      "SMA20": 0.0021959999999999996,
+      "BB_upper": 0.0024421219210066596,
+      "BB_lower": 0.0019498780789933396,
+      "EMA50": 0.0021696950025035916,
+      "RSI": 70.28155170625149,
+      "volume": 239037.8
+     }
+    },
+    {
+     "symbol": "KUCOIN:DUSDT",
+     "changePercent": 3.236,
+     "indicators": {
+      "open": 0.0031,
+      "close": 0.0032,
+      "SMA20": 0.0032205000000000024,
+      "BB_upper": 0.00383301857114696,
+      "BB_lower": 0.0026079814288530448,
+      "EMA50": 0.0031445048339819454,
+      "RSI": 49.90018534906431,
+      "volume": 6494.7
+     }
+    },
+    {
+     "symbol": "KUCOIN:QKCUSDT",
+     "changePercent": 2.952,
+     "indicators": {
+      "open": 0.0027,
+      "close": 0.0028,
+      "SMA20": 0.0027034999999999993,
+      "BB_upper": 0.002902122758011272,
+      "BB_lower": 0.0025048772419887268,
+      "EMA50": 0.0025739881969371278,
+      "RSI": 61.20925933531184,
+      "volume": 69997.0463
+     }
+    },
+    {
+     "symbol": "KUCOIN:WILDUSDT",
+     "changePercent": 2.849,
+     "indicators": {
+      "open": 0.0147,
+      "close": 0.0152,
+      "SMA20": 0.014551500000000005,
+      "BB_upper": 0.015530280363512854,
+      "BB_lower": 0.013572719636487157,
+      "EMA50": 0.014193291018707551,
+      "RSI": 58.041240517774845,
+      "volume": 3179.4
+     }
+    },
+    {
+     "symbol": "KUCOIN:OBTUSDT",
+     "changePercent": 2.604,
+     "indicators": {
+      "open": 0.0004,
+      "close": 0.0004,
+      "SMA20": 0.00035930499999999927,
+      "BB_upper": 0.000385647017766344,
+      "BB_lower": 0.00033296298223365456,
+      "EMA50": 0.0003524573361203294,
+      "RSI": 60.4557560558811,
+      "volume": 249732
+     }
+    },
+    {
+     "symbol": "KUCOIN:ORBSUSDT",
+     "changePercent": 2.469,
+     "indicators": {
+      "open": 0.0072,
+      "close": 0.0074,
+      "SMA20": 0.007023799999999997,
+      "BB_upper": 0.007287550336493176,
+      "BB_lower": 0.006760049663506818,
+      "EMA50": 0.006810033455502698,
+      "RSI": 76.16974888982261,
+      "volume": 2334
      }
     },
     {
      "symbol": "KUCOIN:AIOZUSDT",
-     "changePercent": 12.841,
+     "changePercent": 2.463,
      "indicators": {
-      "open": 0.1252,
-      "close": 0.1413,
-      "SMA20": 0.09384199999999995,
-      "BB_upper": 0.12511164380993228,
-      "BB_lower": 0.06257235619006764,
-      "EMA50": 0.08465614629471897,
-      "RSI": 92.1159113082625,
-      "volume": 2375419.7937
-     }
-    },
-    {
-     "symbol": "KUCOIN:GRASSUSDT",
-     "changePercent": 11.535,
-     "indicators": {
-      "open": 0.3719,
-      "close": 0.4148,
-      "SMA20": 0.3590149999999996,
-      "BB_upper": 0.3918389104922152,
-      "BB_lower": 0.32619108950778397,
-      "EMA50": 0.3476366933795579,
-      "RSI": 81.49918792494859,
-      "volume": 3104800.85
-     }
-    },
-    {
-     "symbol": "KUCOIN:SWELLUSDT",
-     "changePercent": 7.612,
-     "indicators": {
-      "open": 0.001,
-      "close": 0.001,
-      "SMA20": 0.0007784500000000002,
-      "BB_upper": 0.00092944731785697,
-      "BB_lower": 0.0006274526821430303,
-      "EMA50": 0.0007608680183443307,
-      "RSI": 89.23283934027236,
-      "volume": 8851789
-     }
-    },
-    {
-     "symbol": "KUCOIN:COOKIEUSDT",
-     "changePercent": 7.332,
-     "indicators": {
-      "open": 0.0113,
-      "close": 0.0121,
-      "SMA20": 0.010863000000000005,
-      "BB_upper": 0.011607314449677768,
-      "BB_lower": 0.010118685550322241,
-      "EMA50": 0.0106632570215785,
-      "RSI": 80.31118288701863,
-      "volume": 543420.9
-     }
-    },
-    {
-     "symbol": "KUCOIN:ZILUSDT",
-     "changePercent": 7.023,
-     "indicators": {
-      "open": 0.0041,
-      "close": 0.0043,
-      "SMA20": 0.0040031999999999976,
-      "BB_upper": 0.005103335737079783,
-      "BB_lower": 0.002903064262920212,
-      "EMA50": 0.003603082515174511,
-      "RSI": 55.66119005648384,
-      "volume": 970022
-     }
-    },
-    {
-     "symbol": "KUCOIN:SHRUSDT",
-     "changePercent": 6.991,
-     "indicators": {
-      "open": 0.0003,
-      "close": 0.0003,
-      "SMA20": 0.000257445,
-      "BB_upper": 0.00028332182167500506,
-      "BB_lower": 0.00023156817832499496,
-      "EMA50": 0.0002657265559833447,
-      "RSI": 59.61538320692132,
-      "volume": 24967855
-     }
-    },
-    {
-     "symbol": "KUCOIN:CREDIUSDT",
-     "changePercent": 6.772,
-     "indicators": {
-      "open": 0.0006,
-      "close": 0.0006,
-      "SMA20": 0.0005525700000000001,
-      "BB_upper": 0.0005882528306052022,
-      "BB_lower": 0.0005168871693947979,
-      "EMA50": 0.000529805991967653,
-      "RSI": 64.7307121694972,
-      "volume": 4397010
-     }
-    },
-    {
-     "symbol": "KUCOIN:XPRTUSDT",
-     "changePercent": 6.618,
-     "indicators": {
-      "open": 0.0107,
-      "close": 0.0115,
-      "SMA20": 0.010256135000000003,
-      "BB_upper": 0.013609134559364676,
-      "BB_lower": 0.00690313544063533,
-      "EMA50": 0.010790167169851797,
-      "RSI": 51.44845985164255,
-      "volume": 47652
+      "open": 0.1303,
+      "close": 0.1335,
+      "SMA20": 0.09903499999999997,
+      "BB_upper": 0.13604735820641556,
+      "BB_lower": 0.062022641793584375,
+      "EMA50": 0.08828535457655527,
+      "RSI": 78.2541853257784,
+      "volume": 180532.017
      }
     }
    ]
   },
   "losers": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:47+00:00",
+   "as_of": "2026-09-22T04:38:26+00:00",
    "took_s": 0.0,
    "data": [
     {
-     "symbol": "KUCOIN:WSDMUSDT",
-     "changePercent": -25.034,
+     "symbol": "KUCOIN:VENOMUSDT",
+     "changePercent": -4.757,
+     "indicators": {
+      "open": 0.0164,
+      "close": 0.0156,
+      "SMA20": 0.014055700000000018,
+      "BB_upper": 0.021470952823740966,
+      "BB_lower": 0.00664044717625907,
+      "EMA50": 0.011834542928673477,
+      "RSI": 60.76433779516372,
+      "volume": 31895
+     }
+    },
+    {
+     "symbol": "KUCOIN:SUNDOGUSDT",
+     "changePercent": -3.846,
+     "indicators": {
+      "open": 0.0031,
+      "close": 0.003,
+      "SMA20": 0.0027934999999999987,
+      "BB_upper": 0.003036833105022788,
+      "BB_lower": 0.0025501668949772095,
+      "EMA50": 0.002877979718443926,
+      "RSI": 62.83066130407252,
+      "volume": 166468.7936
+     }
+    },
+    {
+     "symbol": "KUCOIN:PROMPTUSDT",
+     "changePercent": -3.498,
+     "indicators": {
+      "open": 0.0229,
+      "close": 0.0221,
+      "SMA20": 0.020506000000000024,
+      "BB_upper": 0.022124226189380064,
+      "BB_lower": 0.018887773810619984,
+      "EMA50": 0.020549242429463727,
+      "RSI": 64.63739424687608,
+      "volume": 24778.8
+     }
+    },
+    {
+     "symbol": "KUCOIN:LRCUSDT",
+     "changePercent": -3.455,
+     "indicators": {
+      "open": 0.0098,
+      "close": 0.0095,
+      "SMA20": 0.009274000000000001,
+      "BB_upper": 0.009690624531202518,
+      "BB_lower": 0.008857375468797484,
+      "EMA50": 0.009146829233311251,
+      "RSI": 56.881609801557445,
+      "volume": 53735.8
+     }
+    },
+    {
+     "symbol": "KUCOIN:PUSHUSDT",
+     "changePercent": -3.375,
+     "indicators": {
+      "open": 0.0056,
+      "close": 0.0054,
+      "SMA20": 0.005459,
+      "BB_upper": 0.00605936322339066,
+      "BB_lower": 0.004858636776609341,
+      "EMA50": 0.005364797581603078,
+      "RSI": 50.68799984402137,
+      "volume": 265.2
+     }
+    },
+    {
+     "symbol": "KUCOIN:KPOLUSDT",
+     "changePercent": -3.255,
      "indicators": {
       "open": 0.0001,
       "close": 0.0001,
-      "SMA20": 9.872999999999997e-05,
-      "BB_upper": 0.0001366298205800505,
-      "BB_lower": 6.083017941994945e-05,
-      "EMA50": 8.769856288775962e-05,
-      "RSI": 54.110890620276656,
-      "volume": 15903680
+      "SMA20": 0.00011123999999999997,
+      "BB_upper": 0.00015228336243535635,
+      "BB_lower": 7.01966375646436e-05,
+      "EMA50": 9.951171252340247e-05,
+      "RSI": 52.93005644420661,
+      "volume": 342074
      }
     },
     {
-     "symbol": "KUCOIN:NFPUSDT",
-     "changePercent": -14.179,
+     "symbol": "KUCOIN:WSDMUSDT",
+     "changePercent": -2.405,
      "indicators": {
-      "open": 0.004,
-      "close": 0.0034,
-      "SMA20": 0.004196499999999997,
-      "BB_upper": 0.004982051398700367,
-      "BB_lower": 0.003410948601299627,
-      "EMA50": 0.004291754400668576,
-      "RSI": 42.14432084307891,
-      "volume": 58916.4
-     }
-    },
-    {
-     "symbol": "KUCOIN:COTIUSDT",
-     "changePercent": -10.186,
-     "indicators": {
-      "open": 0.0167,
-      "close": 0.015,
-      "SMA20": 0.018669999999999985,
-      "BB_upper": 0.02172469474743413,
-      "BB_lower": 0.01561530525256584,
-      "EMA50": 0.01831453172063515,
-      "RSI": 32.23945333579016,
-      "volume": 21682043.20000001
-     }
-    },
-    {
-     "symbol": "KUCOIN:ZETAUSDT",
-     "changePercent": -7.83,
-     "indicators": {
-      "open": 0.0613,
-      "close": 0.0565,
-      "SMA20": 0.04548499999999999,
-      "BB_upper": 0.06627184920809306,
-      "BB_lower": 0.024698150791906924,
-      "EMA50": 0.041667460068041916,
-      "RSI": 67.33126899275152,
-      "volume": 341608.7166
-     }
-    },
-    {
-     "symbol": "KUCOIN:SYNUSDT",
-     "changePercent": -6.78,
-     "indicators": {
-      "open": 0.264,
-      "close": 0.2461,
-      "SMA20": 0.22710499999999975,
-      "BB_upper": 0.26473060165632534,
-      "BB_lower": 0.18947939834367417,
-      "EMA50": 0.18460865950699587,
-      "RSI": 60.65811660889607,
-      "volume": 262753.0633
-     }
-    },
-    {
-     "symbol": "KUCOIN:LAVAUSDT",
-     "changePercent": -6.082,
-     "indicators": {
-      "open": 0.0145,
-      "close": 0.0136,
-      "SMA20": 0.013502000000000017,
-      "BB_upper": 0.014346360112746882,
-      "BB_lower": 0.012657639887253153,
-      "EMA50": 0.01451865265126132,
-      "RSI": 47.24364554038041,
-      "volume": 203095.6
-     }
-    },
-    {
-     "symbol": "KUCOIN:NAKAUSDT",
-     "changePercent": -5.61,
-     "indicators": {
-      "open": 0.0907,
-      "close": 0.0856,
-      "SMA20": 0.08142699999999999,
-      "BB_upper": 0.0949679262607848,
-      "BB_lower": 0.06788607373921517,
-      "EMA50": 0.07511067915412879,
-      "RSI": 58.12102447772345,
-      "volume": 230844.7
-     }
-    },
-    {
-     "symbol": "KUCOIN:BRUSDT",
-     "changePercent": -5.414,
-     "indicators": {
-      "open": 1.158,
-      "close": 1.0953,
-      "SMA20": 1.0919535,
-      "BB_upper": 1.3228127510838585,
-      "BB_lower": 0.8610942489161415,
-      "EMA50": 0.8179295218737904,
-      "RSI": 58.04162882923602,
-      "volume": 39413.4
+      "open": 0.0001,
+      "close": 0.0001,
+      "SMA20": 9.993499999999996e-05,
+      "BB_upper": 0.0001391502661600049,
+      "BB_lower": 6.071973383999501e-05,
+      "EMA50": 8.984846193522141e-05,
+      "RSI": 54.5094572501625,
+      "volume": 96110
      }
     },
     {
      "symbol": "KUCOIN:PHAUSDT",
-     "changePercent": -4.981,
+     "changePercent": -2.007,
      "indicators": {
-      "open": 0.0522,
-      "close": 0.0496,
-      "SMA20": 0.039055000000000006,
-      "BB_upper": 0.053718488670844916,
-      "BB_lower": 0.0243915113291551,
-      "EMA50": 0.03477599073832112,
-      "RSI": 67.48814962190866,
-      "volume": 2690205.3623
+      "open": 0.0548,
+      "close": 0.0537,
+      "SMA20": 0.04123500000000001,
+      "BB_upper": 0.057779518729778705,
+      "BB_lower": 0.02469048127022131,
+      "EMA50": 0.036283873034490204,
+      "RSI": 69.5138455116353,
+      "volume": 546867.215
      }
     },
     {
-     "symbol": "KUCOIN:WMTXUSDT",
-     "changePercent": -4.921,
+     "symbol": "KUCOIN:UNIUSDT",
+     "changePercent": -1.997,
      "indicators": {
-      "open": 0.0146,
-      "close": 0.0139,
-      "SMA20": 0.022788500000000107,
-      "BB_upper": 0.03999790240101278,
-      "BB_lower": 0.005579097598987431,
-      "EMA50": 0.026147944739042948,
-      "RSI": 22.133391938290927,
-      "volume": 247182.5
+      "open": 9.0881,
+      "close": 8.9066,
+      "SMA20": 8.838235000000003,
+      "BB_upper": 9.131774600565068,
+      "BB_lower": 8.544695399434937,
+      "EMA50": 8.02205229222891,
+      "RSI": 62.17942363801824,
+      "volume": 56474.5335
+     }
+    },
+    {
+     "symbol": "KUCOIN:AKTUSDT",
+     "changePercent": -1.832,
+     "indicators": {
+      "open": 0.666,
+      "close": 0.6538,
+      "SMA20": 0.5927900000000004,
+      "BB_upper": 0.6789458332325674,
+      "BB_lower": 0.5066341667674333,
+      "EMA50": 0.5695616841798871,
+      "RSI": 70.70960966147321,
+      "volume": 9861.8797
      }
     }
    ]
   },
   "squeeze": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:47+00:00",
+   "as_of": "2026-09-22T04:38:26+00:00",
    "took_s": 0.0,
    "data": [
     {
-     "symbol": "KUCOIN:KCSUSDT",
-     "changePercent": 2.165,
+     "symbol": "KUCOIN:NUMUSDT",
+     "changePercent": 0.909,
      "indicators": {
-      "open": 7.297,
-      "close": 7.455,
-      "SMA20": 7.232000000000002,
-      "BB_upper": 7.376436837407296,
-      "BB_lower": 7.087563162592708,
-      "EMA50": 7.111708405577907,
-      "RSI": 72.86641548867861,
-      "volume": 134852.1167
+      "open": 0.0022,
+      "close": 0.0022,
+      "SMA20": 0.002205500000000002,
+      "BB_upper": 0.0022436968585093633,
+      "BB_lower": 0.002167303141490641,
+      "EMA50": 0.002172621461534553,
+      "RSI": 55.02310722734403,
+      "volume": 41212.3811
      }
     },
     {
-     "symbol": "KUCOIN:CWEBUSDT",
-     "changePercent": 0.988,
+     "symbol": "KUCOIN:BDXUSDT",
+     "changePercent": 0.278,
      "indicators": {
-      "open": 0.0005,
-      "close": 0.0005,
-      "SMA20": 0.0005127499999999998,
-      "BB_upper": 0.0005205185262439352,
-      "BB_lower": 0.0005049814737560643,
-      "EMA50": 0.0005157644934784478,
-      "RSI": 46.60846214853613,
-      "volume": 34433
-     }
-    },
-    {
-     "symbol": "KUCOIN:HOLDUSDT",
-     "changePercent": 0.728,
-     "indicators": {
-      "open": 0.1922,
-      "close": 0.1936,
-      "SMA20": 0.19412999999999983,
-      "BB_upper": 0.1963090823757574,
-      "BB_lower": 0.19195091762424227,
-      "EMA50": 0.19538167868968762,
-      "RSI": 48.57562378776924,
-      "volume": 6451.78
-     }
-    },
-    {
-     "symbol": "KUCOIN:DODOUSDT",
-     "changePercent": 0.706,
-     "indicators": {
-      "open": 0.0184,
-      "close": 0.0185,
-      "SMA20": 0.01828000000000002,
-      "BB_upper": 0.018613046543289675,
-      "BB_lower": 0.017946953456710362,
-      "EMA50": 0.01813166564926565,
-      "RSI": 56.39949503074718,
-      "volume": 186657.4
+      "open": 0.0755,
+      "close": 0.0757,
+      "SMA20": 0.07575599999999996,
+      "BB_upper": 0.0763077390687993,
+      "BB_lower": 0.07520426093120063,
+      "EMA50": 0.07591729602852831,
+      "RSI": 49.85331874384141,
+      "volume": 63875.7416
      }
     },
     {
      "symbol": "KUCOIN:FUELUSDT",
-     "changePercent": 0.625,
+     "changePercent": 0.248,
      "indicators": {
       "open": 0.0008,
       "close": 0.0008,
-      "SMA20": 0.0008004999999999995,
-      "BB_upper": 0.0008057345009319954,
-      "BB_lower": 0.0007952654990680035,
-      "EMA50": 0.0007938420285474089,
-      "RSI": 62.72553547184791,
-      "volume": 1490498
+      "SMA20": 0.0008011499999999994,
+      "BB_upper": 0.0008077005724946149,
+      "BB_lower": 0.0007945994275053838,
+      "EMA50": 0.0007948538513668105,
+      "RSI": 65.27682507988341,
+      "volume": 220579
      }
     },
     {
-     "symbol": "KUCOIN:WEMIXUSDT",
-     "changePercent": 0.565,
+     "symbol": "KUCOIN:HTXUSDT",
+     "changePercent": 0.173,
      "indicators": {
-      "open": 0.1947,
-      "close": 0.1958,
-      "SMA20": 0.19333499999999987,
-      "BB_upper": 0.19596275569648278,
-      "BB_lower": 0.19070724430351696,
-      "EMA50": 0.19142987597875635,
-      "RSI": 61.936279821326714,
-      "volume": 3069.886
+      "open": 0.0,
+      "close": 0.0,
+      "SMA20": 1.7141000000000032e-06,
+      "BB_upper": 1.7361717013380552e-06,
+      "BB_lower": 1.6920282986619512e-06,
+      "EMA50": 1.6963275128376809e-06,
+      "RSI": 68.87794855143645,
+      "volume": 22340342.000000004
      }
     },
     {
-     "symbol": "KUCOIN:PAXGUSDT",
-     "changePercent": 0.559,
+     "symbol": "KUCOIN:ROOBEEUSDT",
+     "changePercent": 0.125,
      "indicators": {
-      "open": 4341.13,
-      "close": 4365.41,
-      "SMA20": 4361.149,
-      "BB_upper": 4378.537163676029,
-      "BB_lower": 4343.7608363239715,
-      "EMA50": 4353.432027654349,
-      "RSI": 54.16464632680499,
-      "volume": 94.7315
+      "open": 0.0001,
+      "close": 0.0001,
+      "SMA20": 7.995999999999997e-05,
+      "BB_upper": 8.037182520562073e-05,
+      "BB_lower": 7.954817479437921e-05,
+      "EMA50": 8.053373320080427e-05,
+      "RSI": 45.672116596788044,
+      "volume": 2915921
+     }
+    },
+    {
+     "symbol": "KUCOIN:SUNUSDT",
+     "changePercent": 0.115,
+     "indicators": {
+      "open": 0.0175,
+      "close": 0.0175,
+      "SMA20": 0.017150499999999985,
+      "BB_upper": 0.01740891633075641,
+      "BB_lower": 0.016892083669243562,
+      "EMA50": 0.017006391492643852,
+      "RSI": 68.94678254599734,
+      "volume": 6102.5
+     }
+    },
+    {
+     "symbol": "KUCOIN:TRXUSDT",
+     "changePercent": 0.086,
+     "indicators": {
+      "open": 0.3481,
+      "close": 0.3484,
+      "SMA20": 0.34238499999999983,
+      "BB_upper": 0.34850685429437134,
+      "BB_lower": 0.3362631457056283,
+      "EMA50": 0.34034045417704234,
+      "RSI": 75.72501259792423,
+      "volume": 337951.57
      }
     },
     {
      "symbol": "KUCOIN:LLUSDT",
-     "changePercent": 0.167,
+     "changePercent": 0.083,
      "indicators": {
       "open": 0.0012,
       "close": 0.0012,
-      "SMA20": 0.0011987000000000013,
-      "BB_upper": 0.0012012377155043495,
-      "BB_lower": 0.0011961622844956531,
-      "EMA50": 0.0012018298324079483,
-      "RSI": 47.181346010369055,
-      "volume": 1524497
+      "SMA20": 0.0011987000000000015,
+      "BB_upper": 0.001201315339362125,
+      "BB_lower": 0.001196084660637878,
+      "EMA50": 0.0012016137745526657,
+      "RSI": 50.54102673403498,
+      "volume": 273722
      }
     },
     {
-     "symbol": "KUCOIN:NFTUSDT",
-     "changePercent": 0.166,
+     "symbol": "KUCOIN:VRUSDT",
+     "changePercent": 0.067,
      "indicators": {
-      "open": 0.0,
-      "close": 0.0,
-      "SMA20": 2.4035499999999967e-07,
-      "BB_upper": 2.438464037292464e-07,
-      "BB_lower": 2.3686359627075296e-07,
-      "EMA50": 2.390588472839215e-07,
-      "RSI": 51.67156867412827,
-      "volume": 31347783934.07659
-     }
-    },
-    {
-     "symbol": "KUCOIN:USDDUSDT",
-     "changePercent": 0.04,
-     "indicators": {
-      "open": 0.9989,
-      "close": 0.9993,
-      "SMA20": 0.9980100000000001,
-      "BB_upper": 0.9995859441605642,
-      "BB_lower": 0.9964340558394359,
-      "EMA50": 0.9977226694792906,
-      "RSI": 59.38537205516481,
-      "volume": 41.603
+      "open": 0.0015,
+      "close": 0.0015,
+      "SMA20": 0.001506350000000001,
+      "BB_upper": 0.001519948161639497,
+      "BB_lower": 0.0014927518383605048,
+      "EMA50": 0.0015048082505266782,
+      "RSI": 47.392944632092224,
+      "volume": 1962409
      }
     },
     {
      "symbol": "KUCOIN:PYUSDUSDT",
-     "changePercent": 0.01,
+     "changePercent": 0.05,
      "indicators": {
-      "open": 0.9995,
-      "close": 0.9996,
-      "SMA20": 0.9996800000000006,
-      "BB_upper": 0.9999872458223907,
-      "BB_lower": 0.9993727541776104,
-      "EMA50": 0.9998083655946196,
-      "RSI": 46.39318876995136,
-      "volume": 15669.1669
+      "open": 0.9999,
+      "close": 1.0004,
+      "SMA20": 0.9997200000000006,
+      "BB_upper": 1.000156348478721,
+      "BB_lower": 0.9992836515212803,
+      "EMA50": 0.9998237161832686,
+      "RSI": 60.06222430379891,
+      "volume": 569.194
      }
     },
     {
-     "symbol": "KUCOIN:MTVUSDT",
-     "changePercent": 0.009,
+     "symbol": "KUCOIN:XRUSDT",
+     "changePercent": 0.029,
      "indicators": {
-      "open": 0.0001,
-      "close": 0.0001,
-      "SMA20": 9.93265500000001e-05,
-      "BB_upper": 0.0001001494010132152,
-      "BB_lower": 9.8503698986785e-05,
-      "EMA50": 9.953350978816021e-05,
-      "RSI": 46.607422279812056,
-      "volume": 9180069
+      "open": 0.0035,
+      "close": 0.0035,
+      "SMA20": 0.0035095500000000036,
+      "BB_upper": 0.0035425619675267727,
+      "BB_lower": 0.0034765380324732345,
+      "EMA50": 0.003548027991410644,
+      "RSI": 32.5785964672892,
+      "volume": 87303
+     }
+    },
+    {
+     "symbol": "KUCOIN:CEREUSDT",
+     "changePercent": 0.0,
+     "indicators": {
+      "open": 0.0002,
+      "close": 0.0002,
+      "SMA20": 0.0002013350000000004,
+      "BB_upper": 0.0002034194903452593,
+      "BB_lower": 0.0001992505096547415,
+      "EMA50": 0.00020199837308549438,
+      "RSI": 55.4304824510221,
+      "volume": 1186
      }
     }
    ]
   },
   "smart_volume": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:57+00:00",
-   "took_s": 9.98,
+   "as_of": "2026-09-22T04:38:36+00:00",
+   "took_s": 10.01,
    "data": []
   },
   "futures": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:57+00:00",
-   "took_s": 0.17,
+   "as_of": "2026-09-22T04:38:36+00:00",
+   "took_s": 0.11,
    "data": {
     "category": "all",
     "exchanges": [
@@ -3220,228 +3216,116 @@
     "returned": 20,
     "contracts": [
      {
-      "ticker": "CBOT:ZC1!",
-      "name": "ZC1!",
-      "description": "Corn Futures",
-      "close": 543.0,
-      "open": 527.5,
-      "high": 543.5,
-      "low": 526.25,
-      "volume": 229020,
-      "change": 2.938388625592417,
-      "change_abs": 15.5,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
-      "ticker": "CBOT:ZCZ2026",
-      "name": "ZCZ2026",
-      "description": "Corn Futures (Dec 2026)",
-      "close": 543.0,
-      "open": 527.5,
-      "high": 543.5,
-      "low": 526.25,
-      "volume": 229020,
-      "change": 2.938388625592417,
-      "change_abs": 15.5,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
-      "ticker": "CBOT:ZS1!",
-      "name": "ZS1!",
-      "description": "Soybean Futures",
-      "close": 1328.0,
-      "open": 1304.0,
-      "high": 1328.5,
-      "low": 1303.5,
-      "volume": 126511,
-      "change": 1.8795550441120061,
-      "change_abs": 24.5,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
-      "ticker": "CBOT:ZSX2026",
-      "name": "ZSX2026",
-      "description": "Soybean Futures (Nov 2026)",
-      "close": 1328.0,
-      "open": 1304.0,
-      "high": 1328.5,
-      "low": 1303.5,
-      "volume": 126511,
-      "change": 1.8795550441120061,
-      "change_abs": 24.5,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
-      "ticker": "CBOT:ZMZ2026",
-      "name": "ZMZ2026",
-      "description": "Soybean Meal Futures (Dec 2026)",
-      "close": 368.4,
-      "open": 360.3,
-      "high": 369.0,
-      "low": 359.1,
-      "volume": 90117,
-      "change": 2.7328499721137627,
-      "change_abs": 9.799999999999955,
+      "ticker": "CBOT:ZN1!",
+      "name": "ZN1!",
+      "description": "10-Year T-Note Futures",
+      "close": 106.0,
+      "open": 106.078125,
+      "high": 106.140625,
+      "low": 105.984375,
+      "volume": 58221,
+      "change": -0.04420215117135701,
+      "change_abs": -0.046875,
       "currency": "USD",
       "exchange": "CBOT"
      },
      {
-      "ticker": "CBOT:ZM1!",
-      "name": "ZM1!",
-      "description": "Soybean Meal Futures",
-      "close": 368.4,
-      "open": 360.3,
-      "high": 369.0,
-      "low": 359.1,
-      "volume": 90117,
-      "change": 2.7328499721137627,
-      "change_abs": 9.799999999999955,
+      "ticker": "CBOT:ZNZ2026",
+      "name": "ZNZ2026",
+      "description": "10-Year T-Note Futures (Dec 2026)",
+      "close": 106.0,
+      "open": 106.078125,
+      "high": 106.140625,
+      "low": 105.984375,
+      "volume": 58221,
+      "change": -0.04420215117135701,
+      "change_abs": -0.046875,
       "currency": "USD",
       "exchange": "CBOT"
      },
      {
-      "ticker": "CBOT:ZLZ2026",
-      "name": "ZLZ2026",
-      "description": "Soybean Oil Futures (Dec 2026)",
-      "close": 68.85,
-      "open": 68.13,
-      "high": 69.1,
-      "low": 67.57,
-      "volume": 70884,
-      "change": 0.923482849604215,
-      "change_abs": 0.6299999999999955,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
-      "ticker": "CBOT:ZL1!",
-      "name": "ZL1!",
-      "description": "Soybean Oil Futures",
-      "close": 68.85,
-      "open": 68.13,
-      "high": 69.1,
-      "low": 67.57,
-      "volume": 70884,
-      "change": 0.923482849604215,
-      "change_abs": 0.6299999999999955,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
-      "ticker": "CBOT:ZCH2027",
-      "name": "ZCH2027",
-      "description": "Corn Futures (Mar 2027)",
-      "close": 556.75,
-      "open": 541.25,
-      "high": 557.0,
-      "low": 540.0,
-      "volume": 61877,
-      "change": 2.816251154201293,
-      "change_abs": 15.25,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
-      "ticker": "CBOT:ZWZ2026",
-      "name": "ZWZ2026",
-      "description": "Chicago SRW Wheat Futures (Dec 2026)",
-      "close": 726.75,
-      "open": 716.0,
-      "high": 730.0,
-      "low": 715.25,
-      "volume": 58017,
-      "change": 1.7500875043752189,
-      "change_abs": 12.5,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
-      "ticker": "CBOT:ZW1!",
-      "name": "ZW1!",
-      "description": "Chicago SRW Wheat Futures",
-      "close": 726.75,
-      "open": 716.0,
-      "high": 730.0,
-      "low": 715.25,
-      "volume": 58017,
-      "change": 1.7500875043752189,
-      "change_abs": 12.5,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
-      "ticker": "CBOT:ZSF2027",
-      "name": "ZSF2027",
-      "description": "Soybean Futures (Jan 2027)",
-      "close": 1344.0,
-      "open": 1320.25,
-      "high": 1344.25,
-      "low": 1320.25,
-      "volume": 45326,
-      "change": 1.8181818181818181,
-      "change_abs": 24.0,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
-      "ticker": "CBOT:ZMF2027",
-      "name": "ZMF2027",
-      "description": "Soybean Meal Futures (Jan 2027)",
-      "close": 368.7,
-      "open": 362.5,
-      "high": 369.1,
-      "low": 361.0,
-      "volume": 33296,
-      "change": 2.302996670366263,
-      "change_abs": 8.300000000000011,
+      "ticker": "CBOT:ZF1!",
+      "name": "ZF1!",
+      "description": "5-Year T-Note Futures",
+      "close": 104.234375,
+      "open": 104.28125,
+      "high": 104.328125,
+      "low": 104.2265625,
+      "volume": 41794,
+      "change": -0.02997152704930316,
+      "change_abs": -0.03125,
       "currency": "USD",
       "exchange": "CBOT"
      },
      {
-      "ticker": "CBOT:ZSH2027",
-      "name": "ZSH2027",
-      "description": "Soybean Futures (Mar 2027)",
-      "close": 1351.75,
-      "open": 1329.0,
-      "high": 1352.0,
-      "low": 1329.0,
-      "volume": 33003,
-      "change": 1.6735614892816848,
-      "change_abs": 22.25,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
-      "ticker": "CBOT:ZMV2026",
-      "name": "ZMV2026",
-      "description": "Soybean Meal Futures (Oct 2026)",
-      "close": 366.6,
-      "open": 356.7,
-      "high": 367.1,
-      "low": 356.0,
-      "volume": 32711,
-      "change": 3.3840947546531304,
-      "change_abs": 12.0,
+      "ticker": "CBOT:ZFZ2026",
+      "name": "ZFZ2026",
+      "description": "5-Year T-Note Futures (Dec 2026)",
+      "close": 104.234375,
+      "open": 104.28125,
+      "high": 104.328125,
+      "low": 104.2265625,
+      "volume": 41794,
+      "change": -0.02997152704930316,
+      "change_abs": -0.03125,
       "currency": "USD",
       "exchange": "CBOT"
      },
      {
-      "ticker": "CBOT:ZCN2027",
-      "name": "ZCN2027",
-      "description": "Corn Futures (Jul 2027)",
-      "close": 564.5,
-      "open": 550.5,
-      "high": 564.75,
-      "low": 549.0,
-      "volume": 28340,
-      "change": 2.4500907441016335,
-      "change_abs": 13.5,
-      "currency": "USX",
+      "ticker": "CBOT:ZT1!",
+      "name": "ZT1!",
+      "description": "2-Year T-Note Futures",
+      "close": 101.8671875,
+      "open": 101.88671875,
+      "high": 101.90234375,
+      "low": 101.86328125,
+      "volume": 36277,
+      "change": -0.007668711656441719,
+      "change_abs": -0.0078125,
+      "currency": "USD",
       "exchange": "CBOT"
+     },
+     {
+      "ticker": "CBOT:ZTZ2026",
+      "name": "ZTZ2026",
+      "description": "2-Year T-Note Futures (Dec 2026)",
+      "close": 101.8671875,
+      "open": 101.88671875,
+      "high": 101.90234375,
+      "low": 101.86328125,
+      "volume": 36277,
+      "change": -0.007668711656441719,
+      "change_abs": -0.0078125,
+      "currency": "USD",
+      "exchange": "CBOT"
+     },
+     {
+      "ticker": "COMEX:GCZ2026",
+      "name": "GCZ2026",
+      "description": "Gold Futures (Dec 2026)",
+      "close": 4374.7,
+      "open": 4382.5,
+      "high": 4414.1,
+      "low": 4371.4,
+      "volume": 31286,
+      "change": -0.20985880152375325,
+      "change_abs": -9.199999999999818,
+      "currency": "USD",
+      "exchange": "COMEX"
+     },
+     {
+      "ticker": "COMEX:GC1!",
+      "name": "GC1!",
+      "description": "Gold Futures",
+      "close": 4374.7,
+      "open": 4382.5,
+      "high": 4414.1,
+      "low": 4371.4,
+      "volume": 31286,
+      "change": -0.20985880152375325,
+      "change_abs": -9.199999999999818,
+      "currency": "USD",
+      "exchange": "COMEX"
      },
      {
       "ticker": "CME:HEZ2026",
@@ -3458,20 +3342,6 @@
       "exchange": "CME"
      },
      {
-      "ticker": "CBOT:ZCK2027",
-      "name": "ZCK2027",
-      "description": "Corn Futures (May 2027)",
-      "close": 563.0,
-      "open": 548.0,
-      "high": 563.25,
-      "low": 546.75,
-      "volume": 25840,
-      "change": 2.6903784769721844,
-      "change_abs": 14.75,
-      "currency": "USX",
-      "exchange": "CBOT"
-     },
-     {
       "ticker": "CME:LEZ2026",
       "name": "LEZ2026",
       "description": "Live Cattle Futures (Dec 2026)",
@@ -3486,29 +3356,155 @@
       "exchange": "CME"
      },
      {
-      "ticker": "CBOT:ZLF2027",
-      "name": "ZLF2027",
-      "description": "Soybean Oil Futures (Jan 2027)",
-      "close": 69.09,
-      "open": 68.39,
-      "high": 69.33,
-      "low": 67.86,
-      "volume": 21993,
-      "change": 0.8318739054290826,
-      "change_abs": 0.5700000000000074,
-      "currency": "USX",
+      "ticker": "NYMEX:MCLX2026",
+      "name": "MCLX2026",
+      "description": "Micro WTI Crude Oil Futures (Nov 2026)",
+      "close": 93.21,
+      "open": 91.92,
+      "high": 93.4,
+      "low": 91.7,
+      "volume": 21758,
+      "change": 0.9093861643390594,
+      "change_abs": 0.8399999999999892,
+      "currency": "USD",
+      "exchange": "NYMEX"
+     },
+     {
+      "ticker": "NYMEX:MCL1!",
+      "name": "MCL1!",
+      "description": "Micro WTI Crude Oil Futures",
+      "close": 93.21,
+      "open": 91.92,
+      "high": 93.4,
+      "low": 91.7,
+      "volume": 21758,
+      "change": 0.9093861643390594,
+      "change_abs": 0.8399999999999892,
+      "currency": "USD",
+      "exchange": "NYMEX"
+     },
+     {
+      "ticker": "CBOT:TNZ2026",
+      "name": "TNZ2026",
+      "description": "Ultra 10-Year U.S. Treasury Note Futures (Dec 2026)",
+      "close": 107.71875,
+      "open": 107.8125,
+      "high": 107.890625,
+      "low": 107.703125,
+      "volume": 20963,
+      "change": -0.0145032632342277,
+      "change_abs": -0.015625,
+      "currency": "USD",
       "exchange": "CBOT"
+     },
+     {
+      "ticker": "CBOT:TN1!",
+      "name": "TN1!",
+      "description": "Ultra 10-Year U.S. Treasury Note Futures",
+      "close": 107.71875,
+      "open": 107.8125,
+      "high": 107.890625,
+      "low": 107.703125,
+      "volume": 20963,
+      "change": -0.0145032632342277,
+      "change_abs": -0.015625,
+      "currency": "USD",
+      "exchange": "CBOT"
+     },
+     {
+      "ticker": "CME:6JZ2026",
+      "name": "6JZ2026",
+      "description": "Japanese Yen Futures (Dec 2026)",
+      "close": 0.0063925,
+      "open": 0.006396,
+      "high": 0.006401,
+      "low": 0.0063885,
+      "volume": 16767,
+      "change": -0.01564088527410859,
+      "change_abs": -1.0000000000001327e-06,
+      "currency": "USD",
+      "exchange": "CME"
+     },
+     {
+      "ticker": "CME:6J1!",
+      "name": "6J1!",
+      "description": "Japanese Yen Futures",
+      "close": 0.0063925,
+      "open": 0.006396,
+      "high": 0.006401,
+      "low": 0.0063885,
+      "volume": 16767,
+      "change": -0.01564088527410859,
+      "change_abs": -1.0000000000001327e-06,
+      "currency": "USD",
+      "exchange": "CME"
+     },
+     {
+      "ticker": "NYMEX:BZH2027",
+      "name": "BZH2027",
+      "description": "Brent Last Day Financial Futures (Mar 2027)",
+      "close": 89.05,
+      "open": 89.79,
+      "high": 89.81,
+      "low": 88.38,
+      "volume": 16510,
+      "change": -1.970497578159408,
+      "change_abs": -1.7900000000000063,
+      "currency": "USD",
+      "exchange": "NYMEX"
+     },
+     {
+      "ticker": "NYMEX:CL1!",
+      "name": "CL1!",
+      "description": "Crude Oil Futures",
+      "close": 93.26,
+      "open": 91.95,
+      "high": 93.39,
+      "low": 91.75,
+      "volume": 15912,
+      "change": 0.9635162931687783,
+      "change_abs": 0.8900000000000006,
+      "currency": "USD",
+      "exchange": "NYMEX"
+     },
+     {
+      "ticker": "NYMEX:CLX2026",
+      "name": "CLX2026",
+      "description": "Crude Oil Futures (Nov 2026)",
+      "close": 93.26,
+      "open": 91.95,
+      "high": 93.39,
+      "low": 91.75,
+      "volume": 15912,
+      "change": 0.9635162931687783,
+      "change_abs": 0.8900000000000006,
+      "currency": "USD",
+      "exchange": "NYMEX"
+     },
+     {
+      "ticker": "CME:6AZ2026",
+      "name": "6AZ2026",
+      "description": "Australian Dollar Futures (Dec 2026)",
+      "close": 0.7112,
+      "open": 0.7111,
+      "high": 0.7117,
+      "low": 0.709,
+      "volume": 15218,
+      "change": -0.014058765640375224,
+      "change_abs": -9.999999999998899e-05,
+      "currency": "USD",
+      "exchange": "CME"
      }
     ]
    }
   },
   "futures_movers": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:57+00:00",
-   "took_s": 0.3,
+   "as_of": "2026-09-22T04:38:37+00:00",
+   "took_s": 0.15,
    "data": {
     "direction": "gainers",
-    "total_available": 895,
+    "total_available": 881,
     "contracts": [
      {
       "ticker": "NYMEX:A5CU2026",
@@ -3581,20 +3577,6 @@
       "exchange": "NYMEX"
      },
      {
-      "ticker": "CME:XINTCZ2026",
-      "name": "XINTCZ2026",
-      "description": "Micro Intel Corp Futures (Dec 2026)",
-      "close": 123.15,
-      "open": 114.07,
-      "high": 125.9,
-      "low": 114.04,
-      "volume": 445,
-      "change": 12.127833925157068,
-      "change_abs": 13.320000000000007,
-      "currency": "USD",
-      "exchange": "CME"
-     },
-     {
       "ticker": "CME:XINTC1!",
       "name": "XINTC1!",
       "description": "Micro Intel Corp Futures",
@@ -3609,9 +3591,23 @@
       "exchange": "CME"
      },
      {
-      "ticker": "CME:SMETAZ2026",
-      "name": "SMETAZ2026",
-      "description": "Meta Platforms Futures (Dec 2026)",
+      "ticker": "CME:XINTCZ2026",
+      "name": "XINTCZ2026",
+      "description": "Micro Intel Corp Futures (Dec 2026)",
+      "close": 123.15,
+      "open": 114.07,
+      "high": 125.9,
+      "low": 114.04,
+      "volume": 445,
+      "change": 12.127833925157068,
+      "change_abs": 13.320000000000007,
+      "currency": "USD",
+      "exchange": "CME"
+     },
+     {
+      "ticker": "CME:SMETA1!",
+      "name": "SMETA1!",
+      "description": "Meta Platforms Futures",
       "close": 749.27,
       "open": 679.46,
       "high": 757.46,
@@ -3623,9 +3619,9 @@
       "exchange": "CME"
      },
      {
-      "ticker": "CME:SMETA1!",
-      "name": "SMETA1!",
-      "description": "Meta Platforms Futures",
+      "ticker": "CME:SMETAZ2026",
+      "name": "SMETAZ2026",
+      "description": "Meta Platforms Futures (Dec 2026)",
       "close": 749.27,
       "open": 679.46,
       "high": 757.46,
@@ -3665,17 +3661,17 @@
       "exchange": "NYMEX"
      },
      {
-      "ticker": "CME:BTCX2026",
-      "name": "BTCX2026",
-      "description": "Bitcoin Futures (Nov 2026)",
-      "close": 87485.0,
-      "open": 82720.0,
-      "high": 88120.0,
-      "low": 82150.0,
-      "volume": 152,
-      "change": 6.565564285279249,
-      "change_abs": 5390.0,
-      "currency": "USD",
+      "ticker": "CME:EEM1!",
+      "name": "EEM1!",
+      "description": "Micro Ether Euro Futures",
+      "close": 2411.0,
+      "open": 2340.5,
+      "high": 2447.5,
+      "low": 2340.5,
+      "volume": 880,
+      "change": 4.848880191345945,
+      "change_abs": 111.5,
+      "currency": "EUR",
       "exchange": "CME"
      }
     ]
@@ -3683,8 +3679,8 @@
   },
   "energy": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:57+00:00",
-   "took_s": 0.05,
+   "as_of": "2026-09-22T04:38:37+00:00",
+   "took_s": 0.08,
    "data": {
     "category": "energy",
     "requested": [
@@ -3698,58 +3694,16 @@
     "returned": 6,
     "contracts": [
      {
-      "ticker": "NYMEX:MCL1!",
-      "name": "MCL1!",
-      "description": "Micro WTI Crude Oil Futures",
-      "close": 92.2,
-      "open": 91.92,
-      "high": 92.34,
-      "low": 91.7,
-      "volume": 3462,
-      "change": -0.18404243802100434,
-      "change_abs": -0.1700000000000017,
-      "currency": "USD",
-      "exchange": "NYMEX"
-     },
-     {
-      "ticker": "ICEEUR:BRN1!",
-      "name": "BRN1!",
-      "description": "Brent Crude Futures",
-      "close": 100.34,
-      "open": 104.71,
-      "high": 104.9,
-      "low": 98.98,
-      "volume": 331740,
-      "change": -3.3984788678155393,
-      "change_abs": -3.530000000000001,
-      "currency": "USD",
-      "exchange": "ICEEUR"
-     },
-     {
-      "ticker": "NYMEX:CL1!",
-      "name": "CL1!",
-      "description": "Crude Oil Futures",
-      "close": 92.17,
-      "open": 91.95,
-      "high": 92.34,
-      "low": 91.75,
-      "volume": 2313,
-      "change": -0.21652051531882954,
-      "change_abs": -0.20000000000000284,
-      "currency": "USD",
-      "exchange": "NYMEX"
-     },
-     {
       "ticker": "NYMEX:NG1!",
       "name": "NG1!",
       "description": "Henry Hub Natural Gas Futures",
-      "close": 2.83,
+      "close": 2.841,
       "open": 2.83,
-      "high": 2.832,
+      "high": 2.853,
       "low": 2.825,
-      "volume": 272,
-      "change": -0.21156558533144515,
-      "change_abs": -0.005999999999999783,
+      "volume": 1757,
+      "change": 0.1763046544428892,
+      "change_abs": 0.0050000000000003375,
       "currency": "USD",
       "exchange": "NYMEX"
      },
@@ -3757,13 +3711,13 @@
       "ticker": "NYMEX:HO1!",
       "name": "HO1!",
       "description": "NY Harbor ULSD Futures",
-      "close": 4.7049,
+      "close": 4.7239,
       "open": 4.7088,
-      "high": 4.7089,
+      "high": 4.7317,
       "low": 4.7,
-      "volume": 74,
-      "change": -0.05523101433880552,
-      "change_abs": -0.0025999999999992696,
+      "volume": 596,
+      "change": 0.3483802442910432,
+      "change_abs": 0.01640000000000086,
       "currency": "USD",
       "exchange": "NYMEX"
      },
@@ -3771,13 +3725,55 @@
       "ticker": "NYMEX:RB1!",
       "name": "RB1!",
       "description": "RBOB Gasoline Futures",
-      "close": 3.184,
+      "close": 3.2081,
       "open": 3.1869,
-      "high": 3.187,
+      "high": 3.2141,
       "low": 3.1655,
-      "volume": 106,
-      "change": -0.3567628465919645,
-      "change_abs": -0.011399999999999633,
+      "volume": 603,
+      "change": 0.3974463290980834,
+      "change_abs": 0.012700000000000156,
+      "currency": "USD",
+      "exchange": "NYMEX"
+     },
+     {
+      "ticker": "NYMEX:MCL1!",
+      "name": "MCL1!",
+      "description": "Micro WTI Crude Oil Futures",
+      "close": 93.21,
+      "open": 91.92,
+      "high": 93.4,
+      "low": 91.7,
+      "volume": 21758,
+      "change": 0.9093861643390594,
+      "change_abs": 0.8399999999999892,
+      "currency": "USD",
+      "exchange": "NYMEX"
+     },
+     {
+      "ticker": "ICEEUR:BRN1!",
+      "name": "BRN1!",
+      "description": "Brent Crude Futures",
+      "close": 101.55,
+      "open": 100.32,
+      "high": 101.74,
+      "low": 100.22,
+      "volume": 11599,
+      "change": 1.2058999402033024,
+      "change_abs": 1.2099999999999937,
+      "currency": "USD",
+      "exchange": "ICEEUR"
+     },
+     {
+      "ticker": "NYMEX:CL1!",
+      "name": "CL1!",
+      "description": "Crude Oil Futures",
+      "close": 93.26,
+      "open": 91.95,
+      "high": 93.39,
+      "low": 91.75,
+      "volume": 15912,
+      "change": 0.9635162931687783,
+      "change_abs": 0.8900000000000006,
       "currency": "USD",
       "exchange": "NYMEX"
      }
@@ -3786,8 +3782,8 @@
   },
   "metals": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:57+00:00",
-   "took_s": 0.06,
+   "as_of": "2026-09-22T04:38:37+00:00",
+   "took_s": 0.1,
    "data": {
     "category": "metals",
     "requested": [
@@ -3802,58 +3798,16 @@
     "returned": 7,
     "contracts": [
      {
-      "ticker": "COMEX:GC1!",
-      "name": "GC1!",
-      "description": "Gold Futures",
-      "close": 4405.2,
-      "open": 4382.5,
-      "high": 4408.6,
-      "low": 4382.0,
-      "volume": 8506,
-      "change": 0.4858687470060946,
-      "change_abs": 21.300000000000182,
-      "currency": "USD",
-      "exchange": "COMEX"
-     },
-     {
-      "ticker": "COMEX:SI1!",
-      "name": "SI1!",
-      "description": "Silver Futures",
-      "close": 67.1,
-      "open": 66.515,
-      "high": 67.145,
-      "low": 66.515,
-      "volume": 1042,
-      "change": 1.0313935105021275,
-      "change_abs": 0.6849999999999881,
-      "currency": "USD",
-      "exchange": "COMEX"
-     },
-     {
-      "ticker": "COMEX:HG1!",
-      "name": "HG1!",
-      "description": "Copper Futures",
-      "close": 6.7985,
-      "open": 6.785,
-      "high": 6.801,
-      "low": 6.7845,
-      "volume": 540,
-      "change": 0.532347504621066,
-      "change_abs": 0.03599999999999959,
-      "currency": "USD",
-      "exchange": "COMEX"
-     },
-     {
       "ticker": "NYMEX:PL1!",
       "name": "PL1!",
       "description": "Platinum Futures",
-      "close": 1815.8,
+      "close": 1790.3,
       "open": 1807.4,
-      "high": 1815.8,
-      "low": 1805.4,
-      "volume": 187,
-      "change": 0.799378261352274,
-      "change_abs": 14.399999999999864,
+      "high": 1822.2,
+      "low": 1788.2,
+      "volume": 1806,
+      "change": -0.6161874097923913,
+      "change_abs": -11.100000000000136,
       "currency": "USD",
       "exchange": "NYMEX"
      },
@@ -3861,13 +3815,13 @@
       "ticker": "NYMEX:PA1!",
       "name": "PA1!",
       "description": "Palladium Futures",
-      "close": 1325.5,
+      "close": 1306.0,
       "open": 1320.5,
-      "high": 1325.5,
-      "low": 1320.5,
-      "volume": 60,
-      "change": 0.6912792464296497,
-      "change_abs": 9.099999999999909,
+      "high": 1330.5,
+      "low": 1303.0,
+      "volume": 578,
+      "change": -0.7900334244910431,
+      "change_abs": -10.400000000000091,
       "currency": "USD",
       "exchange": "NYMEX"
      },
@@ -3875,13 +3829,13 @@
       "ticker": "COMEX:ALI1!",
       "name": "ALI1!",
       "description": "Aluminum Futures",
-      "close": 3461.75,
+      "close": 3451.5,
       "open": 3457.25,
       "high": 3462.5,
-      "low": 3451.5,
-      "volume": 17,
-      "change": 0.47162966187781163,
-      "change_abs": 16.25,
+      "low": 3448.5,
+      "volume": 20,
+      "change": 0.174140182847192,
+      "change_abs": 6.0,
       "currency": "USD",
       "exchange": "COMEX"
      },
@@ -3898,13 +3852,55 @@
       "change_abs": 0.0,
       "currency": "USD",
       "exchange": "COMEX"
+     },
+     {
+      "ticker": "COMEX:GC1!",
+      "name": "GC1!",
+      "description": "Gold Futures",
+      "close": 4374.7,
+      "open": 4382.5,
+      "high": 4414.1,
+      "low": 4371.4,
+      "volume": 31286,
+      "change": -0.20985880152375325,
+      "change_abs": -9.199999999999818,
+      "currency": "USD",
+      "exchange": "COMEX"
+     },
+     {
+      "ticker": "COMEX:SI1!",
+      "name": "SI1!",
+      "description": "Silver Futures",
+      "close": 66.45,
+      "open": 66.515,
+      "high": 67.325,
+      "low": 66.36,
+      "volume": 5222,
+      "change": 0.052698938492805214,
+      "change_abs": 0.03499999999999659,
+      "currency": "USD",
+      "exchange": "COMEX"
+     },
+     {
+      "ticker": "COMEX:HG1!",
+      "name": "HG1!",
+      "description": "Copper Futures",
+      "close": 6.8295,
+      "open": 6.785,
+      "high": 6.8385,
+      "low": 6.7845,
+      "volume": 3843,
+      "change": 0.9907578558225534,
+      "change_abs": 0.06700000000000017,
+      "currency": "USD",
+      "exchange": "COMEX"
      }
     ]
    }
   },
   "watchlist": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:57+00:00",
+   "as_of": "2026-09-22T04:38:37+00:00",
    "took_s": 0.0,
    "data": {
     "description": "Well-known continuous front-month futures contracts by category",
@@ -3972,8 +3968,8 @@
   },
   "us_screener": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:57+00:00",
-   "took_s": 0.09,
+   "as_of": "2026-09-22T04:38:37+00:00",
+   "took_s": 0.21,
    "data": {
     "country": "america",
     "stock_type": "common",
@@ -4337,8 +4333,8 @@
   },
   "equity_quotes": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:57+00:00",
-   "took_s": 0.07,
+   "as_of": "2026-09-22T04:38:37+00:00",
+   "took_s": 0.11,
    "data": {
     "requested": 14,
     "returned": 14,
@@ -4517,60 +4513,60 @@
   },
   "news": {
    "ok": true,
-   "as_of": "2026-09-21T23:59:58+00:00",
-   "took_s": 1.08,
+   "as_of": "2026-09-22T04:38:38+00:00",
+   "took_s": 1.3,
    "data": {
     "symbol": null,
     "category": "stocks",
     "count": 3,
     "items": [
      {
-      "title": "Is MP Materials Corp (MP) Overvalued After 5.8% Rally? GF Value Says Overvalued",
-      "url": "https://www.gurufocus.com/news/9090693/is-mp-materials-corp-mp-overvalued-after-58-rally-gf-value-says-overvalued",
-      "published": "2026-09-21T23:59:28.000000Z",
-      "summary": "On September 21, 2026, MP Materials Corp (MP) shares rose by 5.8% to a current price of $50.00, fluctuating within a 52-week range of $37.81 to $100.25. This re",
-      "source": "gurufocus.com"
+      "title": "Oil rises amid worries of growing Iran-U.S. tensions after Bessent issues Iranian airline shutdown warning",
+      "url": "https://www.cnbc.com/2026/09/22/oil-iran-us-bessent-un-crude.html",
+      "published": "2026-09-22T04:22:20.000000Z",
+      "summary": "Oil rose Tuesday, amid concerns of growing Iran-U.S. tensions. after U.S. Treasury Secretary Scott Bessent told CNBC that all Iranian airlines will be shut down from Wednesday.",
+      "source": "cnbc.com"
      },
      {
-      "title": "A Look at American Airlines Group Inc (AAL) After 4.7% Gain -- GF Value $15.18 vs Price $13.57",
-      "url": "https://www.gurufocus.com/news/9090692/a-look-at-american-airlines-group-inc-aal-after-47-gain-gf-value-1518-vs-price-1357",
-      "published": "2026-09-21T23:58:31.000000Z",
-      "summary": "On September 21, 2026, American Airlines Group Inc (AAL) shares rose 4.7% to a current price of $13.57, showing resilience amid broader market fluctuations. The",
-      "source": "gurufocus.com"
+      "title": "A Former Top Meta Engineer Said He Enjoyed Work More After a Demotion",
+      "url": "https://www.businessinsider.com/top-meta-engineer-said-he-enjoyed-work-more-after-demotion-2026-9",
+      "published": "2026-09-22T04:17:13.000000Z",
+      "summary": "Former Meta and OpenAI engineer Philip Su said promotions lost their shine as higher expectations left him exhausted and seeking a demotion.",
+      "source": "businessinsider.com"
      },
      {
-      "title": "Applied Optoelectronics Inc (AAOI) Stock Up 3.3% but GF Value Says Overvalued -- GF Score: 61/100",
-      "url": "https://www.gurufocus.com/news/9090691/applied-optoelectronics-inc-aaoi-stock-up-33-but-gf-value-says-overvalued-gf-score-61100",
-      "published": "2026-09-21T23:57:36.000000Z",
-      "summary": "On September 21, 2026, Applied Optoelectronics Inc (AAOI) shares rose 3.3% to $108.67, showing a significant shift in momentum despite being within a volatile 5",
-      "source": "gurufocus.com"
+      "title": "India co-sponsors inaugural partners for multilateralism summit at UN",
+      "url": "https://www.thehindubusinessline.com/news/india-co-sponsors-inaugural-partners-for-multilateralism-summit-at-un/article71494130.ece",
+      "published": "2026-09-22T04:15:37.000000Z",
+      "summary": "India co-sponsors the inaugural UN summit for multilateralism, emphasising the need for participative deliberations amid global challenges.",
+      "source": "thehindubusinessline.com"
      }
     ],
     "provider": "marketaux",
-    "timestamp": "2026-09-21T23:59:58.883172+00:00"
+    "timestamp": "2026-09-22T04:38:38.851355+00:00"
    }
   }
  },
  "strategy": {
   "pivot_watch": {
    "ok": true,
-   "as_of": "2026-09-22T00:06:59+00:00",
-   "took_s": 0.16,
+   "as_of": "2026-09-22T04:45:42+00:00",
+   "took_s": 0.18,
    "data": {
-    "checked_at": 1790016656.0138865,
+    "checked_at": 1790035973.8530023,
     "markets": [
      {
       "id": "BTCUSD",
-      "checked_at": 1790016656.0138865,
+      "checked_at": 1790035973.8530023,
       "tradingview_symbol": "COINBASE:BTCUSD",
       "chart": "https://www.tradingview.com/chart/?symbol=COINBASE%3ABTCUSD&interval=240",
       "state": "bullish",
       "signal": null,
       "action": "WAIT FOR CONFIRMATION",
-      "close": 85933.17,
-      "previous_close": 84878.78,
-      "close_time": 1790006400,
-      "new_candle": false,
+      "close": 86594.94,
+      "previous_close": 86494.97,
+      "close_time": 1790035200,
+      "new_candle": true,
       "baseline": false,
       "lower": 74887.5,
       "upper": 78242.76,
@@ -4593,11 +4589,11 @@
       "events": [],
       "notes": [],
       "quote": {
-       "price": 85995.41,
-       "time": 1790016654.576296
+       "price": 86408.25,
+       "time": 1790035972.892324
       },
-      "low": 80570.77,
-      "high": 86354.94,
+      "low": 80837.42,
+      "high": 87397.0,
       "range_label": "Provider rolling 24h range (retrieved at check time)",
       "source": "coinbase",
       "sources": [
@@ -4606,14 +4602,6 @@
        "https://api.exchange.coinbase.com/products/BTC-USD/stats"
       ],
       "analysis_candles": [
-       {
-        "start": 1789012800,
-        "open": 78297.15,
-        "high": 78554.18,
-        "low": 77876.66,
-        "close": 78079.51,
-        "complete": true
-       },
        {
         "start": 1789027200,
         "open": 78079.51,
@@ -5157,25 +5145,25 @@
         "low": 84753.25,
         "close": 85933.17,
         "complete": true
+       },
+       {
+        "start": 1790006400,
+        "open": 85933.17,
+        "high": 86895.0,
+        "low": 85606.51,
+        "close": 86494.97,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 86490.34,
+        "high": 87397.0,
+        "low": 86266.36,
+        "close": 86594.94,
+        "complete": true
        }
       ],
       "chart_candles": [
-       {
-        "start": 1789142400,
-        "open": 77691.97,
-        "high": 78042.65,
-        "low": 76850.0,
-        "close": 77257.36,
-        "complete": true
-       },
-       {
-        "start": 1789156800,
-        "open": 77266.12,
-        "high": 77505.57,
-        "low": 76948.83,
-        "close": 77208.55,
-        "complete": true
-       },
        {
         "start": 1789171200,
         "open": 77208.55,
@@ -5639,33 +5627,49 @@
         "low": 84753.25,
         "close": 85933.17,
         "complete": true
+       },
+       {
+        "start": 1790006400,
+        "open": 85933.17,
+        "high": 86895.0,
+        "low": 85606.51,
+        "close": 86494.97,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 86490.34,
+        "high": 87397.0,
+        "low": 86266.36,
+        "close": 86594.94,
+        "complete": true
        }
       ],
       "status": "NO NEW SIGNAL",
       "shadow": {
        "version": 1,
        "range_id": "4479c88215db939d472d8c1a227672994e3e8956b2417a586264a82329e1cc36",
-       "last_end": 1790006400,
+       "last_end": 1790035200,
        "status": "UNTRACKED",
        "reason": "WAIT_FOR_NEW_BREAKOUT",
        "decision": "WAIT",
        "transitions": [],
-       "range_age_hours": 134.8488927462366,
+       "range_age_hours": 140.21495916730828,
        "range_review_due": false
       }
      },
      {
       "id": "BTCUSDT",
-      "checked_at": 1790016656.0138865,
+      "checked_at": 1790035973.8530023,
       "tradingview_symbol": "BINANCE:BTCUSDT",
       "chart": "https://www.tradingview.com/chart/?symbol=BINANCE%3ABTCUSDT&interval=240",
       "state": "bullish",
       "signal": null,
       "action": "WAIT FOR CONFIRMATION",
-      "close": 85927.71,
-      "previous_close": 84887.19,
-      "close_time": 1790006400,
-      "new_candle": false,
+      "close": 86620.0,
+      "previous_close": 86490.11,
+      "close_time": 1790035200,
+      "new_candle": true,
       "baseline": false,
       "lower": 77216.76,
       "upper": 81741.0,
@@ -5688,11 +5692,11 @@
       "events": [],
       "notes": [],
       "quote": {
-       "price": 85980.76,
-       "time": 1790016657.001
+       "price": 86426.01,
+       "time": 1790035975.012
       },
-      "low": 80579.43,
-      "high": 86344.7,
+      "low": 80850.22,
+      "high": 87395.67,
       "range_label": "Provider rolling 24h range",
       "source": "binance",
       "sources": [
@@ -5700,22 +5704,6 @@
        "https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT"
       ],
       "analysis_candles": [
-       {
-        "start": 1787140800,
-        "open": 64515.62,
-        "high": 69500.0,
-        "low": 64474.86,
-        "close": 68554.0,
-        "complete": true
-       },
-       {
-        "start": 1787155200,
-        "open": 68554.0,
-        "high": 68997.0,
-        "low": 67825.03,
-        "close": 68429.44,
-        "complete": true
-       },
        {
         "start": 1787169600,
         "open": 68429.44,
@@ -7295,29 +7283,29 @@
        {
         "start": 1790006400,
         "open": 85927.71,
-        "high": 86108.0,
+        "high": 86895.7,
         "low": 85607.42,
-        "close": 85980.76,
+        "close": 86490.11,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 86490.11,
+        "high": 87395.67,
+        "low": 86295.78,
+        "close": 86620.0,
+        "complete": true
+       },
+       {
+        "start": 1790035200,
+        "open": 86620.01,
+        "high": 86625.82,
+        "low": 86292.31,
+        "close": 86426.01,
         "complete": false
        }
       ],
       "chart_candles": [
-       {
-        "start": 1789142400,
-        "open": 77732.25,
-        "high": 78068.01,
-        "low": 76883.0,
-        "close": 77286.01,
-        "complete": true
-       },
-       {
-        "start": 1789156800,
-        "open": 77286.0,
-        "high": 77504.01,
-        "low": 76967.13,
-        "close": 77225.7,
-        "complete": true
-       },
        {
         "start": 1789171200,
         "open": 77225.71,
@@ -7781,13 +7769,29 @@
         "low": 84778.0,
         "close": 85927.71,
         "complete": true
+       },
+       {
+        "start": 1790006400,
+        "open": 85927.71,
+        "high": 86895.7,
+        "low": 85607.42,
+        "close": 86490.11,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 86490.11,
+        "high": 87395.67,
+        "low": 86295.78,
+        "close": 86620.0,
+        "complete": true
        }
       ],
       "status": "NO NEW SIGNAL",
       "shadow": {
        "version": 1,
        "range_id": "0337bf766716d6cee85eac8697fd6b0ef817f8e00e62d7dcabf99b7363401df4",
-       "last_end": 1790006400,
+       "last_end": 1790035200,
        "status": "MISSED",
        "reason": "MISSED_MOVE",
        "side": "BUY",
@@ -7807,22 +7811,22 @@
        "resolved_at": 1790006400,
        "decision": "WAIT",
        "transitions": [],
-       "range_age_hours": 58.84889274623659,
+       "range_age_hours": 64.21495916730828,
        "range_review_due": false
       }
      },
      {
       "id": "ETHUSD",
-      "checked_at": 1790016656.0138865,
+      "checked_at": 1790035973.8530023,
       "tradingview_symbol": "COINBASE:ETHUSD",
       "chart": "https://www.tradingview.com/chart/?symbol=COINBASE%3AETHUSD&interval=240",
       "state": "bullish",
       "signal": null,
       "action": "WAIT FOR CONFIRMATION",
-      "close": 2755.32,
-      "previous_close": 2724.53,
-      "close_time": 1790006400,
-      "new_candle": false,
+      "close": 2775.58,
+      "previous_close": 2762.05,
+      "close_time": 1790035200,
+      "new_candle": true,
       "baseline": false,
       "lower": 2434.6,
       "upper": 2646.55,
@@ -7845,11 +7849,11 @@
       "events": [],
       "notes": [],
       "quote": {
-       "price": 2752.02,
-       "time": 1790016656.201671
+       "price": 2772.06,
+       "time": 1790035973.264197
       },
-      "low": 2608.0,
-      "high": 2769.5,
+      "low": 2642.16,
+      "high": 2807.1,
       "range_label": "Provider rolling 24h range (retrieved at check time)",
       "source": "coinbase",
       "sources": [
@@ -7858,14 +7862,6 @@
        "https://api.exchange.coinbase.com/products/ETH-USD/stats"
       ],
       "analysis_candles": [
-       {
-        "start": 1789012800,
-        "open": 2474.49,
-        "high": 2483.81,
-        "low": 2463.28,
-        "close": 2472.22,
-        "complete": true
-       },
        {
         "start": 1789027200,
         "open": 2472.2,
@@ -8409,25 +8405,25 @@
         "low": 2711.0,
         "close": 2755.32,
         "complete": true
+       },
+       {
+        "start": 1790006400,
+        "open": 2755.23,
+        "high": 2776.92,
+        "low": 2735.0,
+        "close": 2762.05,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 2762.8,
+        "high": 2807.1,
+        "low": 2762.34,
+        "close": 2775.58,
+        "complete": true
        }
       ],
       "chart_candles": [
-       {
-        "start": 1789142400,
-        "open": 2558.87,
-        "high": 2583.35,
-        "low": 2529.12,
-        "close": 2539.33,
-        "complete": true
-       },
-       {
-        "start": 1789156800,
-        "open": 2539.03,
-        "high": 2547.98,
-        "low": 2506.0,
-        "close": 2516.29,
-        "complete": true
-       },
        {
         "start": 1789171200,
         "open": 2516.1,
@@ -8891,13 +8887,29 @@
         "low": 2711.0,
         "close": 2755.32,
         "complete": true
+       },
+       {
+        "start": 1790006400,
+        "open": 2755.23,
+        "high": 2776.92,
+        "low": 2735.0,
+        "close": 2762.05,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 2762.8,
+        "high": 2807.1,
+        "low": 2762.34,
+        "close": 2775.58,
+        "complete": true
        }
       ],
       "status": "NO NEW SIGNAL",
       "shadow": {
        "version": 1,
        "range_id": "28319710bc1be5002dc90aefddf18c3eff7c6437ba7e7db43bcf013f3c3751ca",
-       "last_end": 1790006400,
+       "last_end": 1790035200,
        "status": "REJECTED",
        "reason": "TOO_FAR_FROM_PIVOT",
        "side": "BUY",
@@ -8929,22 +8941,22 @@
        "resolved_at": 1789977600,
        "decision": "WAIT",
        "transitions": [],
-       "range_age_hours": 62.84889274623659,
+       "range_age_hours": 68.21495916730828,
        "range_review_due": false
       }
      },
      {
       "id": "ETHUSDT",
-      "checked_at": 1790016656.0138865,
+      "checked_at": 1790035973.8530023,
       "tradingview_symbol": "BINANCE:ETHUSDT",
       "chart": "https://www.tradingview.com/chart/?symbol=BINANCE%3AETHUSDT&interval=240",
       "state": "bullish",
       "signal": null,
       "action": "WAIT FOR CONFIRMATION",
-      "close": 2755.27,
-      "previous_close": 2725.38,
-      "close_time": 1790006400,
-      "new_candle": false,
+      "close": 2776.19,
+      "previous_close": 2761.83,
+      "close_time": 1790035200,
+      "new_candle": true,
       "baseline": false,
       "lower": 2436.89,
       "upper": 2646.0,
@@ -8967,11 +8979,11 @@
       "events": [],
       "notes": [],
       "quote": {
-       "price": 2751.8,
-       "time": 1790016659.009
+       "price": 2772.76,
+       "time": 1790035976.009
       },
-      "low": 2608.31,
-      "high": 2769.11,
+      "low": 2643.71,
+      "high": 2807.34,
       "range_label": "Provider rolling 24h range",
       "source": "binance",
       "sources": [
@@ -8979,22 +8991,6 @@
        "https://data-api.binance.vision/api/v3/ticker/24hr?symbol=ETHUSDT"
       ],
       "analysis_candles": [
-       {
-        "start": 1787140800,
-        "open": 1923.06,
-        "high": 2115.0,
-        "low": 1922.05,
-        "close": 2085.83,
-        "complete": true
-       },
-       {
-        "start": 1787155200,
-        "open": 2085.83,
-        "high": 2108.0,
-        "low": 2067.43,
-        "close": 2102.02,
-        "complete": true
-       },
        {
         "start": 1787169600,
         "open": 2102.02,
@@ -10574,29 +10570,29 @@
        {
         "start": 1790006400,
         "open": 2755.28,
-        "high": 2769.11,
+        "high": 2776.31,
         "low": 2735.17,
-        "close": 2751.81,
+        "close": 2761.83,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 2761.84,
+        "high": 2807.34,
+        "low": 2761.84,
+        "close": 2776.19,
+        "complete": true
+       },
+       {
+        "start": 1790035200,
+        "open": 2776.2,
+        "high": 2776.43,
+        "low": 2767.87,
+        "close": 2772.76,
         "complete": false
        }
       ],
       "chart_candles": [
-       {
-        "start": 1789142400,
-        "open": 2559.43,
-        "high": 2583.86,
-        "low": 2529.0,
-        "close": 2539.49,
-        "complete": true
-       },
-       {
-        "start": 1789156800,
-        "open": 2539.49,
-        "high": 2547.95,
-        "low": 2506.3,
-        "close": 2516.43,
-        "complete": true
-       },
        {
         "start": 1789171200,
         "open": 2516.44,
@@ -11060,18 +11056,34 @@
         "low": 2712.2,
         "close": 2755.27,
         "complete": true
+       },
+       {
+        "start": 1790006400,
+        "open": 2755.28,
+        "high": 2776.31,
+        "low": 2735.17,
+        "close": 2761.83,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 2761.84,
+        "high": 2807.34,
+        "low": 2761.84,
+        "close": 2776.19,
+        "complete": true
        }
       ],
       "status": "NO NEW SIGNAL",
       "shadow": {
        "version": 1,
        "range_id": "4b0d067ec453316fe0886aa925c72e97ad21de55f3b150b18a9885614ee27b72",
-       "last_end": 1790006400,
+       "last_end": 1790035200,
        "status": "RETEST_PENDING",
        "reason": "WAIT_FOR_RETEST",
        "side": "BUY",
        "signal_end": 1789963200,
-       "age_candles": 3,
+       "age_candles": 5,
        "settings": {
         "retest_candles": 6,
         "atr_period": 14,
@@ -11085,22 +11097,22 @@
        "upper": 2646.0,
        "decision": "WAIT",
        "transitions": [],
-       "range_age_hours": 62.84889274623659,
+       "range_age_hours": 68.21495916730828,
        "range_review_due": false
       }
      },
      {
       "id": "XAUUSD",
-      "checked_at": 1790016656.0138865,
+      "checked_at": 1790035973.8530023,
       "tradingview_symbol": "OANDA:XAUUSD",
       "chart": "https://www.tradingview.com/chart/?symbol=OANDA%3AXAUUSD&interval=240",
       "state": "bullish",
       "signal": null,
       "action": "WAIT FOR CONFIRMATION",
-      "close": 4348.085,
-      "previous_close": 4369.15,
-      "close_time": 1790006400,
-      "new_candle": false,
+      "close": 4368.54,
+      "previous_close": 4345.085,
+      "close_time": 1790035200,
+      "new_candle": true,
       "baseline": false,
       "lower": 4261.375,
       "upper": 4341.135,
@@ -11119,34 +11131,18 @@
       "events": [],
       "notes": [],
       "quote": {
-       "price": 4348.25,
-       "time": 1790016660.71944
+       "price": 4371.4349999999995,
+       "time": 1790035977.485929
       },
       "low": 4322.81,
-      "high": 4383.435,
-      "range_label": "Last six completed 4H candles, 2026-09-18T20:00:00Z to 2026-09-21T16:00:00Z (68h elapsed; gaps not filled; not rolling live 24h)",
+      "high": 4383.385,
+      "range_label": "Last six completed 4H candles, 2026-09-21T00:00:00Z to 2026-09-22T00:00:00Z (24h elapsed; gaps not filled; not rolling live 24h)",
       "source": "oanda",
       "sources": [
        "https://developer.oanda.com/rest-live-v20/instrument-df/",
        "https://developer.oanda.com/rest-live-v20/pricing-ep/"
       ],
       "analysis_candles": [
-       {
-        "start": 1786032000,
-        "open": 4233.815,
-        "high": 4251.385,
-        "low": 4223.505,
-        "close": 4248.95,
-        "complete": true
-       },
-       {
-        "start": 1786046400,
-        "open": 4248.81,
-        "high": 4253.245,
-        "low": 4234.78,
-        "close": 4252.425,
-        "complete": true
-       },
        {
         "start": 1786060800,
         "open": 4252.42,
@@ -12728,27 +12724,27 @@
         "open": 4348.12,
         "high": 4357.105,
         "low": 4337.55,
-        "close": 4348.135,
+        "close": 4345.085,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 4345.05,
+        "high": 4370.77,
+        "low": 4339.305,
+        "close": 4368.54,
+        "complete": true
+       },
+       {
+        "start": 1790035200,
+        "open": 4368.6,
+        "high": 4376.005,
+        "low": 4366.98,
+        "close": 4371.43,
         "complete": false
        }
       ],
       "chart_candles": [
-       {
-        "start": 1788825600,
-        "open": 4423.145,
-        "high": 4440.81,
-        "low": 4415.215,
-        "close": 4437.875,
-        "complete": true
-       },
-       {
-        "start": 1788840000,
-        "open": 4437.965,
-        "high": 4442.98,
-        "low": 4390.19,
-        "close": 4392.58,
-        "complete": true
-       },
        {
         "start": 1788854400,
         "open": 4392.575,
@@ -13212,33 +13208,49 @@
         "low": 4322.81,
         "close": 4348.085,
         "complete": true
+       },
+       {
+        "start": 1790006400,
+        "open": 4348.12,
+        "high": 4357.105,
+        "low": 4337.55,
+        "close": 4345.085,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 4345.05,
+        "high": 4370.77,
+        "low": 4339.305,
+        "close": 4368.54,
+        "complete": true
        }
       ],
       "status": "NO NEW SIGNAL",
       "shadow": {
        "version": 1,
        "range_id": "4559d2a18854e5653bb6c29046cd2ce0c63777956dc35e3caad15265fa143a6d",
-       "last_end": 1790006400,
+       "last_end": 1790035200,
        "status": "WATCHING",
        "reason": "WAIT_FOR_NEW_BREAKOUT",
        "decision": "WAIT",
        "transitions": [],
-       "range_age_hours": 130.8488927462366,
+       "range_age_hours": 136.21495916730828,
        "range_review_due": false
       }
      },
      {
       "id": "USOIL",
-      "checked_at": 1790016656.0138865,
+      "checked_at": 1790035973.8530023,
       "tradingview_symbol": "OANDA:WTICOUSD",
       "chart": "https://www.tradingview.com/chart/?symbol=OANDA%3AWTICOUSD&interval=240",
       "state": "bearish",
       "signal": null,
       "action": "WAIT FOR CONFIRMATION",
-      "close": 96.205,
-      "previous_close": 97.442,
-      "close_time": 1790006400,
-      "new_candle": false,
+      "close": 96.124,
+      "previous_close": 95.99,
+      "close_time": 1790035200,
+      "new_candle": true,
       "baseline": false,
       "lower": 99.215,
       "upper": 102.172,
@@ -13261,34 +13273,18 @@
       "events": [],
       "notes": [],
       "quote": {
-       "price": 96.366,
-       "time": 1790016658.837964
+       "price": 96.1325,
+       "time": 1790035973.570412
       },
-      "low": 95.456,
-      "high": 101.154,
-      "range_label": "Last six completed 4H candles, 2026-09-18T20:00:00Z to 2026-09-21T16:00:00Z (68h elapsed; gaps not filled; not rolling live 24h)",
+      "low": 95.028,
+      "high": 99.984,
+      "range_label": "Last six completed 4H candles, 2026-09-21T00:00:00Z to 2026-09-22T00:00:00Z (24h elapsed; gaps not filled; not rolling live 24h)",
       "source": "oanda",
       "sources": [
        "https://developer.oanda.com/rest-live-v20/instrument-df/",
        "https://developer.oanda.com/rest-live-v20/pricing-ep/"
       ],
       "analysis_candles": [
-       {
-        "start": 1786032000,
-        "open": 78.094,
-        "high": 78.673,
-        "low": 77.459,
-        "close": 78.045,
-        "complete": true
-       },
-       {
-        "start": 1786046400,
-        "open": 78.04,
-        "high": 78.862,
-        "low": 77.949,
-        "close": 78.327,
-        "complete": true
-       },
        {
         "start": 1786060800,
         "open": 78.317,
@@ -14868,29 +14864,29 @@
        {
         "start": 1790006400,
         "open": 96.216,
-        "high": 96.408,
+        "high": 96.47,
         "low": 95.028,
-        "close": 96.366,
+        "close": 95.99,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 95.984,
+        "high": 96.178,
+        "low": 95.592,
+        "close": 96.124,
+        "complete": true
+       },
+       {
+        "start": 1790035200,
+        "open": 96.118,
+        "high": 96.196,
+        "low": 95.951,
+        "close": 96.132,
         "complete": false
        }
       ],
       "chart_candles": [
-       {
-        "start": 1788825600,
-        "open": 92.98,
-        "high": 93.508,
-        "low": 92.572,
-        "close": 93.326,
-        "complete": true
-       },
-       {
-        "start": 1788840000,
-        "open": 93.321,
-        "high": 95.045,
-        "low": 93.301,
-        "close": 94.899,
-        "complete": true
-       },
        {
         "start": 1788854400,
         "open": 94.889,
@@ -15354,18 +15350,34 @@
         "low": 95.456,
         "close": 96.205,
         "complete": true
+       },
+       {
+        "start": 1790006400,
+        "open": 96.216,
+        "high": 96.47,
+        "low": 95.028,
+        "close": 95.99,
+        "complete": true
+       },
+       {
+        "start": 1790020800,
+        "open": 95.984,
+        "high": 96.178,
+        "low": 95.592,
+        "close": 96.124,
+        "complete": true
        }
       ],
       "status": "NO NEW SIGNAL",
       "shadow": {
        "version": 1,
        "range_id": "86197767fe46cb51dbc7f04705e53a579e501ae38142df559930f83f3738723f",
-       "last_end": 1790006400,
+       "last_end": 1790035200,
        "status": "UNTRACKED",
        "reason": "WAIT_FOR_NEW_BREAKOUT",
        "decision": "WAIT",
        "transitions": [],
-       "range_age_hours": 74.84889274623659,
+       "range_age_hours": 80.21495916730828,
        "range_review_due": false
       }
      }
@@ -15378,21 +15390,21 @@
   "universe": 18,
   "errors": [
    "coin_analysis('XAUUSD', 'OANDA', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('E",
-   "coin_analysis('XAUUSD', 'TVC', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('E",
+   "coin_analysis('XAUUSD', 'TVC', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 6s (JSONDecodeError('E",
    "volume_confirmation_analysis('XAUUSD', 'OANDA', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('E",
-   "volume_confirmation_analysis('XAUUSD', 'TVC', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 4s (JSONDecodeError('E",
+   "volume_confirmation_analysis('XAUUSD', 'TVC', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('E",
    "multi_agent_analysis('XAUUSD', 'OANDA', '1D'): {\"code\": \"INTERNAL_ERROR\", \"message\": \"multi_agent_analysis failed: RuntimeError(\\\"Upstream TradingView scanner returned transient errors on all 3 attempts span",
    "multi_agent_analysis('XAUUSD', 'TVC', '1D'): {\"code\": \"INTERNAL_ERROR\", \"message\": \"multi_agent_analysis failed: RuntimeError(\\\"Upstream TradingView scanner returned transient errors on all 3 attempts span",
    "coin_analysis('USOIL', 'TVC', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('E",
    "coin_analysis('USOIL', 'OANDA', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('E",
    "volume_confirmation_analysis('USOIL', 'TVC', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 4s (JSONDecodeError('E",
-   "volume_confirmation_analysis('USOIL', 'OANDA', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 6s (JSONDecodeError('E",
+   "volume_confirmation_analysis('USOIL', 'OANDA', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('E",
    "circuit breaker: tradingview_ta declared down after 6 failures",
-   "coin_analysis('NVDA', 'NASDAQ', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('E",
-   "volume_confirmation_analysis('NVDA', 'NASDAQ', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('E",
+   "coin_analysis('NVDA', 'NASDAQ', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 6s (JSONDecodeError('E",
+   "volume_confirmation_analysis('NVDA', 'NASDAQ', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 4s (JSONDecodeError('E",
    "coin_analysis('AMD', 'NASDAQ', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('E",
-   "volume_confirmation_analysis('AMD', 'NASDAQ', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 6s (JSONDecodeError('E",
-   "coin_analysis('AVGO', 'NASDAQ', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 4s (JSONDecodeError('E",
+   "volume_confirmation_analysis('AMD', 'NASDAQ', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 4s (JSONDecodeError('E",
+   "coin_analysis('AVGO', 'NASDAQ', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 6s (JSONDecodeError('E",
    "volume_confirmation_analysis('AVGO', 'NASDAQ', '1D'): {\"code\": \"UPSTREAM_ERROR\", \"message\": \"Analysis failed: Upstream TradingView scanner returned transient errors on all 3 attempts spanning 5s (JSONDecodeError('E",
    "circuit breaker: tradingview_ta declared down after 6 failures"
   ],
@@ -15401,5 +15413,5 @@
   "budget_spent": false,
   "ta_upstream_throttled": true
  },
- "build_seconds": 446.0
+ "build_seconds": 449.2
 }
