@@ -147,7 +147,8 @@ def test_nonobject_and_wrong_identity_cached_histories_publish_partial(tmp_path)
     history.mkdir()
     for invalid in ([], {'symbol':'OTHER', 'asset_class':'crypto', 'source':'yahoo', 'bars_1h':[bar(0)]},
                     {'symbol':'SPY', 'asset_class':'stocks', 'source':'yahoo', 'bars_1h':[bar(0)], 'bars_15m':None},
-                    {'symbol':'SPY', 'asset_class':'stocks', 'source':'yahoo', 'bars_1h':[bar(0)], 'quote':['malformed']}):
+                    {'symbol':'SPY', 'asset_class':'stocks', 'source':'yahoo', 'bars_1h':[bar(0)], 'quote':['malformed']},
+                    {'symbol':'SPY', 'asset_class':'stocks', 'source':'yahoo', 'bars_1h':[dict(bar(0),end=60)]}):
         (history/'SPY.json').write_text(json.dumps(invalid))
         assert cli.main(['validate', '--symbols', 'SPY', '--history-dir', str(history),
                          '--output', str(tmp_path/'out.json')]) == 1
@@ -196,3 +197,17 @@ def test_invalid_quote_container_is_blocked_before_pattern():
                            bars_15m=[], quote=['malformed']), 60*3600)
     assert result['state'] == 'BLOCKED'
     assert any('quote' in r for r in result['reasons'])
+
+
+def test_known_favorable_open_target_gap_precedes_intrabar_stop():
+    from entrydesk.validation import target_price
+    for side, opening in [('LONG',110),('SHORT',90)]:
+        trade = simulate_trade([bar(0,h=101,l=99),bar(3600,o=opening,h=111,l=89)], 0, side, 2, 'stocks')
+        assert trade['exit_reason'] == 'target'
+        assert trade['exit'] == pytest.approx(target_price(100,2,side,.0005))
+
+
+def test_flat_minute_bars_cannot_claim_hourly_coverage():
+    bars = [dict(bar(i*60), end=(i+1)*60) for i in range(60)]
+    with pytest.raises(ValueError):
+        backtest(bars, 'stocks')

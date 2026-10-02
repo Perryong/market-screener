@@ -37,7 +37,7 @@ def demo_bundle():
 
 
 def validate_bundle(bundle, symbol, asset_class):
-    from .data import validate_bars
+    from .data import validate_bars, validate_interval
     if not isinstance(bundle, dict):
         raise ValueError('history must be a JSON object')
     if bundle.get('symbol') != symbol or bundle.get('asset_class') != asset_class or bundle.get('source') != 'yahoo':
@@ -52,6 +52,8 @@ def validate_bundle(bundle, symbol, asset_class):
         raise ValueError('15-minute history must be a candle list')
     validate_bars(bundle['bars_1h'], time.time())
     validate_bars(bundle.get('bars_15m', []), time.time())
+    validate_interval(bundle['bars_1h'], 3600)
+    validate_interval(bundle.get('bars_15m', []), 900)
     return bundle
 
 

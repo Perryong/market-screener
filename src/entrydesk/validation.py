@@ -47,10 +47,10 @@ def simulate_trade(bars, index, side, risk, asset_class):
         b = bars[j]
         if sign * (b['open'] - stop) <= 0:
             price, reason = b['open'], 'stop_gap'
+        elif sign * (b['open'] - target) >= 0:
+            price, reason = target, 'target'  # known open precedes ambiguous intrabar range
         elif (b['low'] <= stop if sign == 1 else b['high'] >= stop):
             price, reason = stop, 'stop'
-        elif sign * (b['open'] - target) >= 0:
-            price, reason = target, 'target'  # conservative: no favorable gap windfall
         elif (b['high'] >= target if sign == 1 else b['low'] <= target):
             price, reason = target, 'target'
         elif j == index + 23:
@@ -120,7 +120,9 @@ def readiness(validation, now=None):
 
 def backtest(bars, asset_class):
     from .factors import build_factors, validate_bars
+    from .data import validate_interval
     validate_bars(bars, max((b.get('end', 0) for b in bars), default=0))
+    validate_interval(bars, 3600)
     split = int(len(bars) * .8)
     trades, i, rejected = [], 59, 0
     while i < len(bars) - 1:
