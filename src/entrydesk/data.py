@@ -1,5 +1,6 @@
 """Bounded public Yahoo observations; session-aware completed candles only."""
 from datetime import datetime, timezone
+from functools import lru_cache
 import math
 from numbers import Real
 
@@ -29,6 +30,25 @@ def _calendar(now):
     return xc.get_calendar('XNYS', start=f'{year-3}-01-01',end=f'{year+1}-12-31')
 
 
+@lru_cache(maxsize=4096)
+def _verified_final_equity_half_hour(start, end):
+    """Only the actual final XNYS half hour may shorten an hourly candle."""
+    date=datetime.fromtimestamp(end,timezone.utc).date().isoformat()
+    calendar=_calendar(end)
+    if not calendar.is_session(date): return False
+    opening=calendar.session_open(date).timestamp()
+    closing=calendar.session_close(date).timestamp()
+    return end==closing and start>=opening and (start-opening)%3600==0
+
+
+def validate_interval(bars, interval):
+    for bar in bars:
+        duration=bar['end']-bar['start']
+        if duration==interval: continue
+        if interval==3600 and duration==1800 and _verified_final_equity_half_hour(bar['start'],bar['end']): continue
+        raise ValueError('candle does not match supplied interval or verified session close')
+
+
 def normalize_history(frame, interval, now, asset_class, calendar=None):
     """Discard an unfinished provider bar, never repair malformed observations."""
     import pandas as pd
@@ -48,8 +68,11 @@ def normalize_history(frame, interval, now, asset_class, calendar=None):
             end=min(end,closing)
         if end > now:
             continue
+        if any(not finite(row.get(key)) for key in ('Open','High','Low','Close','Volume')):
+            raise ValueError('raw provider OHLCV must be finite numeric values, not booleans')
         result.append(dict(start=start,end=end,open=float(row['Open']),high=float(row['High']),low=float(row['Low']),close=float(row['Close']),volume=float(row['Volume'])))
     validate_bars(result,now)
+    validate_interval(result,interval)
     return result
 
 

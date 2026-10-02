@@ -1,5 +1,5 @@
 """Validated candle adapter for pinned Astra pure factors (AGPL-3.0)."""
-from .data import finite, validate_bars
+from .data import finite, validate_bars, validate_interval
 from .astra.calculations import compute_macd_factors, compute_rsi_factors, compute_vwap_volume_profile, compute_depth_factors
 from .astra.scoring import score_composite_alpha
 
@@ -66,8 +66,7 @@ def build_factors(bars_1h, bars_15m, micro=None):
     """Canonical chronological 1h/15m candles; missing tiers remain unavailable."""
     for bars,interval in ((bars_1h,3600),(bars_15m,900)):
         validate_bars(bars,max((b['end'] for b in bars if isinstance(b,dict) and finite(b.get('end'))),default=0))
-        if any(b['end']-b['start']>interval for b in bars):
-            raise ValueError('candle does not match supplied interval')
+        validate_interval(bars,interval)
     closes=[b['close'] for b in bars_1h]; price=closes[-1] if closes else 0
     atr,adx=_atr_adx(bars_1h)
     trend='BULL' if adx is not None and adx>=22 and len(closes)>1 and closes[-1]>closes[-15] else 'BEAR' if adx is not None and adx>=22 else 'RANGE'

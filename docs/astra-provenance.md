@@ -17,7 +17,11 @@ Selected source and dependency closure:
 
 The adapter rejects malformed, unfinished (at ingestion's supplied observation
 clock), overlapping, nonfinite and boolean OHLCV before permissive upstream
-helpers run. Factors use chronological 1 h and actual 15 m observations; missing
+helpers run. Raw provider OHLCV is checked before float conversion. Declared
+15-minute bars must last exactly 900 seconds; hourly bars last 3600 seconds,
+except the calendar-verified final 1800-second XNYS session period. Partial
+session checks are cached, and arbitrary short bars cannot claim hourly evidence.
+Factors use chronological 1 h and actual 15 m observations; missing
 15 m data is never substituted with hourly or daily candles. Wilder ATR and ADX
 are calculated forward in time; indicators contain no future bars.
 

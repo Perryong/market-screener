@@ -200,3 +200,26 @@ def test_rsi_divergence_exact_prefix_reference_and_bounded_work(monkeypatch):
     start=time.perf_counter()
     compute_rsi_factors([100.0+math.sin(i) for i in range(8000)],[],'RANGE')
     assert time.perf_counter()-start<.5, 'RSI only needs the last20 divergence samples, not every prefix'
+
+
+def test_provider_boolean_ohlcv_rejected_before_conversion():
+    import pandas as pd
+    index=pd.to_datetime(['2026-10-02T14:30:00Z'])
+    for key in ('Open','High','Low','Close','Volume'):
+        values=dict(Open=[100],High=[102],Low=[99],Close=[101],Volume=[5])
+        values[key]=[True]
+        frame=pd.DataFrame(values,index=index)
+        with pytest.raises(ValueError):
+            normalize_history(frame,3600,index[0].timestamp()+3600,'crypto')
+
+
+def test_exact_interval_and_verified_equity_last_partial_hour():
+    import pandas as pd
+    for short,slot in [(60,3600),(1800,3600),(60,900),(450,900)]:
+        with pytest.raises(ValueError):
+            build_factors(bars(60,short) if slot==3600 else bars(),bars(20,short) if slot==900 else [])
+    end=pd.Timestamp('2026-11-27T18:00:00Z').timestamp()
+    partial=dict(start=end-1800,end=end,open=100,high=102,low=99,close=101,volume=5)
+    assert build_factors([partial],[])['trend_momentum']['rsi_1h'] is None
+    arbitrary={**partial,'start':end-3600,'end':end-1800}
+    with pytest.raises(ValueError): build_factors([arbitrary],[])
