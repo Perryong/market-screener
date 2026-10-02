@@ -124,7 +124,7 @@ def test_pinned_source_parity_when_checkout_available():
     import ast
     import pathlib
     import subprocess
-    source=pathlib.Path('/Users/perry/Documents/Code/astra-quant-agent')
+    source=pathlib.Path(__file__).resolve().parents[2].parent / 'astra-quant-agent'
     if not source.is_dir(): pytest.skip('optional upstream checkout absent')
     pin='78c0e4aa768511e888c392aa27de357b02aaf0f4'
     upstream=subprocess.check_output(['git','-C',str(source),'show',f'{pin}:scripts/factors/okx_quant_factors.py'],text=True)

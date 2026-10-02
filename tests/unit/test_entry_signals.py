@@ -211,3 +211,15 @@ def test_flat_minute_bars_cannot_claim_hourly_coverage():
     bars = [dict(bar(i*60), end=(i+1)*60) for i in range(60)]
     with pytest.raises(ValueError):
         backtest(bars, 'stocks')
+
+
+def test_short_spot_requires_verified_borrow_terms(monkeypatch):
+    import entrydesk.factors as factors
+    monkeypatch.setattr(factors, 'build_factors', lambda bars, confirm: {
+        'signal_recommendation': 'SELL_SHORT', 'volatility_channel': {'atr_1h': 2}})
+    bars = [bar(i*3600, h=101, l=99) for i in range(60)]
+    bars[-1] = bar(59*3600, o=100, h=101, l=96, c=97, v=300)
+    result = evaluate(dict(symbol='BTC-USD',asset_class='crypto',source='yahoo',
+                           bars_1h=bars,bars_15m=[],quote=None),60*3600)
+    assert result['side'] == 'SHORT' and result['state'] == 'BLOCKED'
+    assert any('borrow availability' in reason for reason in result['reasons'])

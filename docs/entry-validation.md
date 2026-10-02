@@ -25,3 +25,8 @@ Current historical metrics cover only the unconfirmed hourly base pattern. They 
 Forward paper closes must be unique, chronological, nonoverlapping and completed by a finite validation `as_of` timestamp no later than the current evaluation time. Cached histories require a JSON object with the requested ticker/asset identity, Yahoo source, valid candles and string error records; malformed caches produce blocked partial publication rather than a crash.
 
 Malformed nested validation records or invalid clocks fail readiness with a schema/time reason. Provider warnings appear in both collection and saved-history validation snapshots; WATCHING patterns still show provider gaps and stale-cache reasons.
+
+Short stock/spot-crypto patterns remain blocked because these free sources do not
+verify borrow availability or financing costs. Their historical returns are
+exploratory; the flat fee/slippage assumptions do not establish short financing.
+Drawdown is measured at closed-trade equity points, not intrabar marked equity.

@@ -21,8 +21,8 @@ def render_app(payload, snapshot):
     base=Path(__file__).parent
     css=(base/'research.css').read_text()
     js=(base/'research_math.js').read_text()+'\n'+(base/'research.js').read_text()
-    data=json.dumps(snapshot,ensure_ascii=False,allow_nan=False).replace('&','\\u0026').replace('<','\\u003c').replace('>','\\u003e').replace('\u2028','\\u2028').replace('\u2029','\\u2029')
-    strategy=json.dumps(payload,ensure_ascii=False,allow_nan=False).replace('<','\\u003c').replace('&','\\u0026')
+    data=json.dumps(snapshot,ensure_ascii=False,allow_nan=False,separators=(',',':')).replace('&','\\u0026').replace('<','\\u003c').replace('>','\\u003e').replace('\u2028','\\u2028').replace('\u2029','\\u2029')
+    strategy=json.dumps(payload,ensure_ascii=False,allow_nan=False,separators=(',',':')).replace('<','\\u003c').replace('&','\\u0026')
     navigation=''.join('<div class="nav-group"><p>'+name+'</p>'+''.join(
         f'<a href="#/{route}" data-route="{route}">{escape(label)}</a>' for route,label in links)+'</div>' for name,links in NAV)
     breakout=escape(render_breakout(payload),quote=True)

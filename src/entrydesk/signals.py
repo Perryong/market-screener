@@ -29,6 +29,8 @@ def evaluate(bundle, now, validation=None):
             reasons.append('fixed breakout/volume/Astra direction not present')
             return result
         result.update(side=side, state='CANDIDATE')
+        if side == 'SHORT' and bundle.get('asset_class') in ('stocks', 'crypto'):
+            reasons.append('short borrow availability and financing costs are unverified')
         if now - bars[-1]['end'] > 75 * 60:
             reasons.append('hourly breakout candle older than 75 minutes')
         sign = 1 if side == 'LONG' else -1

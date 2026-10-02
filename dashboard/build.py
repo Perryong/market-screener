@@ -9,7 +9,7 @@ ENTRY_FIELDS = ('symbol','asset_class','source','as_of','state','side','entry','
 
 
 def embedded(value):
-    return json.dumps(value, ensure_ascii=False, allow_nan=False).replace('&', '\\u0026').replace('<', '\\u003c').replace('>', '\\u003e').replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
+    return json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(',', ':')).replace('&', '\\u0026').replace('<', '\\u003c').replace('>', '\\u003e').replace('\u2028', '\\u2028').replace('\u2029', '\\u2029')
 
 
 def render(strategy, research, entries, technical):
@@ -28,6 +28,11 @@ def load(path):
 def main(root=None):
     root = Path(root) if root else Path(__file__).resolve().parents[1]
     docs = root/'docs'
+    # Compact public snapshots without changing any values or historical coverage.
+    for name in ('data.json', 'latest.json', 'research.json', 'entries.json'):
+        path = docs/name
+        if path.exists():
+            atomic_text(path, json.dumps(load(path), ensure_ascii=False, allow_nan=False, separators=(',', ':'))+'\n')
     technical = (docs/'technical.html').read_text()
     # Replace the previous embedded public snapshot, preserving the original application.
     import re
