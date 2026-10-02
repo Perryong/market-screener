@@ -1,7 +1,7 @@
 # Pinned Astra factor provenance
 
 [Astra Quant Agent](https://github.com/Perryong/astra-quant-agent) calculations are imported from commit
-`78 c 0 e 4 aa 768511 e 888 c 392 aa 27 de 357 b 02 aaf 0 f 4`, not a moving branch.
+`78c0e4aa768511e888c392aa27de357b02aaf0f4`, not a moving branch.
 The exact original AGPL-3.0 license is preserved in
 `src/entrydesk/astra/LICENSE`. The original market-screener MIT license is retained
 for original code; imported Astra code is AGPL and must not be represented as MIT.
@@ -27,7 +27,12 @@ Documented corrections and naming:
   99 even for constant prices. Both RSI scalar and divergence series paths now
   yield 50 for a constant window and 100 for a genuinely all-gain window. An
   all-loss window remains 0; insufficient samples remain missing.
-- Astra's `vwap_24 h` output is exposed as `vwap`, with actual interval, bar count,
+- RSI divergence calculates only its last 20 oscillator observations, each
+  from its exact 14 differences. Earlier oscillator values are never consumed
+  by the detector. This removes quadratic prefix work without changing RSI,
+  divergence, momentum or composite outputs; seeded random and short-prefix
+  parity checks compare every field against the full-prefix reference.
+- Astra's `vwap_24h` output is exposed as `vwap`, with actual interval, bar count,
   elapsed UTC window and an explicit completed-15 m-bar label. Up to 96 bars can
   span multiple equity sessions, so this adapter does not call them 24 hours.
 - Flat VPVR range previously produced a zero price. The adapter returns its
