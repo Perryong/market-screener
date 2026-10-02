@@ -1,6 +1,7 @@
 """Explicit live collection, saved-history validation, and isolated synthetic demo."""
 import argparse
 import json
+import math
 import os
 from pathlib import Path
 import random
@@ -35,6 +36,21 @@ def demo_bundle():
                 quote=None, market_open=False, errors=[])
 
 
+def validate_bundle(bundle, symbol, asset_class):
+    from .data import validate_bars
+    if not isinstance(bundle, dict):
+        raise ValueError('history must be a JSON object')
+    if bundle.get('symbol') != symbol or bundle.get('asset_class') != asset_class or bundle.get('source') != 'yahoo':
+        raise ValueError('history symbol, asset class or source identity mismatch')
+    if not isinstance(bundle.get('errors', []), list) or any(not isinstance(e, str) for e in bundle.get('errors', [])):
+        raise ValueError('history errors must be strings')
+    if not isinstance(bundle.get('bars_1h'), list) or not bundle['bars_1h']:
+        raise ValueError('hourly data unavailable')
+    validate_bars(bundle['bars_1h'], time.time())
+    validate_bars(bundle.get('bars_15m', []), time.time())
+    return bundle
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command', nargs='?', choices=['collect', 'validate', 'demo'], default='collect')
@@ -45,7 +61,7 @@ def main(argv=None):
     parser.add_argument('--history-dir', type=Path, default=Path('.screener/entrydesk'))
     args = parser.parse_args(argv)
     command = args.mode or args.command
-    if args.max_seconds <= 0:
+    if not math.isfinite(args.max_seconds) or args.max_seconds <= 0:
         parser.error('--max-seconds must be positive')
     selected = set(args.symbols.split(',')) if args.symbols else None
     known = {s for symbols in DEFAULTS.values() for s in symbols}
@@ -60,7 +76,6 @@ def main(argv=None):
         payload['validation'][bundle['symbol']] = report
         payload['candidates'].append(evaluate(bundle, bundle['bars_1h'][-1]['end'], report))
     else:
-        from .data import validate_bars
         for asset_class, symbols in DEFAULTS.items():
             for symbol in symbols:
                 if selected and symbol not in selected:
@@ -71,27 +86,24 @@ def main(argv=None):
                 path = args.history_dir / (symbol.replace('=', '_').replace('/', '_') + '.json')
                 try:
                     if command == 'validate':
-                        bundle = json.loads(path.read_text())
+                        bundle = validate_bundle(json.loads(path.read_text()), symbol, asset_class)
                     else:
                         # A process boundary enforces a total deadline even if a provider stalls.
                         script = ('import json,time; from entrydesk.data import collect_symbol; '
                                   'print(json.dumps(collect_symbol(' + repr(symbol) + ',' + repr(asset_class) + ',time.time()),allow_nan=False))')
                         completed = subprocess.run([sys.executable, '-c', script], capture_output=True, text=True,
                                                    timeout=max(.01, deadline-time.monotonic()), check=True)
-                        bundle = json.loads(completed.stdout)
-                        if not bundle.get('bars_1h'):
-                            raise ValueError('; '.join(bundle.get('errors', [])) or 'hourly data unavailable')
-                        validate_bars(bundle['bars_1h'], time.time())
+                        bundle = validate_bundle(json.loads(completed.stdout), symbol, asset_class)
                         atomic_json(path, bundle)
-                        payload['errors'].extend(symbol + ': ' + warning for warning in bundle.get('errors', []))
                 except (OSError, ValueError, subprocess.SubprocessError) as exc:
                     payload['errors'].append(symbol + ': ' + str(exc))
                     try:
-                        bundle = json.loads(path.read_text())
+                        bundle = validate_bundle(json.loads(path.read_text()), symbol, asset_class)
                         bundle['stale'] = True
                         bundle.setdefault('errors', []).append('cached after provider failure')
                     except (OSError, ValueError):
                         bundle = dict(symbol=symbol, asset_class=asset_class, errors=['collection failed'], stale=True)
+                payload['errors'].extend(symbol + ': ' + warning for warning in bundle.get('errors', []))
                 try:
                     remaining = deadline - time.monotonic()
                     if remaining <= 0:
@@ -107,6 +119,7 @@ def main(argv=None):
                     report = dict(ready=False, reasons=[str(exc)])
                 payload['validation'][symbol] = report
                 payload['candidates'].append(evaluate(bundle, time.time(), report))
+        payload['errors'] = list(dict.fromkeys(payload['errors']))
         if payload['errors']:
             payload['status'] = 'partial'
     atomic_json(args.output, payload)

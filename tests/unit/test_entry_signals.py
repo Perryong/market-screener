@@ -10,9 +10,9 @@ def bar(t, o=100, h=102, l=98, c=100, v=100):
 
 def test_gap_ambiguity_costs():
     stop = simulate_trade([bar(0, 100, 110, 90), bar(3600)], 0, 'LONG', 2, 'stocks')
-    assert stop['exit_reason'] == 'stop' and stop['net_r'] < -1
+    assert stop['exit_reason'] == 'stop' and stop['net_r'] == pytest.approx(-1)
     gap = simulate_trade([bar(0, l=99), bar(3600, 95, 96, 94, 95)], 0, 'LONG', 2, 'stocks')
-    assert gap['exit'] == 95 and gap['net_r'] < -2.5
+    assert gap['exit'] == 95 and gap['net_r'] < -2
 
 
 def test_readiness_requires_genuine_forward_evidence():
@@ -67,9 +67,9 @@ def test_no_fabricated_terminal_close():
 def test_closed_paper_records_and_holdout_pass():
     metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1)
     records = [dict(origin='forward_paper', closed=True, entry_time=i*2, exit_time=i*2+1, net_r=.2) for i in range(30)]
-    assert readiness(dict(holdout=metrics, forward_paper=dict(closed_trades=records)))[0]
+    assert readiness(dict(as_of=60, holdout=metrics, forward_paper=dict(closed_trades=records), rule_coverage={'confirmation_15m_replayed': True}))[0]
     records[-1]['net_r'] = float('nan')
-    assert not readiness(dict(holdout=metrics, forward_paper=dict(closed_trades=records)))[0]
+    assert not readiness(dict(as_of=60, holdout=metrics, forward_paper=dict(closed_trades=records), rule_coverage={'confirmation_15m_replayed': True}))[0]
 
 
 def test_net_target_covers_large_cost_cross_term():
@@ -107,4 +107,82 @@ def test_commodity_warning_preserves_real_history(tmp_path, monkeypatch):
     assert json.loads((tmp_path/'history/GC_F.json').read_text())['bars_1h'] == bundle['bars_1h']
     payload = json.loads((tmp_path/'out.json').read_text())
     assert payload['validation']['GC=F']['exploratory'] is True
+    assert cli.main(['validate', '--symbols', 'GC=F', '--history-dir', str(tmp_path/'history'),
+                     '--output', str(tmp_path/'validated.json')]) == 1
 
+
+
+def test_cost_adjusted_r_normal_stop_and_target():
+    from entrydesk.validation import target_price
+    for side in ('LONG', 'SHORT'):
+        sign = 1 if side == 'LONG' else -1
+        stop = 100-sign*2
+        b = bar(0, h=max(100, stop)+.01, l=min(100, stop)-.01)
+        assert simulate_trade([b], 0, side, 2, 'crypto')['net_r'] == pytest.approx(-1)
+        target = target_price(100, 2, side, .0015)
+        b = bar(0, h=max(100, target)+.01, l=min(100, target)-.01)
+        assert simulate_trade([b], 0, side, 2, 'crypto')['net_r'] == pytest.approx(2)
+    with pytest.raises(ValueError):
+        simulate_trade([bar(0)], 0, 'LONG', 110, 'stocks')
+
+
+def test_hourly_only_validation_cannot_certify_full_rules():
+    metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1)
+    records = [dict(origin='forward_paper', closed=True, entry_time=i*2, exit_time=i*2+1, net_r=.2) for i in range(30)]
+    ready, reasons = readiness(dict(holdout=metrics, forward_paper=dict(closed_trades=records)))
+    assert not ready and any('15-minute' in r for r in reasons)
+
+
+def test_duplicate_or_overlapping_paper_closes_rejected():
+    metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1)
+    event = dict(origin='forward_paper', closed=True, entry_time=1, exit_time=2, net_r=.2)
+    assert not readiness(dict(as_of=60, holdout=metrics, forward_paper={'closed_trades': [event]*30},
+                              rule_coverage={'confirmation_15m_replayed': True}))[0]
+
+
+def test_nonobject_and_wrong_identity_cached_histories_publish_partial(tmp_path):
+    import json
+    import entrydesk.__main__ as cli
+    history = tmp_path/'history'
+    history.mkdir()
+    for invalid in ([], {'symbol':'OTHER', 'asset_class':'crypto', 'source':'yahoo', 'bars_1h':[bar(0)]}):
+        (history/'SPY.json').write_text(json.dumps(invalid))
+        assert cli.main(['validate', '--symbols', 'SPY', '--history-dir', str(history),
+                         '--output', str(tmp_path/'out.json')]) == 1
+        payload = json.loads((tmp_path/'out.json').read_text())
+        assert payload['status'] == 'partial'
+        assert payload['candidates'][0]['state'] == 'BLOCKED'
+
+
+def test_forward_dates_cannot_exceed_observation_time():
+    metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1)
+    records = [dict(origin='forward_paper', closed=True, entry_time=i*2, exit_time=i*2+1, net_r=.2) for i in range(30)]
+    validation = dict(as_of=60, holdout=metrics, forward_paper={'closed_trades':records},
+                      rule_coverage={'confirmation_15m_replayed': True})
+    assert not readiness(validation, now=58)[0]
+    validation['as_of'] = 50
+    assert not readiness(validation, now=60)[0]
+
+
+def test_readiness_malformed_schema_and_clock_fail_closed():
+    for validation in ([], {'holdout':None}, {'rule_coverage':None}, {'forward_paper':None}):
+        ready, reasons = readiness(validation)
+        assert not ready and any('schema' in r for r in reasons)
+    for now in (True, float('nan'), float('inf'), -1, 'now'):
+        assert not readiness({}, now)[0]
+
+
+def test_cli_rejects_nonfinite_budget():
+    import entrydesk.__main__ as cli
+    for value in ('nan', 'inf'):
+        with pytest.raises(SystemExit) as exc:
+            cli.main(['--max-seconds', value])
+        assert exc.value.code == 2
+
+
+def test_watching_keeps_provider_warnings():
+    bars = [bar(i*3600) for i in range(60)]
+    result = evaluate(dict(symbol='X', asset_class='stocks', source='yahoo', bars_1h=bars,
+                           bars_15m=[], errors=['15m provider unavailable']), 60*3600)
+    assert result['state'] == 'WATCHING'
+    assert any('15m provider unavailable' in r for r in result['reasons'])

@@ -17,3 +17,11 @@ Targets solve net reward equal to twice modeled net stop loss, including the tar
 The forward record schema checks explicit paper origin, closure, finite results and chronological entry/exit times. These checks do not independently authenticate a supplied record. Imported forward evidence requires an audited source; the CLI creates no forward records and cannot establish that evidence itself.
 
 A seeded stochastic 17,463-hour workload completed in 4.551 seconds after the exact Astra RSI performance correction and cheap price/volume veto. This is a runtime benchmark, not a public-data profitability result; no trade or readiness claim follows from it. Full-prefix factor calculation remains O(K*N) for K qualifying breakouts and is bounded by the CLI deadline.
+
+Net R divides realized after-cost profit by modeled after-cost stop loss. A normal stop is -1R and a modeled target is 2R; adverse gaps can lose more than 1R. Equity risk therefore refers to modeled net stop loss, not gross ATR distance. Invalid or nonpositive simulated price geometry is rejected and counted.
+
+Current historical metrics cover only the unconfirmed hourly base pattern. They do not replay the live 15-minute confirmation. Reports expose `strategy_scope: exploratory_hourly_base_pattern` and `rule_coverage.confirmation_15m_replayed: false`; readiness requires independent historical confirmation coverage before these metrics can support the full candidate strategy.
+
+Forward paper closes must be unique, chronological, nonoverlapping and completed by a finite validation `as_of` timestamp no later than the current evaluation time. Cached histories require a JSON object with the requested ticker/asset identity, Yahoo source, valid candles and string error records; malformed caches produce blocked partial publication rather than a crash.
+
+Malformed nested validation records or invalid clocks fail readiness with a schema/time reason. Provider warnings appear in both collection and saved-history validation snapshots; WATCHING patterns still show provider gaps and stale-cache reasons.

@@ -17,6 +17,9 @@ def evaluate(bundle, now, validation=None):
         validate_bars(confirm, now)
         if len(bars) < 60:
             raise ValueError('60 completed hourly candles required')
+        reasons.extend('provider: ' + str(warning) for warning in bundle.get('errors', []))
+        if bundle.get('stale'):
+            reasons.append('cached observations are stale')
         factors = build_factors(bars, confirm)
         result.update(factors=factors, score=factors.get('composite_alpha_score'))
         side = pattern(bars, factors)
@@ -68,7 +71,7 @@ def evaluate(bundle, now, validation=None):
             reasons.append('provider errors or stale cached observations')
         if not bundle.get('source') or bundle.get('source_mismatch'):
             reasons.append('source identity missing or mismatched')
-        ready, vetoes = readiness(validation)
+        ready, vetoes = readiness(validation, now)
         reasons.extend(vetoes)
         result['state'] = 'PAPER_READY' if ready and not reasons else 'BLOCKED'
     except (ValueError, TypeError, KeyError, OverflowError) as exc:
