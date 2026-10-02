@@ -64,8 +64,8 @@ If you want an AI clicking around *your* TradingView Desktop — editing Pine Sc
 > [!TIP]
 > **Prefer zero setup? Use the hosted version.** [**pro.cryptosieve.com**](https://pro.cryptosieve.com) serves all 37 tools as one connector URL for Claude.ai, ChatGPT, Copilot, and Cursor — no `uv`, `pandas`, or Python to wrangle. **From $9/mo (Pro) or $29/mo (Pro+ — higher limits), with a 3-day free trial.** Self-hosting stays free forever; hosted is just for folks who'd rather skip the ops. *(Full self-host vs hosted comparison in Quick Start below.)*
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10-3.13](https://img.shields.io/badge/python-3.10--3.13-blue.svg)](https://www.python.org/downloads/)
+[![Original code: MIT](https://img.shields.io/badge/Original_code-MIT-yellow.svg)](LICENSE) [![Imported Astra terms](https://img.shields.io/badge/Imported_Astra-AGPL_%2B_addendum-blue.svg)](src/entrydesk/astra/LICENSE)
+[![Python 3.11-3.13](https://img.shields.io/badge/python-3.11--3.13-blue.svg)](https://www.python.org/downloads/)
 [![MCP Ready](https://img.shields.io/badge/MCP-Ready-brightgreen)](https://modelcontextprotocol.com/)
 [![OpenClaw Ready](https://img.shields.io/badge/OpenClaw-Ready-blueviolet)](https://openclaw.ai)
 [![Version](https://img.shields.io/badge/version-v0.9.0-blue)](https://github.com/atilaahmettaner/tradingview-mcp/releases)
@@ -547,3 +547,28 @@ MIT License — see [LICENSE](LICENSE) for details.
 ---
 
 *Disclaimer: This tool is for educational and research purposes only. It does not constitute financial advice. Always do your own research before making investment decisions.*
+
+
+## Combined research and entry desk
+
+Python 3.11–3.13 is required. `uv sync --frozen` installs the existing MCP server and the ported research screener. Existing MCP commands remain available.
+
+```sh
+uv run python -m screener tick --state-dir .screener/live --out .screener/public
+uv run python -m screener research --state-dir .screener/live --out .screener/public
+uv run python -m entrydesk collect
+cp .screener/public/latest.json .screener/public/research.json docs/
+uv run python dashboard/build.py
+uv run pytest tests/unit tests/screener -q
+node tests/screener/research_math_check.js
+```
+
+Open `docs/index.html` directly or serve `docs/`. Common navigation retains the original breakout research and Desk Tape technical analysis. The entry desk exposes stock, crypto and commodity candidates, factors, veto reasons and validation. Missing snapshots render empty; synthetic demos must be generated explicitly and are labeled. Scores are not probabilities. Paper readiness requires chronological holdout and forward paper evidence; continuous futures remain exploratory.
+
+The hourly workflow independently bounds the public collectors and builds from available snapshots after provider failures. Only explicit public JSON/HTML files are committed. `.screener/` contains private SQLite journals, cached histories and state; it is ignored and stored in the workflow cache. Portfolio holdings remain in browser local storage. No commands here submit orders.
+
+Original project portions retain their MIT license. Imported Astra-derived portions have separate AGPL-3.0 and Commons Clause/addendum terms; see [Astra provenance](docs/astra-provenance.md) and the imported license. The complete corresponding source is available in this repository, including the vendored functions and adapters. This does not grant paid redistribution rights for imported portions.
+
+Recorded data, test evidence and remaining trading-readiness limits are in
+[Combined desk verification](docs/combined-entry-verification.md). The integrated
+Entry desk currently approves no production entries.

@@ -1,0 +1,6 @@
+{
+  "max_instruments": 200,
+  "max_requests": 500,
+  "max_seconds": 600,
+  "discovery": false
+}
