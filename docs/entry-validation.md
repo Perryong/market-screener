@@ -1,0 +1,13 @@
+# Entry evidence
+
+Run `python -m entrydesk collect --symbols SPY,BTC-USD,GC=F --max-seconds 90` from the repository root. Defaults cover 13 equities, BTC/ETH and gold/silver/oil continuous futures. Collection stops at the total process deadline, publishes partial failures with exit status 1, and preserves failed symbols' prior private history as explicitly stale. Public output is `docs/entries.json`; provider histories live only under `.screener/entrydesk`.
+
+`python -m entrydesk validate` evaluates recorded histories without downloads. `python -m entrydesk demo --output /tmp/entry-demo.json` uses seeded synthetic data and never falls back into a live collection. `--mode` is an alias for the command.
+
+The fixed rule uses 60 hourly candles of warmup, a close beyond the preceding 20 highs/lows, volume at least 1.5 times the preceding median and an agreeing Astra BUY_LONG/SELL_SHORT recommendation. Historical inputs are causal hourly prefixes with no live microstructure. Entries fill at the following bar open; positions do not overlap. Stops use signal ATR, targets include modeled costs, and exits are stop-first when a candle touches both levels. Adverse gaps fill at the open, favorable gaps conservatively fill at the target. Positions time out after 24 candles. Per-side fees/slippage assumptions are 0.05% stocks, 0.15% crypto and 0.10% exploratory commodities. Equity uses fixed 1% risk per trade.
+
+The chronological 80/20 train/holdout split is fixed. Training positions crossing the boundary are excluded rather than using holdout exits. Reports include closed trades, net R expectancy, profit factor, equity and drawdown. Profit factor is null without losses. No thresholds are fitted to make a holdout pass. Bootstrap intervals are omitted: sparse fixed-rule trades do not establish a robust distribution.
+
+Readiness requires at least 30 closed holdout trades, positive net expectancy, profit factor greater than 1.1, maximum drawdown at most 20%, plus at least 30 genuine forward paper closes. Historical simulations and synthetic demos never count as forward paper observations. There is no paper execution writer or order path. Fresh quotes need actual provider observation timestamps within 120 seconds, valid spreads, a completed 15-minute confirmation, open regular equity sessions and intact source identity. Continuous futures always remain blocked pending dated contracts, roll handling, point values and contract costs.
+
+Scores are factor summaries, not probabilities. Passing software tests does not establish profitability. Initial validation has no genuine forward paper record; PAPER_READY therefore fails closed.
