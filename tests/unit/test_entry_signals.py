@@ -145,7 +145,8 @@ def test_nonobject_and_wrong_identity_cached_histories_publish_partial(tmp_path)
     import entrydesk.__main__ as cli
     history = tmp_path/'history'
     history.mkdir()
-    for invalid in ([], {'symbol':'OTHER', 'asset_class':'crypto', 'source':'yahoo', 'bars_1h':[bar(0)]}):
+    for invalid in ([], {'symbol':'OTHER', 'asset_class':'crypto', 'source':'yahoo', 'bars_1h':[bar(0)]},
+                    {'symbol':'SPY', 'asset_class':'stocks', 'source':'yahoo', 'bars_1h':[bar(0)], 'bars_15m':None}):
         (history/'SPY.json').write_text(json.dumps(invalid))
         assert cli.main(['validate', '--symbols', 'SPY', '--history-dir', str(history),
                          '--output', str(tmp_path/'out.json')]) == 1

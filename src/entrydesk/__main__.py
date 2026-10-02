@@ -46,6 +46,8 @@ def validate_bundle(bundle, symbol, asset_class):
         raise ValueError('history errors must be strings')
     if not isinstance(bundle.get('bars_1h'), list) or not bundle['bars_1h']:
         raise ValueError('hourly data unavailable')
+    if not isinstance(bundle.get('bars_15m', []), list):
+        raise ValueError('15-minute history must be a candle list')
     validate_bars(bundle['bars_1h'], time.time())
     validate_bars(bundle.get('bars_15m', []), time.time())
     return bundle
