@@ -42,6 +42,8 @@ def validate_bundle(bundle, symbol, asset_class):
         raise ValueError('history must be a JSON object')
     if bundle.get('symbol') != symbol or bundle.get('asset_class') != asset_class or bundle.get('source') != 'yahoo':
         raise ValueError('history symbol, asset class or source identity mismatch')
+    if bundle.get('quote') is not None and not isinstance(bundle['quote'], dict):
+        raise ValueError('quote must be an observation object or null')
     if not isinstance(bundle.get('errors', []), list) or any(not isinstance(e, str) for e in bundle.get('errors', [])):
         raise ValueError('history errors must be strings')
     if not isinstance(bundle.get('bars_1h'), list) or not bundle['bars_1h']:

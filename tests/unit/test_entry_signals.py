@@ -146,7 +146,8 @@ def test_nonobject_and_wrong_identity_cached_histories_publish_partial(tmp_path)
     history = tmp_path/'history'
     history.mkdir()
     for invalid in ([], {'symbol':'OTHER', 'asset_class':'crypto', 'source':'yahoo', 'bars_1h':[bar(0)]},
-                    {'symbol':'SPY', 'asset_class':'stocks', 'source':'yahoo', 'bars_1h':[bar(0)], 'bars_15m':None}):
+                    {'symbol':'SPY', 'asset_class':'stocks', 'source':'yahoo', 'bars_1h':[bar(0)], 'bars_15m':None},
+                    {'symbol':'SPY', 'asset_class':'stocks', 'source':'yahoo', 'bars_1h':[bar(0)], 'quote':['malformed']}):
         (history/'SPY.json').write_text(json.dumps(invalid))
         assert cli.main(['validate', '--symbols', 'SPY', '--history-dir', str(history),
                          '--output', str(tmp_path/'out.json')]) == 1
@@ -187,3 +188,11 @@ def test_watching_keeps_provider_warnings():
                            bars_15m=[], errors=['15m provider unavailable']), 60*3600)
     assert result['state'] == 'WATCHING'
     assert any('15m provider unavailable' in r for r in result['reasons'])
+
+
+def test_invalid_quote_container_is_blocked_before_pattern():
+    bars = [bar(i*3600) for i in range(60)]
+    result = evaluate(dict(symbol='X', asset_class='stocks', source='yahoo', bars_1h=bars,
+                           bars_15m=[], quote=['malformed']), 60*3600)
+    assert result['state'] == 'BLOCKED'
+    assert any('quote' in r for r in result['reasons'])

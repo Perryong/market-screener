@@ -12,6 +12,8 @@ def evaluate(bundle, now, validation=None):
     try:
         if isinstance(now, bool) or not isinstance(now, (int, float)) or not math.isfinite(now):
             raise ValueError('finite observation time required')
+        if bundle.get('quote') is not None and not isinstance(bundle['quote'], dict):
+            raise ValueError('quote must be an observation object or null')
         bars, confirm = bundle.get('bars_1h', []), bundle.get('bars_15m', [])
         validate_bars(bars, now)
         validate_bars(confirm, now)
