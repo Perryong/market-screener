@@ -4,6 +4,7 @@ The implementation combines market-analysis-screener's research/markets/news and
 breakout desk with market-screener's original Desk Tape/MCP functionality. The
 new Entry desk includes pinned Astra pure factors and strict entry evidence gates.
 Branch: `codex/combined-entry-desk`; upstream base `5b02cfe`.
+[Draft integration PR](https://github.com/Perryong/market-screener/pull/1).
 
 ## Verified software
 

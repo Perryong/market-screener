@@ -41,4 +41,4 @@ Files: src/entrydesk/signals.py, validation.py, __main__.py, tests/unit/test_ent
 - [x] Whole branch independent review, fix important findings with tests and scoped re-review.
 - [x] Commit documentation, push feature branch and draft PR if possible, attach PR, preserve local app. No merge/deploy or orders.
 
-Completed with readiness blocked on real-data evidence gaps; see docs/combined-entry-verification.md. Final independent review approves research integration only. Draft PR publication is the remaining finishing step.
+Completed with readiness blocked on real-data evidence gaps; see docs/combined-entry-verification.md. Final independent review approves research integration only. Published as draft PR https://github.com/Perryong/market-screener/pull/1; branch and local preview preserved. No merge or deployment.
