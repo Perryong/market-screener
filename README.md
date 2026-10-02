@@ -547,3 +547,24 @@ MIT License — see [LICENSE](LICENSE) for details.
 ---
 
 *Disclaimer: This tool is for educational and research purposes only. It does not constitute financial advice. Always do your own research before making investment decisions.*
+
+
+## Combined research and entry desk
+
+Python 3.11–3.13 is required. `uv sync --frozen` installs the existing MCP server and the ported research screener. Existing MCP commands remain available.
+
+```sh
+uv run python -m screener tick --state-dir .screener/live --out .screener/public
+uv run python -m screener research --state-dir .screener/live --out .screener/public
+uv run python -m entrydesk collect
+cp .screener/public/latest.json .screener/public/research.json docs/
+uv run python dashboard/build.py
+uv run pytest tests/unit tests/screener -q
+node tests/screener/research_math_check.js
+```
+
+Open `docs/index.html` directly or serve `docs/`. Common navigation retains the original breakout research and Desk Tape technical analysis. The entry desk exposes stock, crypto and commodity candidates, factors, veto reasons and validation. Missing snapshots render empty; synthetic demos must be generated explicitly and are labeled. Scores are not probabilities. Paper readiness requires chronological holdout and forward paper evidence; continuous futures remain exploratory.
+
+The hourly workflow independently bounds the public collectors and builds from available snapshots after provider failures. Only explicit public JSON/HTML files are committed. `.screener/` contains private SQLite journals, cached histories and state; it is ignored and stored in the workflow cache. Portfolio holdings remain in browser local storage. No commands here submit orders.
+
+Original project portions retain their MIT license. Imported Astra-derived portions have separate AGPL-3.0 and Commons Clause/addendum terms; see [Astra provenance](docs/astra-provenance.md) and the imported license. The complete corresponding source is available in this repository, including the vendored functions and adapters. This does not grant paid redistribution rights for imported portions.
