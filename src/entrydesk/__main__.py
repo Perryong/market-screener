@@ -60,7 +60,7 @@ def main(argv=None):
         payload['validation'][bundle['symbol']] = report
         payload['candidates'].append(evaluate(bundle, bundle['bars_1h'][-1]['end'], report))
     else:
-        from .data import collect_symbol
+        from .data import validate_bars
         for asset_class, symbols in DEFAULTS.items():
             for symbol in symbols:
                 if selected and symbol not in selected:
@@ -79,9 +79,11 @@ def main(argv=None):
                         completed = subprocess.run([sys.executable, '-c', script], capture_output=True, text=True,
                                                    timeout=max(.01, deadline-time.monotonic()), check=True)
                         bundle = json.loads(completed.stdout)
-                        if bundle.get('errors') or not bundle.get('bars_1h'):
+                        if not bundle.get('bars_1h'):
                             raise ValueError('; '.join(bundle.get('errors', [])) or 'hourly data unavailable')
+                        validate_bars(bundle['bars_1h'], time.time())
                         atomic_json(path, bundle)
+                        payload['errors'].extend(symbol + ': ' + warning for warning in bundle.get('errors', []))
                 except (OSError, ValueError, subprocess.SubprocessError) as exc:
                     payload['errors'].append(symbol + ': ' + str(exc))
                     try:

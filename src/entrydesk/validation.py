@@ -5,19 +5,27 @@ import statistics
 COSTS = {'stocks': .0005, 'crypto': .0015, 'commodities': .001}
 
 
-def pattern(bars, factors):
+def pattern(bars, factors=None):
     if len(bars) < 60:
         return None
     prior, last = bars[-21:-1], bars[-1]
     median = statistics.median(b['volume'] for b in prior)
     if median <= 0 or last['volume'] < 1.5 * median:
         return None
-    recommendation = factors.get('signal_recommendation')
-    if last['close'] > max(b['high'] for b in prior) and recommendation == 'BUY_LONG':
+    recommendation = factors.get('signal_recommendation') if factors is not None else None
+    if last['close'] > max(b['high'] for b in prior) and (factors is None or recommendation == 'BUY_LONG'):
         return 'LONG'
-    if last['close'] < min(b['low'] for b in prior) and recommendation == 'SELL_SHORT':
+    if last['close'] < min(b['low'] for b in prior) and (factors is None or recommendation == 'SELL_SHORT'):
         return 'SHORT'
     return None
+
+
+def target_price(entry, risk, side, cost):
+    """Solve net reward = 2 * net stop loss, including exit-price costs."""
+    sign = 1 if side == 'LONG' else -1
+    stop = entry - sign * risk
+    net_risk = risk + cost * (entry + stop)
+    return (sign * entry + cost * entry + (2 + 1e-10) * net_risk) / (sign - cost)
 
 
 def simulate_trade(bars, index, side, risk, asset_class):
@@ -25,7 +33,7 @@ def simulate_trade(bars, index, side, risk, asset_class):
     entry = bars[index]['open']
     cost = COSTS[asset_class]
     stop = entry - sign * risk
-    target = entry + sign * (2 * risk + 6 * entry * cost)
+    target = target_price(entry, risk, side, cost)
     last_index = min(index + 23, len(bars) - 1)
     for j in range(index, last_index + 1):
         b = bars[j]
@@ -90,6 +98,11 @@ def backtest(bars, asset_class):
     split = int(len(bars) * .8)
     trades, i = [], 59
     while i < len(bars) - 1:
+        # Price/volume veto is cheap; compute recursive full-history indicators only for breakouts.
+        if not pattern(bars[max(0, i-59):i+1]):
+            i += 1
+            continue
+        # ponytail: full-prefix factors cost O(K*N) for K breakouts; incremental adapter if deadlines routinely fail.
         prefix = bars[:i+1]
         factors = build_factors(prefix, [])
         side = pattern(prefix, factors)

@@ -70,3 +70,41 @@ def test_closed_paper_records_and_holdout_pass():
     assert readiness(dict(holdout=metrics, forward_paper=dict(closed_trades=records)))[0]
     records[-1]['net_r'] = float('nan')
     assert not readiness(dict(holdout=metrics, forward_paper=dict(closed_trades=records)))[0]
+
+
+def test_net_target_covers_large_cost_cross_term():
+    from entrydesk.validation import target_price
+    for side in ('LONG', 'SHORT'):
+        sign = 1 if side == 'LONG' else -1
+        entry, risk, cost = 100, 20, .0015
+        stop = entry - sign*risk
+        target = target_price(entry, risk, side, cost)
+        net_risk = risk + cost*(entry+stop)
+        net_reward = sign*(target-entry)-cost*(entry+target)
+        assert net_reward/net_risk >= 2-1e-12
+
+
+def test_zero_volume_baseline_is_not_confirmation():
+    from entrydesk.validation import pattern
+    bars = [bar(i*3600, v=0) for i in range(60)]
+    bars[-1] = bar(59*3600, h=104, c=103, v=300)
+    assert pattern(bars, {'signal_recommendation': 'BUY_LONG'}) is None
+
+
+def test_commodity_warning_preserves_real_history(tmp_path, monkeypatch):
+    import json
+    import subprocess
+    import entrydesk.__main__ as cli
+    bundle = dict(symbol='GC=F', asset_class='commodities', source='yahoo', bars_1h=[bar(0)],
+                  bars_15m=[], errors=['continuous futures contract unverified'], quote=None)
+    def fake_run(args, **kwargs):
+        output = backtest(bundle['bars_1h'], 'commodities') if kwargs.get('input') else bundle
+        return subprocess.CompletedProcess(args, 0, json.dumps(output), '')
+    monkeypatch.setattr(subprocess, 'run', fake_run)
+    code = cli.main(['collect', '--symbols', 'GC=F', '--history-dir', str(tmp_path/'history'),
+                     '--output', str(tmp_path/'out.json')])
+    assert code == 1
+    assert json.loads((tmp_path/'history/GC_F.json').read_text())['bars_1h'] == bundle['bars_1h']
+    payload = json.loads((tmp_path/'out.json').read_text())
+    assert payload['validation']['GC=F']['exploratory'] is True
+

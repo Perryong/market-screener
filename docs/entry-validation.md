@@ -11,3 +11,9 @@ The chronological 80/20 train/holdout split is fixed. Training positions crossin
 Readiness requires at least 30 closed holdout trades, positive net expectancy, profit factor greater than 1.1, maximum drawdown at most 20%, plus at least 30 genuine forward paper closes. Historical simulations and synthetic demos never count as forward paper observations. There is no paper execution writer or order path. Fresh quotes need actual provider observation timestamps within 120 seconds, valid spreads, a completed 15-minute confirmation, open regular equity sessions and intact source identity. Continuous futures always remain blocked pending dated contracts, roll handling, point values and contract costs.
 
 Scores are factor summaries, not probabilities. Passing software tests does not establish profitability. Initial validation has no genuine forward paper record; PAPER_READY therefore fails closed.
+
+Targets solve net reward equal to twice modeled net stop loss, including the target-price exit-cost term. This applies identically to candidate levels and historical fills. Source warnings preserve valid collected history and make publication partial; they block readiness without discarding research evidence.
+
+The forward record schema checks explicit paper origin, closure, finite results and chronological entry/exit times. These checks do not independently authenticate a supplied record. Imported forward evidence requires an audited source; the CLI creates no forward records and cannot establish that evidence itself.
+
+A seeded stochastic 17,463-hour workload completed in 4.551 seconds after the exact Astra RSI performance correction and cheap price/volume veto. This is a runtime benchmark, not a public-data profitability result; no trade or readiness claim follows from it. Full-prefix factor calculation remains O(K*N) for K qualifying breakouts and is bounded by the CLI deadline.

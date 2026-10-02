@@ -1,6 +1,6 @@
 """Candidate pattern and fail-closed paper readiness gates."""
 import math
-from .validation import COSTS, pattern, readiness
+from .validation import COSTS, pattern, readiness, target_price
 
 
 def evaluate(bundle, now, validation=None):
@@ -31,7 +31,7 @@ def evaluate(bundle, now, validation=None):
         if isinstance(prior_atr, (int, float)) and math.isfinite(prior_atr) and prior_atr > 0:
             reference = bars[-1]['close']
             result['reference_levels'] = {'entry': reference, 'stop': reference - sign * prior_atr,
-                'target': reference + sign * (2 * prior_atr + 6 * reference * COSTS[bundle['asset_class']]),
+                'target': target_price(reference, prior_atr, side, COSTS[bundle['asset_class']]),
                 'basis': 'completed hourly close; non-executable'}
         level = max(b['high'] for b in bars[-21:-1]) if sign == 1 else min(b['low'] for b in bars[-21:-1])
         if not confirm or confirm[-1]['end'] < bars[-1]['end'] or sign * (confirm[-1]['close'] - level) <= 0:
@@ -46,11 +46,11 @@ def evaluate(bundle, now, validation=None):
                 reasons.append('positive prior ATR unavailable')
             else:
                 # stop uses ATR from preceding candle, without breakout-range expansion
-                prior = build_factors(bars[:-1], [])['volatility_channel'].get('atr_1h')
+                prior = prior_atr
                 if not isinstance(prior, (int, float)) or not math.isfinite(prior) or prior <= 0:
                     raise ValueError('positive prior ATR unavailable')
                 cost = COSTS[bundle['asset_class']]
-                stop, target = entry - sign * prior, entry + sign * (2 * prior + 6 * entry * cost)
+                stop, target = entry - sign * prior, target_price(entry, prior, side, cost)
                 risk = prior + cost * (entry + stop)
                 reward = sign * (target - entry) - cost * (entry + target)
                 result.update(entry=entry, stop=stop, target=target, net_rr=reward / risk)
