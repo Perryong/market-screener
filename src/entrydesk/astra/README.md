@@ -12,7 +12,9 @@ pure scoring module unchanged after an attribution header.
 
 Modified 2026-10-03: extracted pure subset, removed network/environment imports,
 and corrected both RSI zero-loss paths: unchanged prices return 50, an all-gain
-window returns 100. Ordinary mixed gain/loss windows preserve upstream arithmetic.
+window returns 100. Ordinary mixed gain/loss windows preserve upstream arithmetic. RSI divergence
+calculates only its trailing 20 oscillator samples from exact 14-difference
+windows, eliminating unused quadratic prefix work without changing outputs.
 No exchange execution, credentials, council, environment, or autonomous code is included.
 
 This code is not covered by the original market-screener MIT license. Preserve

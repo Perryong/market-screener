@@ -214,8 +214,9 @@ def compute_rsi_factors(closes_1h: Sequence[float], closes_15m: Sequence[float],
     rsi_15m = _rsi(closes_15m)
     rsi_series: List[float] = []
     vals = [_sf(c) for c in closes_1h]
-    for end in range(15, len(vals) + 1):
-        seg = vals[:end]
+    # Only the trailing divergence window is consumed; each RSI uses14 differences.
+    for end in range(max(15, len(vals) - DIVERGENCE_LOOKBACK + 1), len(vals) + 1):
+        seg = vals[end - 15:end]
         diffs = [seg[i] - seg[i - 1] for i in range(1, len(seg))]
         gains = [d if d > 0 else 0.0 for d in diffs[-14:]]
         losses = [-d if d < 0 else 0.0 for d in diffs[-14:]]

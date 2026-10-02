@@ -169,3 +169,34 @@ def test_finite_inputs_that_overflow_calculation_fail_closed():
 
 def test_quote_reward_risk_overflow_is_not_valid_geometry():
     assert not validate_quote('BUY_LONG',1e-200,1e308,5e-201)[0]
+
+
+def test_rsi_divergence_exact_prefix_reference_and_bounded_work(monkeypatch):
+    import random
+    import time
+    from entrydesk.astra.calculations import classify_rsi_zone, detect_divergence
+    import entrydesk.factors as adapter
+    def reference(one, fifteen, trend):
+        def scalar(values, rounded=False):
+            if len(values)<15: return None
+            diffs=[float(values[i])-float(values[i-1]) for i in range(1,len(values))]
+            gain=sum(max(d,0.0) for d in diffs[-14:])/14
+            loss=sum(max(-d,0.0) for d in diffs[-14:])/14
+            value=100-100/(1+gain/loss) if loss else (100.0 if gain else 50.0)
+            return round(value,1) if rounded else value
+        rsi=scalar(one,True)
+        series=[scalar(one[:end]) for end in range(15,len(one)+1)]
+        return dict(rsi_1h=rsi,rsi_15m=scalar(fifteen,True),rsi_zone=classify_rsi_zone(rsi,trend),
+                    rsi_divergence=detect_divergence(one,series) if series else 'INSUFFICIENT_DATA')
+    randomizer=random.Random(391)
+    for length in list(range(45))+[100,350]:
+        for values in [[100.0]*length, [100.0+i for i in range(length)], [100.0+randomizer.uniform(-10,10) for _ in range(length)]]:
+            for trend in ['RANGE','BULL','BEAR']:
+                assert compute_rsi_factors(values,values[-18:],trend)==reference(values,values[-18:],trend)
+    b=bars(100)
+    expected=adapter.build_factors(b,bars(20,900))
+    monkeypatch.setattr(adapter,'compute_rsi_factors',reference)
+    assert adapter.build_factors(b,bars(20,900))==expected
+    start=time.perf_counter()
+    compute_rsi_factors([100.0+math.sin(i) for i in range(8000)],[],'RANGE')
+    assert time.perf_counter()-start<.5, 'RSI only needs the last20 divergence samples, not every prefix'
