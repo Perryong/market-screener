@@ -65,7 +65,7 @@ jobs:
         if: always()
         continue-on-error: true
         timeout-minutes: 8
-        run: timeout 420 uv run python -m entrydesk collect
+        run: timeout 420 uv run python -m entrydesk collect --max-seconds 400
 
       - uses: actions/cache/save@v4
         if: always()

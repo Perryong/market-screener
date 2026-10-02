@@ -327,6 +327,7 @@ const $ = (s) => document.querySelector(s);
 const g = (o, path, dflt = null) => path.split(".").reduce((a, k) => (a == null ? a : a[k]), o) ?? dflt;
 const num = (v, d = 2) => (typeof v === "number" && isFinite(v) ? v.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }) : "—");
 const px = (v) => (typeof v !== "number" ? "—" : v >= 1000 ? num(v, 0) : v >= 1 ? num(v, 2) : num(v, 5));
+const safeHref = (s) => { try { const url = new URL(String(s)); return ["https:", "http:"].includes(url.protocol) ? esc(url.href) : "#"; } catch { return "#"; } };
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const dirClass = (v) => (typeof v !== "number" ? "flat" : v > 0 ? "up" : v < 0 ? "down" : "flat");
 const signed = (v, d = 2) => (typeof v === "number" ? (v > 0 ? "+" : "") + num(v, d) : "—");
@@ -558,7 +559,7 @@ function renderNews(S) {
   const n = g(S, "market.news") || {};
   const items = (g(n, "data.items") || []).slice(0, 8);
   const feed = `<section class="panel"><header><h3>Market wire</h3><span class="when">${n.as_of ? esc(ago(n.as_of)) : ""}${n.stale ? " · stale" : ""}</span></header>
-    ${items.length ? `<ul class="news">${items.map((it) => `<li><a href="${esc(it.url || "#")}" target="_blank" rel="noopener">${esc(it.title || "untitled")}</a>
+    ${items.length ? `<ul class="news">${items.map((it) => `<li><a href="${safeHref(it.url)}" target="_blank" rel="noopener">${esc(it.title || "untitled")}</a>
       <div class="meta">${esc(it.source || "")}${it.sentiment ? " · " + esc(it.sentiment) : ""}${it.published ? " · " + esc(String(it.published).slice(0, 10)) : ""}</div></li>`).join("")}</ul>`
       : `<p class="empty">${g(S, "meta.news_enabled") ? esc(String(g(n, "data.note", g(n, "data.error.message", "no headlines this run"))).slice(0, 160)) : "No Marketaux token configured, so news is off."}</p>`}</section>`;
 
@@ -628,7 +629,7 @@ function tvWidget(host, kind, config, fallbackHref) {
   script.textContent = JSON.stringify(config);
   const giveUp = () => {
     host.innerHTML = `<p class="widget-fallback">TradingView quotes are blocked here — the snapshot values below still apply.
-      ${fallbackHref ? `<a href="${fallbackHref}" target="_blank" rel="noopener">Open the live chart ↗</a>` : ""}</p>`;
+      ${fallbackHref ? `<a href="${safeHref(fallbackHref)}" target="_blank" rel="noopener">Open the live chart ↗</a>` : ""}</p>`;
   };
   script.onerror = giveUp;
   container.appendChild(script);
@@ -730,7 +731,7 @@ function renderStrategy(S) {
   $("#strat-note").innerHTML = markets.length
     ? `Fixed pivots frozen from six completed 4H candles, a breakout on a completed close, then a
        <strong>later</strong> completed retest before entry is eligible. Levels and decisions come straight from
-       the <a href="${esc(rep.feed_url || "#")}" target="_blank" rel="noopener">market-pivot-watch</a> report
+       the <a href="${safeHref(rep.feed_url)}" target="_blank" rel="noopener">market-pivot-watch</a> report
        — this page reads them, it does not recompute them. Report run ${esc(ago(checked))}.
        Observation only: a decision is not a fill, and nothing here places an order.`
     : `<strong>No pivot report.</strong> ${esc(String(g(sct, "data.error.message", g(sct, "data.error", "feed unavailable"))).slice(0, 180))}`;
@@ -741,7 +742,7 @@ function renderStrategy(S) {
   const m = markets[STRAT_PICK];
   if (!m) { $("#strat-detail").innerHTML = ""; return; }
 
-  const chart = `<span class="venue"><a href="${esc(m.chart || "#")}" target="_blank" rel="noopener">${esc(m.tradingview_symbol || "")}</a></span>`;
+  const chart = `<span class="venue"><a href="${safeHref(m.chart)}" target="_blank" rel="noopener">${esc(m.tradingview_symbol || "")}</a></span>`;
   const act = biasChipFor(m.action, m.signal);
   const head = `<div class="head"><span class="id">${esc(m.id)}</span>${chart}<span class="act">${act}</span></div>`;
   const tvHost = `<div class="tv-chart" id="tv-strat"><p class="widget-fallback">Loading the live 4H chart…</p></div>`;
@@ -814,7 +815,11 @@ const tip = $("#tip");
 document.addEventListener("pointermove", (e) => {
   const row = e.target.closest(".bar-row");
   if (!row) { tip.style.opacity = 0; return; }
-  tip.innerHTML = row.dataset.tip.split("|").map((l, i) => (i ? l : "<b>" + l + "</b>")).join("<br>");
+  tip.replaceChildren(...row.dataset.tip.split("|").flatMap((line, i) => {
+    const text = document.createElement(i ? "span" : "b");
+    text.textContent = line;
+    return i ? [document.createElement("br"), text] : [text];
+  }));
   tip.style.opacity = 1;
   const r = tip.getBoundingClientRect();
   tip.style.left = Math.min(e.clientX + 14, innerWidth - r.width - 8) + "px";

@@ -38,3 +38,13 @@ def test_technical_snapshot_is_safe_and_rebuild_is_idempotent(tmp_path):
     assert first.count('id="technical-data"') == 1
     assert '<script>bad</script>' not in first
     assert 'JSON.parse(document.getElementById' in first
+
+
+def test_technical_is_isolated_and_tooltip_uses_text():
+    spec.loader.exec_module(build)
+    html = build.render({}, None, None, '<p>Desk Tape</p>')
+    assert 'sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"' in html
+    assert 'allow-same-origin' not in html
+    technical = (Path(__file__).parents[2] / 'docs/technical.html').read_text()
+    assert 'tip.innerHTML' not in technical
+    assert 'text.textContent = line' in technical

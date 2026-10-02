@@ -5,7 +5,7 @@ from pathlib import Path
 from screener.research_view import render_app
 from screener.shared import atomic_text
 
-ENTRY_FIELDS = ('symbol','asset_class','source','as_of','state','side','entry','stop','target','net_rr','score','factors','reasons','validation')
+ENTRY_FIELDS = ('symbol','asset_class','source','as_of','state','side','entry','stop','target','net_rr','score','factors','reasons','validation','reference_levels')
 
 
 def embedded(value):
@@ -18,7 +18,7 @@ def render(strategy, research, entries, technical):
     public['candidates'] = [{key: row[key] for key in ENTRY_FIELDS if key in row} for row in (entries or {}).get('candidates', [])]
     html = render_app(strategy, research)
     notice = '' if entries else '<div class="banner">Entry snapshot unavailable. Collect public entry evidence to populate this desk.</div>'
-    return html.replace('<main id="content"', notice + '<main id="content"').replace('<section id="breakout-panel"', '<section id="technical-panel" hidden><iframe title="Desk Tape technical analysis" id="technical-frame" srcdoc="'+escape(technical, quote=True)+'" style="width:100%;height:85vh;border:0"></iframe></section><section id="breakout-panel"').replace('<script id="research-data"', '<script id="entry-data" type="application/json">'+embedded(public)+'</script><script id="research-data"')
+    return html.replace('<main id="content"', notice + '<main id="content"').replace('<section id="breakout-panel"', '<section id="technical-panel" hidden><iframe title="Desk Tape technical analysis" id="technical-frame" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" srcdoc="'+escape(technical, quote=True)+'" style="width:100%;height:85vh;border:0"></iframe></section><section id="breakout-panel"').replace('<script id="research-data"', '<script id="entry-data" type="application/json">'+embedded(public)+'</script><script id="research-data"')
 
 
 def load(path):
