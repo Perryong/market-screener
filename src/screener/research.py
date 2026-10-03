@@ -33,10 +33,12 @@ def load_settings(path, stock_symbols):
                     europe='ASML.AS SAP.DE SIE.DE ALV.DE AIR.PA MC.PA OR.PA TTE.PA SAN.PA BNP.PA HSBA.L AZN.L SHEL.L ULVR.L RIO.L NOVN.SW NESN.SW UBSG.SW NOVO-B.CO VOLV-B.ST'.split(),
                     proxies='SPY QQQ DIA IWM TLT USO GLD XLK XLF XLE XLV XLI XLU XLP XLY XLB XLRE XLC ^STOXX ^STOXX50E ^FTSE ^FTMC ^GDAXI ^FCHI ^AEX ^IBEX FTSEMIB.MI ^SSMI ^OMX ^OMXC25 ^OMXH25 ^BFX ^ATX PSI20.LS ^ISEQ EURUSD=X GBPUSD=X EURGBP=X EURCHF=X EURSEK=X EURNOK=X EURDKK=X'.split(),
                     max_instruments=200, max_requests=500, max_seconds=600, discovery=False,
+                    api_sources=False, xbrl_entities={'ASML.AS':'724500Y6DUVHQD6OXN27'},
                     feeds=[dict(name='CNBC Markets',url='https://www.cnbc.com/id/100003114/device/rss/rss.html',category='Markets'),
                            dict(name='CNBC Technology',url='https://www.cnbc.com/id/19854910/device/rss/rss.html',category='Tech & AI'),
                            dict(name='Federal Reserve',url='https://www.federalreserve.gov/feeds/press_all.xml',category='Economy'),
                            dict(name='Federal Reserve Speeches',url='https://www.federalreserve.gov/feeds/speeches.xml',category='Economy',longform=True)])
+    supplied={}
     if path and Path(path).exists():
         supplied = json.loads(Path(path).read_text())
         if not isinstance(supplied, dict) or set(supplied)-set(settings):
@@ -50,6 +52,12 @@ def load_settings(path, stock_symbols):
     for key in ('max_instruments','max_requests','max_seconds'):
         if type(settings[key]) is not int or not 1 <= settings[key] <= 10000:
             raise DataError('Research limits must be positive integers up to 10000')
+    if 'xbrl_entities' not in supplied:
+        settings['xbrl_entities']={symbol:lei for symbol,lei in settings['xbrl_entities'].items() if symbol in settings['europe']}
+    if type(settings['api_sources']) is not bool or not isinstance(settings['xbrl_entities'],dict) or any(
+            symbol not in settings['europe'] or not isinstance(lei,str) or not re.fullmatch(r'[A-Z0-9]{20}',lei)
+            for symbol,lei in settings['xbrl_entities'].items()):
+        raise DataError('API sources require explicit European ticker-to-LEI mappings')
     if type(settings['discovery']) is not bool or not isinstance(settings['feeds'],list):
         raise DataError('Invalid discovery or feeds setting')
     for feed in settings['feeds']:
@@ -122,18 +130,19 @@ def returns(history, as_of):
 def refresh(store, settings, now):
     from . import research_sources as sources
     snapshot = empty_snapshot('live',now)
-    started, requests, blocked, resource_map = time.monotonic(), 0, {}, {}
+    budget=dict(remaining=settings['max_requests'],deadline=time.monotonic()+settings['max_seconds'])
+    blocked, resource_map = {}, {}
     previous = store.get('research-snapshot',{})
     previous_instruments = {r['symbol']:r for r in previous.get('instruments',[])}
-    def load(key, ttl, loader):
+    def load(key, ttl, loader, network_counted=False):
         def bounded():
-            nonlocal requests
             provider = key.split(':')[0]
-            if requests >= settings['max_requests'] or time.monotonic()-started >= settings['max_seconds']:
+            if budget['remaining']<=0 or time.monotonic()>=budget['deadline']:
                 raise DataError('Research refresh budget reached; increase research.json limits or reuse cache')
             if blocked.get(provider,0)>=3:
                 raise DataError('Provider paused after repeated rate limits')
-            requests += 1
+            if not network_counted:
+                budget['remaining']-=1
             try:
                 return loader()
             except Exception as exc:
@@ -160,6 +169,11 @@ def refresh(store, settings, now):
         import yfinance as yf
         discovered=load('Yahoo:discovery',86400,lambda: sources.discover(yf)) or []
         symbols=list(dict.fromkeys(symbols+discovered))
+    supplemental=None
+    if settings.get('api_sources'):
+        from . import api_sources
+        supplemental=api_sources.collect(dict(runtime_settings,_budget=budget,
+            _load=lambda key,ttl,loader:load(key,ttl,loader,network_counted=True)),now)
     selected=symbols[:settings['max_instruments']]
     for symbol in selected:
         record=sources.collect_instrument(symbol,dict(runtime_settings,_core_only=True),now)
@@ -167,17 +181,21 @@ def refresh(store, settings, now):
             record=previous_instruments[symbol]
         snapshot['instruments'].append(record)
     for i,symbol in enumerate(selected):
-        if requests>=settings['max_requests'] or time.monotonic()-started>=settings['max_seconds']:
+        if budget['remaining']<=0 or time.monotonic()>=budget['deadline']:
             for field in ('financials','filings','holdings','holdings_as_of','calendar','distributions'):
                 snapshot['instruments'][i][field]=previous_instruments.get(symbol,{}).get(field,snapshot['instruments'][i].get(field))
             continue
         snapshot['instruments'][i]=sources.collect_instrument(symbol,runtime_settings,now)
+    if settings.get('api_sources'):
+        api_sources.merge(snapshot,supplemental)
     snapshot['resources']+=list(resource_map.values())
     if not os.environ.get('SEC_USER_AGENT','').strip():
         snapshot['resources'].append(dict(id='SEC:configuration',source='SEC EDGAR',fetched_at=0,observation_at=None,status='unavailable',error='Set private SEC_USER_AGENT identification to collect SEC facts and filings'))
-    snapshot['request_count']=requests
+    snapshot['request_count']=settings['max_requests']-budget['remaining']
     snapshot['coverage']=dict(stocks=len(settings['stocks']),funds=len(settings['funds']),europe=len(settings['europe']),
                               loaded=len(snapshot['instruments']),limit=settings['max_instruments'])
+    if settings.get('api_sources'):
+        api_sources.connection_status(snapshot)
     store.put('research-snapshot',snapshot)
     return snapshot
 

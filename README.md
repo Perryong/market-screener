@@ -551,6 +551,8 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ## Combined research and entry desk
 
+Free API configuration, required credentials and coverage limitations: [API setup](docs/api-setup.md). Use `uv run --env-file .env python -m screener sources` to refresh supplementary APIs without recollecting the full research universe.
+
 Python 3.11–3.13 is required. `uv sync --frozen` installs the existing MCP server and the ported research screener. Existing MCP commands remain available.
 
 ```sh

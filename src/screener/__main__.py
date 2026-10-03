@@ -31,7 +31,7 @@ def publish(store, out, mode, now):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command',choices=('once','tick','demo','replay','export','research','research-demo'))
+    parser.add_argument('command',choices=('once','tick','demo','replay','export','research','research-demo','sources'))
     parser.add_argument('--config',type=Path,default=Path('screener.json'))
     parser.add_argument('--research-config',type=Path,default=Path('research.json'))
     parser.add_argument('--force',action='store_true',help='Retry failed research resources immediately, preserving fresh cache')
@@ -52,8 +52,8 @@ def main(argv=None):
     if args.command in ('export','replay') and not args.bundle:
         parser.error('--bundle is required')
     now = time.time()
-    if args.force and args.command!='research':
-        parser.error('--force is only available for research refreshes')
+    if args.force and args.command not in ('research','sources'):
+        parser.error('--force is only available for research or sources refreshes')
     try:
         config = json.loads(args.config.read_text())
         if args.symbols:
@@ -76,14 +76,20 @@ def main(argv=None):
                     atomic_text(args.bundle,json_text(bundle))
                     print('Exported normalized research bars to',args.bundle)
                     return 0
-                if args.command in ('research','research-demo'):
+                if args.command in ('research','research-demo','sources'):
                     settings=research.load_settings(args.research_config,config['stocks']['symbols'])
                     settings['_force']=args.force
-                    snapshot=research.demo_snapshot(now) if args.command=='research-demo' else research.refresh(store,settings,now)
+                    if args.command=='sources':
+                        from .api_sources import refresh_sources
+                        snapshot=refresh_sources(store,settings,now)
+                    else:
+                        snapshot=research.demo_snapshot(now) if args.command=='research-demo' else research.refresh(store,settings,now)
                     store.put('research-snapshot',snapshot)
                     unavailable=sum(r['status']!='ok' for r in snapshot['resources'])
                     if unavailable:
                         errors.append(f'{unavailable} research resources stale/unavailable; see dashboard Data coverage')
+                    for connection in snapshot.get('api_data',{}).get('connections',[]):
+                        print(connection['id']+': '+connection['status']+(' — set '+', '.join(connection['missing']) if connection['missing'] else ''))
                 elif args.command == 'demo':
                     # Repeat demo invocations get a fresh synthetic timeline, isolated from live state.
                     with store.db:

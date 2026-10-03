@@ -77,7 +77,21 @@ def collect_economy(settings,now):
     for symbol,name,unit,transform in MACRO:
         def loader(symbol=symbol,transform=transform):
             start=datetime.fromtimestamp(now,timezone.utc).date()-timedelta(days=12*366)
-            text=read_text('https://fred.stlouisfed.org/graph/fredgraph.csv?id='+symbol+'&cosd='+start.isoformat())
+            text=None
+            key=os.environ.get('FRED_API_KEY','').strip()
+            if key:
+                try:
+                    data=json.loads(read_text('https://api.stlouisfed.org/fred/series/observations?'+urlencode(
+                        dict(series_id=symbol,api_key=key,file_type='json',observation_start=start.isoformat()))))
+                    observations=data['observations']
+                    if observations:
+                        buffer=io.StringIO(); writer=csv.writer(buffer)
+                        writer.writerows((row['date'],row['value']) for row in observations)
+                        text=buffer.getvalue()
+                except Exception:
+                    pass  # Keep the key and provider response out of public diagnostics.
+            if text is None:
+                text=read_text('https://fred.stlouisfed.org/graph/fredgraph.csv?id='+symbol+'&cosd='+start.isoformat())
             values=parse_macro(text,transform)
             if not values:
                 raise DataError('FRED returned no observations')

@@ -12,7 +12,8 @@ NAV = [('Research',[('screener','Stock screener'),('compare','Compare stocks'),(
        ('Markets',[('markets','Today’s market'),('earnings','Earnings calendar'),('dividends','Dividend calendar'),
                    ('ipos','IPO calendar'),('economy','Economy'),('europe','European markets')]),
        ('News',[('news','Latest news'),('reads','Longer reads')]),
-       ('Strategy',[('entrydesk','Entry desk'),('technical','Desk Tape technicals'),('breakout','Breakout screener'),('crypto','Crypto markets')])]
+       ('Strategy',[('entrydesk','Entry desk'),('technical','Desk Tape technicals'),('breakout','Breakout screener'),('crypto','Crypto markets')]),
+       ('Data',[('coverage','API connections & coverage')])]
 
 
 def render_app(payload, snapshot):
