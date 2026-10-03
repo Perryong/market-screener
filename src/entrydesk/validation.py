@@ -2,6 +2,11 @@
 import math
 import statistics
 import time
+import random
+from bisect import bisect_right
+from datetime import datetime, timezone
+
+STRATEGY_ID = 'trend-breakout-v2'
 
 COSTS = {'stocks': .0005, 'crypto': .0015, 'commodities': .001}
 
@@ -13,12 +18,51 @@ def pattern(bars, factors=None):
     median = statistics.median(b['volume'] for b in prior)
     if median <= 0 or last['volume'] < 1.5 * median:
         return None
-    recommendation = factors.get('signal_recommendation') if factors is not None else None
-    if last['close'] > max(b['high'] for b in prior) and (factors is None or recommendation == 'BUY_LONG'):
-        return 'LONG'
-    if last['close'] < min(b['low'] for b in prior) and (factors is None or recommendation == 'SELL_SHORT'):
-        return 'SHORT'
-    return None
+    side = 'LONG' if last['close'] > max(b['high'] for b in prior) else 'SHORT' if last['close'] < min(b['low'] for b in prior) else None
+    if side is None or factors is None:
+        return side
+    tm=factors.get('trend_momentum',{})
+    adx,rsi,hist=(tm.get(k) for k in ('adx_1h','rsi_1h','macd_hist'))
+    if any(isinstance(v,bool) or not isinstance(v,(int,float)) or not math.isfinite(v) for v in (adx,rsi,hist)):
+        return None
+    if not 22<=adx<=100 or not 0<=rsi<=100:
+        return None
+    return side if (side=='LONG' and hist>0 and rsi>=50) or (side=='SHORT' and hist<0 and rsi<=50) else None
+
+
+def confirmation(bars, bars_15m, side):
+    if len(bars)<21 or side not in ('LONG','SHORT'):
+        return False
+    eligible=[b for b in bars_15m if b['end']<=bars[-1]['end']]
+    if not eligible or eligible[-1]['end']!=bars[-1]['end']:
+        return False
+    level=max(b['high'] for b in bars[-21:-1]) if side=='LONG' else min(b['low'] for b in bars[-21:-1])
+    return eligible[-1]['close']>level if side=='LONG' else eligible[-1]['close']<level
+
+
+def grouped_expectancy(trades):
+    """Moving blocks of five observed UTC exit days; uncertainty, not win odds."""
+    groups={}
+    for trade in trades:
+        date=datetime.fromtimestamp(trade['exit_time'],timezone.utc).date().isoformat()
+        groups.setdefault(date,[]).append(trade['net_r'])
+    days=[groups[key] for key in sorted(groups)]
+    result=dict(interval=None,days=len(days),trades=len(trades),block_days=5,replicates=1000,
+                method='95% moving-block bootstrap of net R; five observed UTC exit days',
+                reason='At least 30 trades and 10 distinct exit days required')
+    if len(trades)<30 or len(days)<10:
+        return result
+    rng=random.Random(0); means=[]
+    for _ in range(1000):
+        sample=[]
+        while len(sample)<len(days):
+            start=rng.randrange(len(days)-4)
+            sample.extend(days[start:start+5])
+        values=[v for group in sample[:len(days)] for v in group]
+        means.append(statistics.mean(values))
+    means.sort()
+    result.update(interval=[means[24],means[974]],reason=None)
+    return result
 
 
 def target_price(entry, risk, side, cost):
@@ -90,6 +134,11 @@ def readiness(validation, now=None):
         return False, ['finite nonnegative evaluation time required']
     holdout = (validation or {}).get('holdout', {})
     reasons = []
+    if validation.get('strategy_id')!=STRATEGY_ID:
+        reasons.append('validation strategy version mismatch')
+    interval=holdout.get('uncertainty',{}).get('interval') if isinstance(holdout.get('uncertainty'),dict) else None
+    if not isinstance(interval,list) or len(interval)!=2 or any(isinstance(x,bool) or not isinstance(x,(int,float)) or not math.isfinite(x) for x in interval) or not 0<interval[0]<=interval[1]:
+        reasons.append('positive lower holdout expectancy confidence bound required')
     as_of = (validation or {}).get('as_of')
     observation_valid = (not isinstance(as_of, bool) and isinstance(as_of, (int, float))
                          and math.isfinite(as_of) and 0 <= as_of <= observed_now)
@@ -118,49 +167,59 @@ def readiness(validation, now=None):
     return not reasons, reasons
 
 
-def backtest(bars, asset_class):
+def backtest(bars, asset_class, bars_15m=None):
     from .factors import build_factors, validate_bars
     from .data import validate_interval
-    validate_bars(bars, max((b.get('end', 0) for b in bars), default=0))
-    validate_interval(bars, 3600)
-    split = int(len(bars) * .8)
-    trades, i, rejected = [], 59, 0
-    while i < len(bars) - 1:
-        # Price/volume veto is cheap; compute recursive full-history indicators only for breakouts.
-        if not pattern(bars[max(0, i-59):i+1]):
-            i += 1
-            continue
-        # ponytail: full-prefix factors cost O(K*N) for K breakouts; incremental adapter if deadlines routinely fail.
-        prefix = bars[:i+1]
-        factors = build_factors(prefix, [])
-        side = pattern(prefix, factors)
-        risk = build_factors(prefix[:-1], []).get('volatility_channel', {}).get('atr_1h') if side else None
-        if side and isinstance(risk, (int, float)) and math.isfinite(risk) and risk > 0:
+    if asset_class not in COSTS:
+        raise ValueError('unknown asset class')
+    now=max((b.get('end',0) for b in bars),default=0)
+    validate_bars(bars,now); validate_interval(bars,3600)
+    confirmed=bars_15m is not None
+    quarters=bars_15m or []
+    # Confirmations may extend beyond the last hourly candle; prefix slicing below excludes them.
+    validate_bars(quarters,max(now,max((b.get('end',0) for b in quarters),default=0)))
+    validate_interval(quarters,900)
+    ends=[b['end'] for b in quarters]
+    eligible_indices=[i for i,b in enumerate(bars) if i>=59 and (not confirmed or (quarters and quarters[0]['start']<=b['start'] and b['end']<=quarters[-1]['end']))]
+    start_index=eligible_indices[0] if eligible_indices else len(bars)
+    stop_index=eligible_indices[-1]+1 if eligible_indices else len(bars)
+    split=start_index+int((stop_index-start_index)*.8)
+    trades=[]; i=start_index; rejected=0; missing_confirmation=0
+    while i<min(stop_index,len(bars)-1):
+        if not pattern(bars[max(0,i-59):i+1]):
+            i+=1; continue
+        prefix=bars[:i+1]
+        q_end=bisect_right(ends,bars[i]['end'])
+        q=quarters[max(0,q_end-96):q_end]
+        factors=build_factors(prefix,q if confirmed else [])
+        side=pattern(prefix,factors)
+        if side and confirmed and not confirmation(prefix,q,side):
+            missing_confirmation+=1; i+=1; continue
+        risk=build_factors(prefix[:-1],[])['volatility_channel'].get('atr_1h') if side else None
+        if side and isinstance(risk,(int,float)) and math.isfinite(risk) and risk>0:
             try:
-                trade = simulate_trade(bars, i+1, side, risk, asset_class)
+                trade=simulate_trade(bars,i+1,side,risk,asset_class)
             except ValueError:
-                rejected += 1
-                i += 1
-                continue
-            if trade is None:
-                break  # terminal open positions are not fabricated closed observations
-            # Do not let a training position consume the untouched holdout.
-            if i+1 < split <= trade['exit_index']:
-                i = split - 1
-                continue
-            trades.append(trade)
-            i = trade['exit_index']
+                rejected+=1; i+=1; continue
+            if trade is None: break
+            if i+1<split<=trade['exit_index']:
+                i=split-1; continue
+            trade['signal_time']=bars[i]['end']
+            trades.append(trade); i=trade['exit_index']
         else:
-            i += 1
-    result = {'as_of': bars[-1]['end'] if bars else 0, 'rules': 'UNCONFIRMED hourly base pattern; no 15m replay. 20-bar breakout, 1.5x preceding median volume, Astra direction; next open, 24-bar timeout',
-              'cost_per_side': COSTS[asset_class], 'split_index': split, 'rejected_entries': rejected,
-              'rule_coverage': {'hourly_breakout': True, 'confirmation_15m_replayed': False},
-              'strategy_scope': 'exploratory_hourly_base_pattern',
-              'train': metrics([t for t in trades if t['entry_time'] < (bars[split]['start'] if split < len(bars) else math.inf)]),
-              'holdout': metrics([t for t in trades if split < len(bars) and t['entry_time'] >= bars[split]['start']]),
-              'forward_paper': {'closed_trades': []}, 'exploratory': asset_class == 'commodities'}
-    result['ready'], result['reasons'] = readiness(result)
+            i+=1
+    boundary=bars[split]['start'] if split<len(bars) else math.inf
+    result=dict(as_of=now,strategy_id=STRATEGY_ID,
+        rules='20-bar breakout; 1.5x median volume; ADX>=22, RSI/MACD direction; '+('as-of 15m confirmation; ' if confirmed else 'UNCONFIRMED hourly comparison; ')+'next open, prior ATR stop, net 2R target, 24-bar timeout',
+        cost_per_side=COSTS[asset_class],split_index=split,rejected_entries=rejected,missing_confirmation=missing_confirmation,
+        coverage=dict(start=bars[start_index]['start'] if start_index<len(bars) else None,end=bars[stop_index-1]['end'] if eligible_indices else None,hourly_bars=len(eligible_indices),confirmation_bars=len(quarters)),
+        rule_coverage=dict(hourly_breakout=True,confirmation_15m_replayed=bool(confirmed and eligible_indices)),
+        strategy_scope='confirmed_trend_breakout' if confirmed else 'exploratory_hourly_base_pattern',
+        train=metrics([t for t in trades if t['entry_time']<boundary]),
+        holdout=metrics([t for t in trades if t['entry_time']>=boundary]),
+        forward_paper=dict(closed_trades=[]),exploratory=asset_class=='commodities')
+    result['holdout']['uncertainty']=grouped_expectancy(result['holdout']['trade_log'])
+    result['ready'],result['reasons']=readiness(result)
     if result['exploratory']:
-        result['ready'] = False
-        result['reasons'].append('continuous futures require dated contract economics')
+        result['ready']=False;result['reasons'].append('continuous futures require dated contract economics')
     return result

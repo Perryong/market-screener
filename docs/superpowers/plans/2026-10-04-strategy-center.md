@@ -63,3 +63,5 @@ Files: modify `research_view.py`, `research.js`, `dashboard/build.py`, README an
 ## Execution ledger
 
 - Design: selected explicit available-data strategy plus OpenThomas evidence architecture. User requested autonomous decisions; no design confirmation required.
+
+- Task 1: RED 6 new strategy tests (including actual indicator arithmetic), then GREEN 45 entry tests. Legacy mocked factor fixtures now include explicit direction inputs; full-factor score remains unchanged. Confirmed replay uses overlapping history and no future quarter.

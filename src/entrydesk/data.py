@@ -91,7 +91,7 @@ def collect_symbol(symbol, asset_class, now):
         ticker=yf.Ticker(symbol)
         calendar=_calendar(now) if asset_class=='stocks' else None
         out['market_open']=bool(asset_class=='crypto' or (calendar is not None and calendar.is_open_on_minute(pd.Timestamp(now,unit='s',tz='UTC').floor('min'))))
-        for key,interval,period,seconds in [('bars_1h','1h','2y',3600),('bars_15m','15m','5d',900)]:
+        for key,interval,period,seconds in [('bars_1h','1h','2y',3600),('bars_15m','15m','60d',900)]:
             try:
                 window=dict(start=int(now)-729*86400,end=int(now)) if interval=='1h' else dict(period=period)
                 frame=ticker.history(**window,interval=interval,auto_adjust=False,prepost=False,timeout=8,raise_errors=True)

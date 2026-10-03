@@ -31,7 +31,7 @@ def test_invalid_bars_fail_closed():
 def test_next_open_and_prefix_invariance(monkeypatch):
     import entrydesk.factors as factors
     monkeypatch.setattr(factors, 'build_factors', lambda bars, confirm: {
-        'signal_recommendation': 'BUY_LONG', 'volatility_channel': {'atr_1h': 2}})
+        'signal_recommendation': 'BUY_LONG', 'trend_momentum': {'adx_1h':25,'rsi_1h':60,'macd_hist':1}, 'volatility_channel': {'atr_1h': 2}})
     bars = [bar(i*3600, h=101, l=99) for i in range(60)]
     bars[-1] = bar(59*3600, h=104, l=99, c=103, v=300)
     bars += [bar(60*3600, o=104, h=110, l=103, c=106)]
@@ -45,7 +45,7 @@ def test_next_open_and_prefix_invariance(monkeypatch):
 def test_quote_confirmation_market_and_futures_gates(monkeypatch):
     import entrydesk.factors as factors
     monkeypatch.setattr(factors, 'build_factors', lambda bars, confirm: {
-        'signal_recommendation': 'BUY_LONG', 'volatility_channel': {'atr_1h': 2}, 'composite_alpha_score': 70})
+        'signal_recommendation': 'BUY_LONG', 'trend_momentum': {'adx_1h':25,'rsi_1h':60,'macd_hist':1}, 'volatility_channel': {'atr_1h': 2}, 'composite_alpha_score': 70})
     bars = [bar(i*3600, h=101, l=99) for i in range(60)]
     bars[-1] = bar(59*3600, h=104, l=99, c=103, v=300)
     now = 60*3600
@@ -65,11 +65,11 @@ def test_no_fabricated_terminal_close():
 
 
 def test_closed_paper_records_and_holdout_pass():
-    metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1)
+    metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1, uncertainty={'interval':[.01,.4]})
     records = [dict(origin='forward_paper', closed=True, entry_time=i*2, exit_time=i*2+1, net_r=.2) for i in range(30)]
-    assert readiness(dict(as_of=60, holdout=metrics, forward_paper=dict(closed_trades=records), rule_coverage={'confirmation_15m_replayed': True}))[0]
+    assert readiness(dict(strategy_id='trend-breakout-v2', as_of=60, holdout=metrics, forward_paper=dict(closed_trades=records), rule_coverage={'confirmation_15m_replayed': True}))[0]
     records[-1]['net_r'] = float('nan')
-    assert not readiness(dict(as_of=60, holdout=metrics, forward_paper=dict(closed_trades=records), rule_coverage={'confirmation_15m_replayed': True}))[0]
+    assert not readiness(dict(strategy_id='trend-breakout-v2', as_of=60, holdout=metrics, forward_paper=dict(closed_trades=records), rule_coverage={'confirmation_15m_replayed': True}))[0]
 
 
 def test_net_target_covers_large_cost_cross_term():
@@ -127,16 +127,16 @@ def test_cost_adjusted_r_normal_stop_and_target():
 
 
 def test_hourly_only_validation_cannot_certify_full_rules():
-    metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1)
+    metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1, uncertainty={'interval':[.01,.4]})
     records = [dict(origin='forward_paper', closed=True, entry_time=i*2, exit_time=i*2+1, net_r=.2) for i in range(30)]
     ready, reasons = readiness(dict(holdout=metrics, forward_paper=dict(closed_trades=records)))
     assert not ready and any('15-minute' in r for r in reasons)
 
 
 def test_duplicate_or_overlapping_paper_closes_rejected():
-    metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1)
+    metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1, uncertainty={'interval':[.01,.4]})
     event = dict(origin='forward_paper', closed=True, entry_time=1, exit_time=2, net_r=.2)
-    assert not readiness(dict(as_of=60, holdout=metrics, forward_paper={'closed_trades': [event]*30},
+    assert not readiness(dict(strategy_id='trend-breakout-v2', as_of=60, holdout=metrics, forward_paper={'closed_trades': [event]*30},
                               rule_coverage={'confirmation_15m_replayed': True}))[0]
 
 
@@ -158,9 +158,9 @@ def test_nonobject_and_wrong_identity_cached_histories_publish_partial(tmp_path)
 
 
 def test_forward_dates_cannot_exceed_observation_time():
-    metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1)
+    metrics = dict(trades=30, expectancy=.2, profit_factor=1.2, max_drawdown=.1, uncertainty={'interval':[.01,.4]})
     records = [dict(origin='forward_paper', closed=True, entry_time=i*2, exit_time=i*2+1, net_r=.2) for i in range(30)]
-    validation = dict(as_of=60, holdout=metrics, forward_paper={'closed_trades':records},
+    validation = dict(strategy_id='trend-breakout-v2', as_of=60, holdout=metrics, forward_paper={'closed_trades':records},
                       rule_coverage={'confirmation_15m_replayed': True})
     assert not readiness(validation, now=58)[0]
     validation['as_of'] = 50
@@ -216,7 +216,7 @@ def test_flat_minute_bars_cannot_claim_hourly_coverage():
 def test_short_spot_requires_verified_borrow_terms(monkeypatch):
     import entrydesk.factors as factors
     monkeypatch.setattr(factors, 'build_factors', lambda bars, confirm: {
-        'signal_recommendation': 'SELL_SHORT', 'volatility_channel': {'atr_1h': 2}})
+        'signal_recommendation': 'SELL_SHORT', 'trend_momentum': {'adx_1h':25,'rsi_1h':40,'macd_hist':-1}, 'volatility_channel': {'atr_1h': 2}})
     bars = [bar(i*3600, h=101, l=99) for i in range(60)]
     bars[-1] = bar(59*3600, o=100, h=101, l=96, c=97, v=300)
     result = evaluate(dict(symbol='BTC-USD',asset_class='crypto',source='yahoo',

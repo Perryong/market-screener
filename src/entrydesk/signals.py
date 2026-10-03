@@ -1,12 +1,12 @@
 """Candidate pattern and fail-closed paper readiness gates."""
 import math
-from .validation import COSTS, pattern, readiness, target_price
+from .validation import COSTS, STRATEGY_ID, confirmation, pattern, readiness, target_price
 
 
 def evaluate(bundle, now, validation=None):
     from .factors import build_factors, validate_bars, validate_quote
     result = {key: bundle.get(key) for key in ('symbol', 'asset_class', 'source')}
-    result.update(as_of=now, state='WATCHING', side=None, entry=None, stop=None, target=None,
+    result.update(strategy_id=STRATEGY_ID,as_of=now, state='WATCHING', side=None, entry=None, stop=None, target=None,
                   net_rr=None, score=None, factors={}, reasons=[], validation=validation or {})
     reasons = result['reasons']
     try:
@@ -22,11 +22,13 @@ def evaluate(bundle, now, validation=None):
         reasons.extend('provider: ' + str(warning) for warning in bundle.get('errors', []))
         if bundle.get('stale'):
             reasons.append('cached observations are stale')
-        factors = build_factors(bars, confirm)
+        confirm=[b for b in confirm if b['end']<=bars[-1]['end']]
+        factors = build_factors(bars, confirm[-96:])
+        result['signal_time']=bars[-1]['end']
         result.update(factors=factors, score=factors.get('composite_alpha_score'))
         side = pattern(bars, factors)
         if not side:
-            reasons.append('fixed breakout/volume/Astra direction not present')
+            reasons.append('fixed breakout/volume/ADX/RSI/MACD predicates not present')
             return result
         result.update(side=side, state='CANDIDATE')
         if side == 'SHORT' and bundle.get('asset_class') in ('stocks', 'crypto'):
@@ -40,8 +42,7 @@ def evaluate(bundle, now, validation=None):
             result['reference_levels'] = {'entry': reference, 'stop': reference - sign * prior_atr,
                 'target': target_price(reference, prior_atr, side, COSTS[bundle['asset_class']]),
                 'basis': 'completed hourly close; non-executable'}
-        level = max(b['high'] for b in bars[-21:-1]) if sign == 1 else min(b['low'] for b in bars[-21:-1])
-        if not confirm or confirm[-1]['end'] < bars[-1]['end'] or sign * (confirm[-1]['close'] - level) <= 0:
+        if not confirmation(bars,confirm,side):
             reasons.append('completed 15-minute breakout confirmation missing')
         quote = bundle.get('quote') or {}
         entry, observed = quote.get('price'), quote.get('time')
