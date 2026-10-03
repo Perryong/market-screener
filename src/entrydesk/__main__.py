@@ -10,7 +10,7 @@ import sys
 import time
 
 from .signals import evaluate
-from .validation import backtest
+from .validation import STRATEGY_ID, backtest
 
 DEFAULTS = {'stocks': 'SPY,NVDA,AMD,AVGO,ASML,TSM,MU,INTC,QCOM,AMAT,LRCX,KLAC,ARM'.split(','),
             'crypto': ['BTC-USD', 'ETH-USD'], 'commodities': ['GC=F', 'SI=F', 'CL=F']}
@@ -74,7 +74,8 @@ def main(argv=None):
     if selected and selected - known:
         parser.error('unknown symbols: ' + ','.join(sorted(selected-known)))
     now, deadline = time.time(), time.monotonic() + args.max_seconds
-    payload = dict(version=1, generated_at=now, candidates=[], validation={}, status='ok', errors=[])
+    payload = dict(version=2, strategy_id=STRATEGY_ID, generated_at=now, candidates=[], validation={}, status='ok', errors=[],
+                   journal=dict(mode='not_recording',observations=0,recent=[],forward_paper_closes=0))
     if command == 'demo':
         bundle = demo_bundle()
         report = backtest(bundle['bars_1h'], bundle['asset_class'])
@@ -115,16 +116,35 @@ def main(argv=None):
                     if remaining <= 0:
                         raise ValueError('validation deadline reached')
                     script = ('import json,sys; from entrydesk.validation import backtest; '
-                              'b=json.load(sys.stdin); print(json.dumps(backtest(b[0],b[1]),allow_nan=False))')
+                              'b=json.load(sys.stdin); print(json.dumps(backtest(b[0],b[1],b[2]),allow_nan=False))')
                     completed = subprocess.run([sys.executable, '-c', script],
-                        input=json.dumps([bundle.get('bars_1h', []), asset_class], allow_nan=False),
+                        input=json.dumps([bundle.get('bars_1h', []), asset_class,bundle.get('bars_15m',[])], allow_nan=False),
                         capture_output=True, text=True, timeout=remaining, check=True)
                     report = json.loads(completed.stdout)
                 except (ValueError, TypeError, KeyError, subprocess.SubprocessError) as exc:
                     payload['errors'].append(symbol + ': validation ' + str(exc))
                     report = dict(ready=False, reasons=[str(exc)])
                 payload['validation'][symbol] = report
-                payload['candidates'].append(evaluate(bundle, time.time(), report))
+                observed_at=time.time()
+                candidate=evaluate(bundle,observed_at,report)
+                payload['candidates'].append(candidate)
+                if command=='collect' and bundle.get('source'):
+                    from .journal import Journal
+                    journal=Journal(args.history_dir/'observations.sqlite3')
+                    try:
+                        journal.resolve(bundle,observed_at)
+                        journal.observe(bundle,candidate,observed_at)
+                    except (ValueError,TypeError,KeyError):
+                        payload['errors'].append(symbol+': journal observation rejected')
+                    finally:
+                        journal.close()
+        if (args.history_dir/'observations.sqlite3').exists():
+            from .journal import Journal
+            journal=Journal(args.history_dir/'observations.sqlite3')
+            try:
+                payload['journal']=journal.summary()
+            finally:
+                journal.close()
         payload['errors'] = list(dict.fromkeys(payload['errors']))
         if payload['errors']:
             payload['status'] = 'partial'

@@ -73,6 +73,20 @@ def target_price(entry, risk, side, cost):
     return (sign * entry + cost * entry + (2 + 1e-10) * net_risk) / (sign - cost)
 
 
+def contiguous(previous,current,asset_class):
+    if current['start']==previous['end']:
+        return True
+    if asset_class!='stocks':
+        return False
+    from .data import _calendar
+    calendar=_calendar(previous['end'])
+    day=datetime.fromtimestamp(previous['end'],timezone.utc).date().isoformat()
+    if not calendar.is_session(day) or calendar.session_close(day).timestamp()!=previous['end']:
+        return False
+    next_day=calendar.next_session(day)
+    return current['start']==calendar.session_open(next_day).timestamp()
+
+
 def simulate_trade(bars, index, side, risk, asset_class):
     from .factors import validate_quote
     if side not in ('LONG', 'SHORT') or isinstance(risk, bool) or not isinstance(risk, (int, float)) or not math.isfinite(risk) or risk <= 0:
@@ -89,6 +103,8 @@ def simulate_trade(bars, index, side, risk, asset_class):
     last_index = min(index + 23, len(bars) - 1)
     for j in range(index, last_index + 1):
         b = bars[j]
+        if j>0 and not contiguous(bars[j-1],b,asset_class):
+            raise ValueError('Missing bars in simulated trade path')
         if sign * (b['open'] - stop) <= 0:
             price, reason = b['open'], 'stop_gap'
         elif sign * (b['open'] - target) >= 0:

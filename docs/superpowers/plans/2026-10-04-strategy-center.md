@@ -65,3 +65,5 @@ Files: modify `research_view.py`, `research.js`, `dashboard/build.py`, README an
 - Design: selected explicit available-data strategy plus OpenThomas evidence architecture. User requested autonomous decisions; no design confirmation required.
 
 - Task 1: RED 6 new strategy tests (including actual indicator arithmetic), then GREEN 45 entry tests. Legacy mocked factor fixtures now include explicit direction inputs; full-factor score remains unchanged. Confirmed replay uses overlapping history and no future quarter.
+
+- Task 2: RED immutable/restart/temporal/gap journal tests and CLI confirmation/demo tests, then GREEN 52 entry tests. First-seen forward candles are frozen separately so provider revisions cannot rewrite an open shadow entry. Aggregate shadow outcome statistics omit a fictitious portfolio equity curve.
