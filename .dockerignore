@@ -1,6 +1,12 @@
 # Logs
 *.log
 
+# Local API credentials and private collector/journal state
+.env
+.env.*
+!.env.example
+.screener/
+
 # Python
 __pycache__/
 *.py[cod]
