@@ -25,7 +25,15 @@ permissions:
 jobs:
   snapshot:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+      APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+      APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+      FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+      BLS_API_KEY: ${{ secrets.BLS_API_KEY }}
+      EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+      COINGECKO_DEMO_API_KEY: ${{ secrets.COINGECKO_DEMO_API_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -35,17 +43,61 @@ jobs:
 
       - run: uv sync --frozen
 
+      - uses: actions/cache/restore@v4
+        with:
+          path: .screener
+          key: private-screener-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: private-screener-${{ github.ref_name }}-
+
       - name: Collect snapshot
+        continue-on-error: true
+        timeout-minutes: 20
         env:
           MARKETAUX_API_TOKEN: ${{ secrets.MARKETAUX_API_TOKEN }}
           MARKETAUX_DAILY_BUDGET: "90"
         run: uv run python dashboard/collect.py ${{ inputs.tier && format('--tier {0}', inputs.tier) || '' }}
 
+      - name: Collect breakout evidence
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 8
+        run: timeout 420 uv run python -m screener tick --state-dir .screener/live --out .screener/public
+
+      - name: Collect research
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 8
+        run: timeout 420 uv run python -m screener research --state-dir .screener/live --out .screener/public
+
+      - name: Collect entry evidence
+        if: always()
+        continue-on-error: true
+        timeout-minutes: 8
+        run: timeout 420 uv run python -m entrydesk collect --max-seconds 400
+
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: .screener
+          key: private-screener-${{ github.ref_name }}-${{ github.run_id }}
+
+      - name: Build public desk
+        if: always()
+        run: |
+          for file in latest.json research.json; do
+            if [ -f ".screener/public/$file" ]; then cp ".screener/public/$file" "docs/$file"; fi
+          done
+          uv run python dashboard/build.py
+
       - name: Commit if changed
+        if: always()
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data.json
+          git add docs/data.json docs/index.html docs/technical.html
+          for file in latest.json research.json entries.json; do
+            if [ -f "docs/$file" ]; then git add "docs/$file"; fi
+          done
           git diff --staged --quiet && echo "no change" && exit 0
           git commit -m "chore(dashboard): snapshot $(date -u +'%Y-%m-%dT%H:%MZ')"
           # Another hourly run may have landed while this one was collecting.

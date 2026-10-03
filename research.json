@@ -1,0 +1,8 @@
+{
+  "max_instruments": 200,
+  "max_requests": 500,
+  "max_seconds": 600,
+  "discovery": false,
+  "api_sources": true,
+  "xbrl_entities": {"ASML.AS": "724500Y6DUVHQD6OXN27"}
+}

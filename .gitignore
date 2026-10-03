@@ -248,3 +248,6 @@ promo/
 
 # Playwright MCP scratch output (screenshots, page snapshots)
 .playwright-mcp/
+
+# Private journals and entry histories
+.screener/
