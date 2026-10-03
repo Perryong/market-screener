@@ -67,3 +67,8 @@ Files: modify `research_view.py`, `research.js`, `dashboard/build.py`, README an
 - Task 1: RED 6 new strategy tests (including actual indicator arithmetic), then GREEN 45 entry tests. Legacy mocked factor fixtures now include explicit direction inputs; full-factor score remains unchanged. Confirmed replay uses overlapping history and no future quarter.
 
 - Task 2: RED immutable/restart/temporal/gap journal tests and CLI confirmation/demo tests, then GREEN 52 entry tests. First-seen forward candles are frozen separately so provider revisions cannot rewrite an open shadow entry. Aggregate shadow outcome statistics omit a fictitious portfolio equity curve.
+
+- Ruling: report selected long-policy validation separately from short research and track independent per-side replay occupancy. Otherwise unverified short returns or holding periods could certify/distort a long-only policy. Regression test reproduced the mixed-side issue before fixing it.
+
+- Task 3: public journal/build test reproduced missing route and fields, then passed with explicit field allowlists. Strategy overview and documentation added; license shorthand corrected. Full suite: 420 tests + 2 subtests pass, 8 network stress tests deselected. JS syntax/math pass.
+- Live evidence: collected all 18 configured instruments; only three expected continuous-futures economics warnings. Saved-history confirmed replay: 150 long training closes and 49 long holdout closes in aggregate, maximum six holdout closes for any single instrument. All readiness gates remain closed. 18 immutable observations, no eligible shadow positions and no fabricated forward outcomes.

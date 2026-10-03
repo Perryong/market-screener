@@ -2,7 +2,7 @@
 
 Source: https://github.com/Perryong/astra-quant-agent.
 Pinned commit: `78c0e4aa768511e888c392aa27de357b02aaf0f4`.
-License: GNU Affero General Public License, version 3; full original text in `LICENSE`.
+License: the original AstraQuant license text combines GNU Affero General Public License version 3 with the Commons Clause License Condition v1.0 and an Anti-Scam / Financial Fraud Special Addendum; the complete original text is preserved in `LICENSE`. This is not an unmodified AGPL-only grant.
 
 `calculations.py` contains selected pure functions from
 `scripts/factors/okx_quant_factors.py`, their constant dependency closure,

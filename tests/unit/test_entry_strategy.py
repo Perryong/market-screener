@@ -38,7 +38,8 @@ def test_real_completed_candles_can_trigger_without_full_factor_score(side):
     future=dict(start=bars[-1]['end'],end=bars[-1]['end']+3600,open=close,
         high=close+4,low=close-4,close=close+sign,volume=100)
     result=validation.backtest(bars+[future], 'crypto', quarters(bars+[future]))
-    trades=result['train']['trade_log']+result['holdout']['trade_log']
+    directional=result if side=='LONG' else result['short_research']
+    trades=directional['train']['trade_log']+directional['holdout']['trade_log']
     assert len(trades)==1
     assert trades[0]['side']==side and trades[0]['entry_time']==future['start']
     assert result['strategy_id']==validation.STRATEGY_ID
@@ -82,3 +83,20 @@ def test_grouped_uncertainty_is_deterministic_and_requires_days_and_trades():
     assert result['interval']==[1,1] and result['days']==30
     assert result['block_days']==5 and result['replicates']==1000
     assert validation.grouped_expectancy([dict(t,net_r=-1) for t in samples])['interval']==[-1,-1]
+
+
+def test_short_research_results_cannot_certify_long_entry_policy():
+    bars=trend_bars('SHORT');close=bars[-1]['close']
+    bars.append(dict(start=bars[-1]['end'],end=bars[-1]['end']+3600,open=close,high=close+.1,low=close-4,close=close-1,volume=100))
+    result=validation.backtest(bars,'crypto',quarters(bars))
+    assert result['train']['trades']+result['holdout']['trades']==0
+    assert result['short_research']['train']['trades']+result['short_research']['holdout']['trades']==1
+    assert not result['ready']
+
+
+@pytest.mark.parametrize('bad',[None,[],{'trend_momentum':None},{'trend_momentum':[]},{'trend_momentum':{'adx_1h':True,'rsi_1h':60,'macd_hist':1}}])
+def test_malformed_factor_blocks_do_not_become_a_direction(bad):
+    if bad is None:  # None explicitly means the cheap price/volume prefilter.
+        assert validation.pattern(trend_bars(),bad)=='LONG'
+    else:
+        assert validation.pattern(trend_bars(),bad) is None

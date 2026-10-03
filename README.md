@@ -574,3 +574,7 @@ Original project portions retain their MIT license. Imported Astra-derived porti
 Recorded data, test evidence and remaining trading-readiness limits are in
 [Combined desk verification](docs/combined-entry-verification.md). The integrated
 Entry desk currently approves no production entries.
+
+### Strategy overview
+
+The combined desk includes `#/strategy`: fixed trend-breakout rules, confirmed chronological validation and an immutable forward observation journal. See [strategy study and operation](docs/strategy-study.md). Run `uv run python -m entrydesk collect --max-seconds 400` and `uv run python dashboard/build.py` to refresh. Collection records observations automatically; `validate` only replays saved histories. Shadow outcomes are explicitly simulated and never establish live execution readiness.

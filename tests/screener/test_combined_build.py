@@ -48,3 +48,17 @@ def test_technical_is_isolated_and_tooltip_uses_text():
     technical = (Path(__file__).parents[2] / 'docs/technical.html').read_text()
     assert 'tip.innerHTML' not in technical
     assert 'text.textContent = line' in technical
+
+
+def test_strategy_route_and_public_journal_are_safely_embedded():
+    spec.loader.exec_module(build)
+    entries={'strategy_id':'trend-breakout-v2','journal':{'mode':'forward_shadow','observations':1,'private':'SECRET',
+        'recent':[{'symbol':'BTC-USD','observed_at':1,'input_hash':'abc','private':'SECRET',
+                   'outcome':{'origin':'forward_shadow','net_r':2,'private':'SECRET'}}]},'candidates':[]}
+    html=build.render({},None,entries,'')
+    assert '#/strategy' in html and 'Strategy overview' in html
+    block=re.search(r'<script id="entry-data" type="application/json">(.*?)</script>',html,re.S).group(1)
+    public=json.loads(block)
+    assert public['strategy_id']=='trend-breakout-v2'
+    assert public['journal']['recent'][0]['outcome']['net_r']==2
+    assert 'SECRET' not in html

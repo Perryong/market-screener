@@ -21,7 +21,9 @@ def pattern(bars, factors=None):
     side = 'LONG' if last['close'] > max(b['high'] for b in prior) else 'SHORT' if last['close'] < min(b['low'] for b in prior) else None
     if side is None or factors is None:
         return side
-    tm=factors.get('trend_momentum',{})
+    if not isinstance(factors,dict) or not isinstance(factors.get('trend_momentum'),dict):
+        return None
+    tm=factors['trend_momentum']
     adx,rsi,hist=(tm.get(k) for k in ('adx_1h','rsi_1h','macd_hist'))
     if any(isinstance(v,bool) or not isinstance(v,(int,float)) or not math.isfinite(v) for v in (adx,rsi,hist)):
         return None
@@ -200,7 +202,7 @@ def backtest(bars, asset_class, bars_15m=None):
     start_index=eligible_indices[0] if eligible_indices else len(bars)
     stop_index=eligible_indices[-1]+1 if eligible_indices else len(bars)
     split=start_index+int((stop_index-start_index)*.8)
-    trades=[]; i=start_index; rejected=0; missing_confirmation=0
+    trades=[]; i=start_index; rejected=0; missing_confirmation=0; busy={'LONG':-1,'SHORT':-1}
     while i<min(stop_index,len(bars)-1):
         if not pattern(bars[max(0,i-59):i+1]):
             i+=1; continue
@@ -209,6 +211,8 @@ def backtest(bars, asset_class, bars_15m=None):
         q=quarters[max(0,q_end-96):q_end]
         factors=build_factors(prefix,q if confirmed else [])
         side=pattern(prefix,factors)
+        if side and i<busy[side]:
+            i+=1; continue
         if side and confirmed and not confirmation(prefix,q,side):
             missing_confirmation+=1; i+=1; continue
         risk=build_factors(prefix[:-1],[])['volatility_channel'].get('atr_1h') if side else None
@@ -217,11 +221,12 @@ def backtest(bars, asset_class, bars_15m=None):
                 trade=simulate_trade(bars,i+1,side,risk,asset_class)
             except ValueError:
                 rejected+=1; i+=1; continue
-            if trade is None: break
+            if trade is None:
+                busy[side]=len(bars);i+=1;continue
             if i+1<split<=trade['exit_index']:
-                i=split-1; continue
+                busy[side]=split-1;i+=1;continue
             trade['signal_time']=bars[i]['end']
-            trades.append(trade); i=trade['exit_index']
+            trades.append(trade);busy[side]=trade['exit_index'];i+=1
         else:
             i+=1
     boundary=bars[split]['start'] if split<len(bars) else math.inf
@@ -231,8 +236,11 @@ def backtest(bars, asset_class, bars_15m=None):
         coverage=dict(start=bars[start_index]['start'] if start_index<len(bars) else None,end=bars[stop_index-1]['end'] if eligible_indices else None,hourly_bars=len(eligible_indices),confirmation_bars=len(quarters)),
         rule_coverage=dict(hourly_breakout=True,confirmation_15m_replayed=bool(confirmed and eligible_indices)),
         strategy_scope='confirmed_trend_breakout' if confirmed else 'exploratory_hourly_base_pattern',
-        train=metrics([t for t in trades if t['entry_time']<boundary]),
-        holdout=metrics([t for t in trades if t['entry_time']>=boundary]),
+        train=metrics([t for t in trades if t['side']=='LONG' and t['entry_time']<boundary]),
+        holdout=metrics([t for t in trades if t['side']=='LONG' and t['entry_time']>=boundary]),
+        short_research=dict(train=metrics([t for t in trades if t['side']=='SHORT' and t['entry_time']<boundary]),
+            holdout=metrics([t for t in trades if t['side']=='SHORT' and t['entry_time']>=boundary]),
+            note='Research only; borrow, financing and contract economics are not validated'),
         forward_paper=dict(closed_trades=[]),exploratory=asset_class=='commodities')
     result['holdout']['uncertainty']=grouped_expectancy(result['holdout']['trade_log'])
     result['ready'],result['reasons']=readiness(result)

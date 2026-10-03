@@ -5,7 +5,7 @@ from pathlib import Path
 from screener.research_view import render_app
 from screener.shared import atomic_text
 
-ENTRY_FIELDS = ('symbol','asset_class','source','as_of','state','side','entry','stop','target','net_rr','score','factors','reasons','validation','reference_levels')
+ENTRY_FIELDS = ('strategy_id','signal_time','symbol','asset_class','source','as_of','state','side','entry','stop','target','net_rr','score','factors','reasons','validation','reference_levels')
 
 
 def embedded(value):
@@ -14,7 +14,16 @@ def embedded(value):
 
 def render(strategy, research, entries, technical):
     strategy = {'version': 1, 'mode': 'live', 'generated_at': 0, 'results': [], 'trades': [], **strategy}
-    public = {key: entries[key] for key in ('version','generated_at','validation','status','errors') if entries and key in entries}
+    public = {key: entries[key] for key in ('version','strategy_id','generated_at','validation','status','errors') if entries and key in entries}
+    journal=(entries or {}).get('journal') or {}
+    public['journal']={k:journal[k] for k in ('mode','strategy_id','observations','eligible','pending','closed_shadow','forward_paper_closes','note') if k in journal}
+    public['journal']['performance']={k:v for k,v in journal.get('performance',{}).items() if k in ('trades','expectancy','profit_factor')}
+    recent=[]
+    for row in journal.get('recent',[])[:50]:
+        safe={k:row[k] for k in ('id','strategy_id','symbol','asset_class','source','observed_at','signal_time','input_hash','state','side','score','reasons','reference_levels','cost_per_side','shadow_eligible','shadow_note') if k in row}
+        safe['outcome']={k:v for k,v in (row.get('outcome') or {}).items() if k in ('origin','status','closed','entry_time','exit_time','entry','exit','stop','target','side','exit_reason','net_r','net_return','net_risk','resolved_at','reason')} or None
+        recent.append(safe)
+    public['journal']['recent']=recent
     public['candidates'] = [{key: row[key] for key in ENTRY_FIELDS if key in row} for row in (entries or {}).get('candidates', [])]
     html = render_app(strategy, research)
     notice = '' if entries else '<div class="banner">Entry snapshot unavailable. Collect public entry evidence to populate this desk.</div>'

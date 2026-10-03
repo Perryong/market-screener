@@ -2,9 +2,9 @@
 
 [Astra Quant Agent](https://github.com/Perryong/astra-quant-agent) calculations are imported from commit
 `78c0e4aa768511e888c392aa27de357b02aaf0f4`, not a moving branch.
-The exact original AGPL-3.0 license is preserved in
+The exact original AstraQuant license (AGPL-3.0 subject to the Commons Clause License Condition v1.0 and Anti-Scam / Financial Fraud Special Addendum) is preserved in
 `src/entrydesk/astra/LICENSE`. The original market-screener MIT license is retained
-for original code; imported Astra code is AGPL and must not be represented as MIT.
+for original code; imported Astra code carries the full original license conditions and must not be represented as MIT or an unmodified AGPL-only grant.
 The combined distribution must honor the applicable AGPL corresponding-source
 requirements. This document does not declare that file separation removes them.
 
