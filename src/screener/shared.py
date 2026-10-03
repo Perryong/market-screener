@@ -3,6 +3,7 @@ Originally from the market-pivot-watch pivot_watch package; copied here so the s
 import hashlib
 import json
 import re
+import ssl
 import time
 import urllib.error
 import urllib.parse
@@ -10,6 +11,8 @@ import urllib.request
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
+
+import certifi
 
 
 class DataError(ValueError):
@@ -50,7 +53,11 @@ def get_json(url, params=None, headers=None):
     if params:
         url += "?" + urllib.parse.urlencode(params)
     request = urllib.request.Request(url, headers={"User-Agent": "market-screener/1.0", "Accept": "application/json", **(headers or {})})
-    opener = urllib.request.build_opener(NoRedirect())
+    context = ssl.create_default_context()
+    # Some Python installs have no system CA file. Add maintained public roots
+    # while retaining system/custom roots and certificate/hostname verification.
+    context.load_verify_locations(cafile=certifi.where())
+    opener = urllib.request.build_opener(NoRedirect(), urllib.request.HTTPSHandler(context=context))
     for attempt in range(3):
         try:
             with opener.open(request, timeout=20) as response:
@@ -61,7 +68,9 @@ def get_json(url, params=None, headers=None):
                 continue
             # Never include a response body, account URL, bearer token or raw exception.
             raise DataError(f"Provider HTTP {exc.code}; check entitlement, region and rate limits") from None
-        except (urllib.error.URLError, TimeoutError, OSError):
+        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            if isinstance(getattr(exc, 'reason', exc), ssl.SSLCertVerificationError):
+                raise DataError('Provider TLS certificate verification failed; check local CA trust') from None
             if attempt < 2:
                 time.sleep(2 ** attempt)
                 continue

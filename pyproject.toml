@@ -37,6 +37,7 @@ dependencies = [
   # exist to prevent.
   "pandas>=2",
   "requests>=2.32",
+  "certifi>=2024.7.4",
   # Pinned to ==3.0.0 on purpose. 3.2.0 makes a bare Query() default to a
   # *stock* preset filter that silently returns 0 rows for crypto/futures
   # scans, which would break coin/screener/futures tools. The Docker build uses
