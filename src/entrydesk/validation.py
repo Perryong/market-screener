@@ -89,13 +89,15 @@ def contiguous(previous,current,asset_class):
     return current['start']==calendar.session_open(next_day).timestamp()
 
 
-def simulate_trade(bars, index, side, risk, asset_class):
+def simulate_trade(bars, index, side, risk, asset_class, *, cost_per_side=None):
     from .factors import validate_quote
     if side not in ('LONG', 'SHORT') or isinstance(risk, bool) or not isinstance(risk, (int, float)) or not math.isfinite(risk) or risk <= 0:
         raise ValueError('positive finite ATR and known side required')
     sign = 1 if side == 'LONG' else -1
     entry = bars[index]['open']
-    cost = COSTS[asset_class]
+    cost = COSTS[asset_class] if cost_per_side is None else cost_per_side
+    if isinstance(cost,bool) or not isinstance(cost,(int,float)) or not math.isfinite(cost) or not 0<=cost<1:
+        raise ValueError('finite cost per side between zero and one required')
     stop = entry - sign * risk
     target = target_price(entry, risk, side, cost)
     valid, reason, _ = validate_quote('BUY_LONG' if sign == 1 else 'SELL_SHORT', entry, target, stop)
@@ -222,7 +224,7 @@ def backtest(bars, asset_class, bars_15m=None):
             except ValueError:
                 rejected+=1; i+=1; continue
             if trade is None:
-                busy[side]=len(bars);i+=1;continue
+                busy[side]=split-1 if i+1<split else len(bars);i+=1;continue
             if i+1<split<=trade['exit_index']:
                 busy[side]=split-1;i+=1;continue
             trade['signal_time']=bars[i]['end']

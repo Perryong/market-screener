@@ -122,3 +122,16 @@ def test_collect_wires_confirmed_replay_and_journal_but_demo_is_isolated(tmp_pat
     before=(history/'observations.sqlite3').stat().st_mtime_ns
     cli.main(['demo','--history-dir',str(history),'--output',str(tmp_path/'demo.json')])
     assert (history/'observations.sqlite3').stat().st_mtime_ns==before
+
+
+def test_pending_shadow_keeps_original_costs_after_restart_and_cost_change(tmp_path,monkeypatch):
+    from entrydesk import validation
+    path=tmp_path/'observations.sqlite3';j=journal(path);bundle,candidate,now=setup();j.observe(bundle,candidate,now);j.close()
+    extended=later(bundle,25)
+    for b in extended['bars_1h'][-25:]:b['high']=b['close']+.1
+    monkeypatch.setitem(validation.COSTS,'crypto',.015)
+    j=journal(path);j.resolve(extended,extended['bars_1h'][-1]['end']+1)
+    row=j.summary()['recent'][0]
+    assert row['cost_per_side']==.0015
+    assert row['outcome']['net_return']==pytest.approx(-.003)
+    j.close()

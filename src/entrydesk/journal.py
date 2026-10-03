@@ -86,7 +86,7 @@ class Journal:
                 with self.db:
                     self.db.executemany('INSERT OR IGNORE INTO paths VALUES (?,?,?)',[(identifier,b['start'],encoded(b)) for b in future[:24]])
                 frozen=[json.loads(item[0]) for item in self.db.execute('SELECT payload FROM paths WHERE id=? ORDER BY start LIMIT 24',(identifier,))]
-                trade=simulate_trade(frozen,0,row['side'],row['risk'],row['asset_class'])
+                trade=simulate_trade(frozen,0,row['side'],row['risk'],row['asset_class'],cost_per_side=row['cost_per_side'])
                 if trade is not None:
                     trade.pop('exit_index',None)
                     self._outcome(identifier,dict(trade,status='closed',closed=True),observed_at)

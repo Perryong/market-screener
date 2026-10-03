@@ -100,3 +100,20 @@ def test_malformed_factor_blocks_do_not_become_a_direction(bad):
         assert validation.pattern(trend_bars(),bad)=='LONG'
     else:
         assert validation.pattern(trend_bars(),bad) is None
+
+
+def test_unfinished_training_trade_cannot_suppress_holdout_signal(monkeypatch):
+    from entrydesk import factors
+    bars=[dict(start=i*3600,end=(i+1)*3600,open=100,high=101,low=99,close=100,volume=100) for i in range(75)]
+    bars[65].update(high=105,close=104,volume=300)
+    for i in range(66,75):bars[i].update(open=104,high=104.1,low=103.9,close=104)
+    bars[72].update(high=108,close=107,volume=300)
+    bars[73].update(open=107,high=110,low=106.9,close=108)
+    bars[74].update(open=108,high=108.1,low=107.9,close=108)
+    monkeypatch.setattr(factors,'build_factors',lambda b,q:dict(trend_momentum=dict(adx_1h=30,rsi_1h=60,macd_hist=1),
+        volatility_channel=dict(atr_1h=.5 if len(b)>=72 else 10)))
+    result=validation.backtest(bars,'crypto',quarters(bars))
+    assert result['split_index']==71
+    assert result['holdout']['trades']==1
+    assert result['holdout']['trade_log'][0]['entry_time']==73*3600
+    assert result['holdout']['trade_log'][0]['net_r']==pytest.approx(2)

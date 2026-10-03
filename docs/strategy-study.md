@@ -60,3 +60,9 @@ The selected strategy needs no LLM key or exchange trading credentials. The supp
 ## Licensing and attribution
 
 OpenThomas is MIT; only architectural ideas are reimplemented here. Astra's existing vendored subset retains its complete original AstraQuant license: AGPL-3.0 subject to Commons Clause and the Anti-Scam / Financial Fraud Addendum. See [Astra provenance](astra-provenance.md) and `src/entrydesk/astra/LICENSE`. Current upstream was studied, not wholesale incorporated or relicensed.
+
+## Verification — 4 October 2026, SGT
+
+Final full suite: **422 tests and 2 subtests passed**; 8 opt-in real-network stress tests deselected. JavaScript syntax and research math checks passed. All 18 configured instruments were collected and replayed with confirmed history. Aggregate long outcomes: 150 training closes and 49 holdout closes, at most six holdout closes per instrument. Every readiness gate remains closed; aggregate counts do not satisfy per-instrument evidence requirements. The journal contains 18 first observations, zero eligible shadow positions and zero fabricated closes. The collector/replay returned partial status for the three explicit continuous-futures economics warnings.
+
+An independent review reproduced mutable-cost and incomplete-training occupancy bugs; regression tests failed before both fixes and passed afterward. Re-review found no remaining important findings. Browser checks covered the real Strategy overview and entry navigation, and a labelled temporary fixture verified closed shadow outcomes and expandable audit details. Existing TradingView iframe compatibility and unavailable research feeds remain separate known limitations, documented in the API setup guide.

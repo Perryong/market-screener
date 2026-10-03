@@ -1,5 +1,7 @@
 # Combined desk verification — 2026-10-03 SGT
 
+Historical report. The 4 October strategy update replaces the impossible hourly score gate with explicit candle predicates and confirmed replay, and adds forward-shadow journaling. See [current strategy study and verification](strategy-study.md) and [API integration status](api-setup.md). The results below describe the earlier build.
+
 The implementation combines market-analysis-screener's research/markets/news and
 breakout desk with market-screener's original Desk Tape/MCP functionality. The
 new Entry desk includes pinned Astra pure factors and strict entry evidence gates.

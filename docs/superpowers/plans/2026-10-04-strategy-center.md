@@ -30,35 +30,35 @@
 
 Files: modify `src/entrydesk/validation.py`, `signals.py`, `data.py`; tests in `tests/unit/test_entry_strategy.py` and existing entry signal tests.
 Interfaces: `pattern(bars, factors=None)`; `confirmation(bars, bars_15m, side)`; `backtest(bars, asset_class, bars_15m=None)`; `grouped_expectancy(trades)`; `STRATEGY_ID`.
-- [ ] Add failing tests: score 35 can qualify with ADX=25/RSI=60/hist>0; score 90 with missing predicates cannot. Future 15m close cannot confirm historical signal. Prefix appending preserves completed trades. Historical split cannot consume holdout.
-- [ ] Implement fixed predicates, as-of confirmation and optional confirmed replay, preserve explicitly exploratory hourly-only mode.
-- [ ] Add failing tests for deterministic bootstrap with <30 trades/<10 days unavailable and constant positive/negative samples.
-- [ ] Implement five-day moving-block bootstrap, 1000 replicates, 95% interval; require version and uncertainty evidence at readiness gate. Increase public 15m collection window to 60d.
-- [ ] Run entry test suite and commit.
+- [x] Add failing tests: score 35 can qualify with ADX=25/RSI=60/hist>0; score 90 with missing predicates cannot. Future 15m close cannot confirm historical signal. Prefix appending preserves completed trades. Historical split cannot consume holdout.
+- [x] Implement fixed predicates, as-of confirmation and optional confirmed replay, preserve explicitly exploratory hourly-only mode.
+- [x] Add failing tests for deterministic bootstrap with <30 trades/<10 days unavailable and constant positive/negative samples.
+- [x] Implement five-day moving-block bootstrap, 1000 replicates, 95% interval; require version and uncertainty evidence at readiness gate. Increase public 15m collection window to 60d.
+- [x] Run entry test suite and commit.
 
 ### Task 2: Immutable observation journal and collection
 
 Files: create `src/entrydesk/journal.py`; modify entry CLI; tests `tests/unit/test_entry_journal.py`.
 Interfaces: `Journal(path)`, `observe(bundle, candidate, observed_at)`, `resolve(bundle, observed_at)`, `summary()`, `close()`; export `payload['journal']` and strategy metadata. SQLite primary key identifies source/symbol/strategy/signal close. Observation payload immutable; outcome resolves at most once.
-- [ ] Add failing tests for idempotency, changed-history immutability, restart, strictly post-observation entry, stale/future/gapped bars, expiry and no terminal forced close.
-- [ ] Implement append-only observations and separately persisted forward-shadow outcomes. Reuse conservative simulation, no new network calls.
-- [ ] Wire collect only to journal; validate and demo cannot generate new forward observations. Replay confirmed histories via subprocess with remaining deadline. Export sanitized recent observations and counts.
-- [ ] Run journal/CLI tests and commit.
+- [x] Add failing tests for idempotency, changed-history immutability, restart, strictly post-observation entry, stale/future/gapped bars, expiry and no terminal forced close.
+- [x] Implement append-only observations and separately persisted forward-shadow outcomes. Reuse conservative simulation, no new network calls.
+- [x] Wire collect only to journal; validate and demo cannot generate new forward observations. Replay confirmed histories via subprocess with remaining deadline. Export sanitized recent observations and counts.
+- [x] Run journal/CLI tests and commit.
 
 ### Task 3: Strategy UI and study documentation
 
 Files: modify `research_view.py`, `research.js`, `dashboard/build.py`, README and Astra provenance; create `docs/strategy-study.md`; builder tests.
-- [ ] Add failing builder tests for Strategy route and safe public journal embedding.
-- [ ] Implement Strategy overview, exact rules, source comparison, validation and shadow journal tables, entry link and unavailable states; keep score as context.
-- [ ] Document repository revisions, transfer decisions, risk gates, local commands and source limitations; correct license shorthand.
-- [ ] Run JavaScript syntax/math checks and builder suite; commit.
+- [x] Add failing builder tests for Strategy route and safe public journal embedding.
+- [x] Implement Strategy overview, exact rules, source comparison, validation and shadow journal tables, entry link and unavailable states; keep score as context.
+- [x] Document repository revisions, transfer decisions, risk gates, local commands and source limitations; correct license shorthand.
+- [x] Run JavaScript syntax/math checks and builder suite; commit.
 
 ### Task 4: Live verification and independent review
 
-- [ ] Run full test suite, bounded live collection and saved-history replay; inspect counts and blockers without tuning.
-- [ ] Rebuild combined application. Browser-check strategy, entry, crypto and API coverage; capture screenshot; remove only our temporary fixture page.
-- [ ] Dispatch fresh-context reviewer with spec/plan and commit range; fix important findings with regression tests.
-- [ ] Rerun affected checks and full suite after corrections. Update ledger with measured results and final limitations. Keep existing draft PR branch and local app available.
+- [x] Run full test suite, bounded live collection and saved-history replay; inspect counts and blockers without tuning.
+- [x] Rebuild combined application. Browser-check strategy, entry, crypto and API coverage; capture screenshot; remove only our temporary fixture page.
+- [x] Dispatch fresh-context reviewer with spec/plan and commit range; fix important findings with regression tests.
+- [x] Rerun affected checks and full suite after corrections. Update ledger with measured results and final limitations. Keep existing draft PR branch and local app available.
 
 ## Execution ledger
 
@@ -72,3 +72,8 @@ Files: modify `research_view.py`, `research.js`, `dashboard/build.py`, README an
 
 - Task 3: public journal/build test reproduced missing route and fields, then passed with explicit field allowlists. Strategy overview and documentation added; license shorthand corrected. Full suite: 420 tests + 2 subtests pass, 8 network stress tests deselected. JS syntax/math pass.
 - Live evidence: collected all 18 configured instruments; only three expected continuous-futures economics warnings. Saved-history confirmed replay: 150 long training closes and 49 long holdout closes in aggregate, maximum six holdout closes for any single instrument. All readiness gates remain closed. 18 immutable observations, no eligible shadow positions and no fabricated forward outcomes.
+
+- Independent final review found two Important issues: frozen observations used mutable costs; incomplete training trades could suppress holdout entries. Both were reproduced with RED regression tests, corrected, and independently re-reviewed with 43 targeted tests passing and no remaining important findings.
+- Browser checks: Strategy overview, actual long-only holdout table, entry navigation, and a labelled synthetic closed shadow outcome with expandable audit details rendered successfully. Desktop layout has no page-width overflow; rule/source cards use two columns.
+
+- Task 4 final verification: 422 tests + 2 subtests passed; 8 opt-in stress tests deselected; JS syntax/math and build passed; git diff whitespace check passed. Final replay retains 150 training / 49 aggregate holdout long closes, max six per instrument, zero ready. Temporary fixture removed. Existing feature branch/draft PR retained, no main merge or order path.
