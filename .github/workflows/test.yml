@@ -36,3 +36,14 @@ jobs:
 
       - name: Run unit tests
         run: uv run pytest tests/unit tests/screener -q
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify research calculations and USD presentation
+        run: |
+          node --check src/screener/research.js
+          node tests/screener/research_math_check.js
+          node tests/screener/usd_display_check.js
+          node tests/screener/technical_display_check.js
