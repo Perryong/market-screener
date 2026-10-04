@@ -21,7 +21,8 @@ from .shared import DataError, get_json, NoRedirect
 
 
 def read_text(url, headers=None):
-    request=Request(url,headers={'User-Agent':'MarketWatch/1.0 public research','Accept':'*/*',**(headers or {})})
+    headers={'User-Agent':'MarketWatch/1.0 public research','Accept':'*/*',**(headers or {})}
+    request=Request(url,headers=headers)
     try:
         with build_opener(NoRedirect()).open(request,timeout=15) as response:
             data=response.read(10*1024*1024+1)
@@ -33,7 +34,7 @@ def read_text(url, headers=None):
             # Native macOS curl uses the system trust store; certificate verification stays enabled.
             args=['/usr/bin/curl','--silent','--show-error','--fail','--max-time','15','--max-filesize','10485760',
                   '--proto','=http,https']
-            for key,value in (headers or {}).items():
+            for key,value in headers.items():
                 args+=['--header',key+': '+value]
             result=subprocess.run(args+[url],capture_output=True,timeout=18)
             if result.returncode==0:
@@ -98,9 +99,14 @@ def collect_economy(settings,now):
             return values
         history=settings['_load']('FRED:'+symbol,86400,loader) or []
         valid=[r for r in history if r['value'] is not None]
+        frequency=('quarterly' if symbol=='A191RL1Q225SBEA' else 'weekly' if symbol in ('ICSA','MORTGAGE30US')
+                   else 'monthly' if symbol in ('CPIAUCSL','CPILFESL','PCEPILFE','UNRATE','PAYEMS','RSAFS','INDPRO','UMCSENT') else 'daily')
+        observation_date=valid[-1]['date'] if valid else None
+        period=(f'{observation_date[:4]} Q{(int(observation_date[5:7])-1)//3+1}' if frequency=='quarterly'
+                else observation_date[:7] if frequency=='monthly' else observation_date) if observation_date else None
         records.append(dict(id=symbol,name=name,unit=unit,transform=transform,history=history,
                             value=valid[-1]['value'] if valid else None,previous=valid[-2]['value'] if len(valid)>1 else None,
-                            date=valid[-1]['date'] if valid else None,source='FRED / Federal Reserve Bank of St. Louis',
+                            date=observation_date,frequency=frequency,observation_period=period,source='FRED / Federal Reserve Bank of St. Louis',
                             url='https://fred.stlouisfed.org/series/'+symbol))
     return records
 
@@ -159,22 +165,36 @@ def normalize_ipos(payload):
     for key,status in [('upcoming','expected'),('priced','priced'),('filed','filed'),('withdrawn','withdrawn')]:
         section=data.get(key) or {}
         for row in section.get('rows') or []:
+            # A filing date is not a pricing or withdrawal date.
+            date_field={'upcoming':'expectedPriceDate','priced':'pricedDate','filed':'filedDate','withdrawn':'withdrawDate'}[key]
             output.append(dict(name=str(row.get('companyName') or row.get('company') or ''),symbol=str(row.get('proposedTickerSymbol') or row.get('symbol') or ''),
-                               status=status,date=date_string(row.get('expectedPriceDate') or row.get('pricedDate') or row.get('filedDate') or row.get('withdrawnDate')),
-                               price=str(row.get('proposedSharePrice') or row.get('offerPrice') or '—'),exchange=str(row.get('exchange') or '—'),
+                               status=status,date=date_string(row.get(date_field) or (row.get('withdrawnDate') if key=='withdrawn' else None)),
+                               deal_id=str(row.get('dealID') or ''),
+                               price=str(row.get('proposedSharePrice') or row.get('offerPrice') or '—'),exchange=str(row.get('proposedExchange') or row.get('exchange') or '—'),
                                shares=str(row.get('sharesOffered') or '—'),amount=str(row.get('dollarValueOfSharesOffered') or '—'),
-                               source='Nasdaq / estimated dates',url='https://www.nasdaq.com/market-activity/ipos'))
+                               source='Nasdaq / estimated dates' if status=='expected' else 'Nasdaq',url='https://www.nasdaq.com/market-activity/ipos'))
     return output
 
 
 def collect_ipos(settings,now):
-    month=datetime.fromtimestamp(now,timezone.utc).strftime('%Y-%m')
-    def loader():
-        raw=json.loads(read_text('https://api.nasdaq.com/api/ipo/calendar?date='+month,{'Accept':'application/json','Origin':'https://www.nasdaq.com'}))
-        if not isinstance(raw.get('data'),dict):
-            raise DataError('Nasdaq calendar unavailable')
-        return normalize_ipos(raw)
-    return settings['_load']('Nasdaq:ipos:'+month,86400,loader) or []
+    today=datetime.fromtimestamp(now,timezone.utc)
+    current=today.year*12+today.month-1
+    unique={}
+    for offset in (0,-1,-2,1,2):
+        year,month_index=divmod(current+offset,12)
+        month=f'{year:04d}-{month_index+1:02d}'
+        def loader(month=month):
+            raw=json.loads(read_text('https://api.nasdaq.com/api/ipo/calendar?date='+month,
+                {'User-Agent':'Mozilla/5.0','Accept':'application/json, text/plain, */*','Origin':'https://www.nasdaq.com'}))
+            if not isinstance(raw.get('data'),dict):
+                raise DataError('Nasdaq calendar unavailable')
+            return normalize_ipos(raw)
+        for row in settings['_load']('Nasdaq:ipos:'+month,86400,loader) or []:
+            key=(row.get('deal_id') or (row['symbol'],row['name']),row['status'],row['date'])
+            if key not in unique:
+                unique[key]=dict(row,source_months=[])
+            unique[key]['source_months'].append(month)
+    return sorted(unique.values(),key=lambda r:(r['date'] or '',r['name'],r['status']),reverse=True)
 
 
 class PlainText(HTMLParser):
@@ -232,6 +252,8 @@ def parse_feed(text,source):
                 when=datetime.fromisoformat(published.replace('Z','+00:00'))
             except ValueError:
                 when=None
+        if when is not None:
+            when=when.replace(tzinfo=timezone.utc) if when.tzinfo is None else when.astimezone(timezone.utc)
         title=plain(value('title'))
         excerpt=plain(value('description') or value('summary') or value('encoded'))[:900]
         rows.append(dict(id=hashlib.sha256(url.encode()).hexdigest()[:20],title=title,excerpt=excerpt,url=url,publisher=source['name'],
@@ -372,6 +394,25 @@ def earnings_records(frame,now):
     return rows
 
 
+def calendar_records(raw,symbol,sector,currency):
+    rows=[]
+    for field,typ in [('Earnings Date','earnings'),('Ex-Dividend Date','dividends')]:
+        values=raw.get(field,[])
+        if not isinstance(values,list):
+            values=[values]
+        dates=sorted({when.isoformat()[:10] for when in values if hasattr(when,'isoformat')})
+        # Yahoo's two earningsDate values describe an estimate window, not two reports.
+        for when in dates[:1] if typ=='earnings' else dates:
+            row=dict(type=typ,date=when,symbol=symbol,sector=sector,
+                     status='provider estimate' if typ=='earnings' else 'provider date',amount=None,
+                     payment_date=str(raw.get('Dividend Date') or '')[:10],currency=currency,
+                     source='Yahoo Finance',url='https://finance.yahoo.com/quote/'+quote(symbol,safe='')+'/calendar/')
+            if typ=='earnings' and len(dates)>1:
+                row['date_end']=dates[-1]
+            rows.append(row)
+    return rows
+
+
 def collect_instrument(symbol,settings,now):
     import yfinance as yf
     ticker=yf.Ticker(symbol)
@@ -470,22 +511,18 @@ def collect_instrument(symbol,settings,now):
     if kind in ('stock','fund'):
         def calendar():
             raw=ticker.calendar or {} if kind=='stock' else {}
-            rows=[]
-            for field,typ in [('Earnings Date','earnings'),('Ex-Dividend Date','dividends')]:
-                values=raw.get(field,[])
-                if not isinstance(values,list):
-                    values=[values]
-                for when in values:
-                    if hasattr(when,'isoformat'):
-                        rows.append(dict(type=typ,date=when.isoformat()[:10],symbol=symbol,sector=record['sector'],
-                                         status='provider estimate' if typ=='earnings' else 'provider date',
-                                         amount=None,
-                                         payment_date=str(raw.get('Dividend Date') or '')[:10],currency=record['currency']))
-            return rows
+            return calendar_records(raw,symbol,record['sector'],record['currency'])
         record['calendar']=load('Yahoo:calendar:'+symbol,86400,calendar) or []
         if kind=='stock':
             dated=load('Yahoo:earnings:'+symbol,86400,lambda:earnings_records(ticker.get_earnings_dates(limit=12),now)) or []
             dates={r['date'] for r in dated}
-            record['calendar']=[r for r in record['calendar'] if r['type']!='earnings' or r['date'] not in dates]+dated
+            record['calendar']=[r for r in record['calendar'] if r['type']!='earnings' or not any(
+                r['date']<=day<=r.get('date_end',r['date']) for day in dates)]+dated
+            for event in record['calendar']:
+                if event['type']=='earnings':
+                    event['source']='Yahoo Finance'
+                    event['url']='https://finance.yahoo.com/calendar/earnings?symbol='+quote(symbol,safe='')
+                    event['eps_currency']=info.get('financialCurrency')
+                    event['eps_unit']=info['financialCurrency']+'/share' if info.get('financialCurrency') else None
     record['distributions']=[dict(date=r['date'],amount=r['dividend'],currency=record['currency']) for r in hist if r.get('dividend')]
     return record

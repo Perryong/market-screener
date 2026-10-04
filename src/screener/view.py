@@ -176,7 +176,7 @@ def render(payload):
               number(r['plan_rr'])+' gross R:R, planned' if r.get('plan_rr') is not None else '— net R:R')
         items = checks(r)
         details = checklist(items)+(f'<p>{e(r.get("source","Data unavailable"))} · Setup close {stamp(r.get("setup_close"))} · Hourly close {stamp(r.get("hourly_close"))}</p>'
-                   f'<p>{e(reasons)}. {e(r.get("paper_note",""))} {e(r.get("quote_error") or "")}</p>'
+                   f'<p>{e(reasons)}. {e(r.get("paper_note",""))} {e(r.get("quote_error") or "")} {e(r.get("rebaseline_note") or "")}</p>'
                    f'<p>Range {display_price(r.get("lower"),quote_currency(r))}–{display_price(r.get("upper"),quote_currency(r))} · ATR {display_price(r.get("atr"),quote_currency(r))} · '
                    f'Compression {number(r.get("compression"))} · Trigger {stamp(r.get("trigger"))}</p>'+chart(r))
         rows.append(f'''<tbody class="candidate {e((r.get('side') or '').lower())}" data-side="{e(r.get('side') or '')}" data-market="{e(r['market'])}" data-status="{e(state)}" data-regime="{e(r['regime'])}" data-symbol="{e(r['symbol'])}" data-time="{r['checked_at']}">

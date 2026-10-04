@@ -100,25 +100,40 @@ class Cache:
         self.store.put('cache:'+key,value)
 
 
-def process(store, bundle, settings, paper, now):
+def process(store, bundle, settings, paper, now, *, rebaseline_inactive=False):
     key = bundle['market']+':'+bundle['symbol']
     saved = store.get('signal:'+key)
+    archived = None
     context = fingerprint([bundle.get('source'), {k:v for k,v in settings.items() if k not in ('round_trip_cost_bps','slippage_bps')}])
     try:
         if saved and saved.get('context',context) != context:
             raise DataError('Feed or strategy changed; use a new state directory')
         result, state, events = engine.evaluate(bundle,saved,settings,now)
-    except DataError:
-        # Keep unknown exposure visible even when signal history cannot resume.
-        for p in store.trades():
-            if p['key']==key and p['status']=='OPEN':
-                store.trade(dict(p,status='UNSCORABLE',exit_reason='SIGNAL_HISTORY_UNVERIFIED'))
-        raise
+    except DataError as exc:
+        recoverable = (rebaseline_inactive and saved
+            and saved.get('status') in ('WATCHING', 'DEVELOPING', 'INVALIDATED', 'MISSED', 'EXPIRED')
+            and str(exc) == 'Missing/revised anchor; explicit rebaseline required'
+            and not any(p['key'] == key and p['status'] in ('OPEN', 'UNSCORABLE') for p in store.trades()))
+        if not recoverable:
+            # Keep unknown exposure visible even when signal history cannot resume.
+            for p in store.trades():
+                if p['key']==key and p['status']=='OPEN':
+                    store.trade(dict(p,status='UNSCORABLE',exit_reason='SIGNAL_HISTORY_UNVERIFIED'))
+            raise
+        # Explicit opt-in discards no audit evidence and never replays historical entries.
+        result, state, events = engine.evaluate(bundle, None, settings, now)
+        archive_key = 'rebaseline:' + key + ':' + fingerprint([now, saved])
+        archived = dict(at=now, reason=str(exc), signal=saved,
+                        bundle=store.get('bundle:'+key), result=store.get('result:'+key))
+        result['rebaseline'] = dict(at=now, previous_status=saved['status'], archive_key=archive_key)
+        result['rebaseline_note'] = 'Prior candle evidence changed or expired; inactive setup restarted from latest completed bars. Prior evidence archived; no historical entry replayed.'
     state['context'] = context
     result.update(source=bundle.get('source','recorded data'), quote=bundle.get('quote'),
                   quote_error=bundle.get('quote_error'), candles=bundle['setup'][-40:])
     store.db.execute('BEGIN IMMEDIATE')
     with store.db:
+        if archived is not None:
+            store.db.execute('INSERT INTO kv VALUES (?,?)', (archive_key, json_text(archived)))
         trades = store.trades()
         for p in trades:
             if p['key'] == key and p['status'] == 'OPEN':
@@ -158,7 +173,7 @@ def process(store, bundle, settings, paper, now):
     return result
 
 
-def scan(store, config, now, scheduled=False, only=None):
+def scan(store, config, now, scheduled=False, only=None, *, rebaseline_inactive=False):
     data = feeds.MarketData(config,Cache(store),now)
     errors, updates = [], 0
     for market in ('stocks','crypto'):
@@ -171,10 +186,11 @@ def scan(store, config, now, scheduled=False, only=None):
             due = feeds.slot(market,now,sessions,active)
             full_due = feeds.slot(market,now,sessions,False)
             last = store.get('job:'+market,{})
-            if scheduled and (due is None or last.get('done',0)>=due or now-last.get('attempt',0)<300):
+            initial_scan = not last
+            if scheduled and (not initial_scan and (due is None or last.get('done',0)>=due) or now-last.get('attempt',0)<300):
                 continue
             store.put('job:'+market, dict(last,attempt=now))
-            full_scan = not scheduled or last.get('full_done',0) < (full_due or 0)
+            full_scan = initial_scan or not scheduled or (last.get('full_done') or 0) < (full_due or 0)
             try:
                 benchmark = data.stock('SPY')['setup'] if market=='stocks' else data.crypto('BTCUSDT',daily=True)
                 context = engine.regime(benchmark)
@@ -200,7 +216,8 @@ def scan(store, config, now, scheduled=False, only=None):
                     bundle['benchmark'] = benchmark
                     checked = max(now,time.time())
                     paper_settings = config['paper'] if symbol in config[market]['symbols'] else dict(config['paper'],enabled=False)
-                    process(store,bundle,config['strategy'],paper_settings,checked)
+                    process(store,bundle,config['strategy'],paper_settings,checked,
+                            rebaseline_inactive=rebaseline_inactive)
                     store.put('bundle:'+key, bundle)
                     updates += 1
                 except (DataError,KeyError,TypeError,ValueError,IndexError) as exc:
@@ -211,7 +228,7 @@ def scan(store, config, now, scheduled=False, only=None):
                               regime=context,reasons=[reason],checked_at=now,score=0))
                     errors.append(key+': '+reason)
             store.put('job:'+market,dict(attempt=now,done=last.get('done',0) if failed else due or now,
-                      full_done=full_due if full_scan and not failed else last.get('full_done',0)))
+                      full_done=(full_due or 0) if full_scan and not failed else (last.get('full_done') or 0)))
         except (DataError,KeyError,TypeError,ValueError,IndexError) as exc:
             reason = str(exc) if isinstance(exc,DataError) else 'Provider schema invalid'
             errors.append(market+': '+reason)

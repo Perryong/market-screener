@@ -243,3 +243,57 @@ def test_xbrl_facts_reject_another_entity():
     fact={'value':'100','dimensions':{'concept':'ifrs-full:Assets','unit':'iso4217:EUR','period':'2025-01-01T00:00:00','entity':'lei:'+'B'*20}}
     with pytest.raises(ValueError,match='entity'):
         api().xbrl_facts({'facts':{'a':fact}},'https://filings.xbrl.org/report','2025-02-01',expected_lei='A'*20)
+
+
+def test_connection_without_resource_evidence_cannot_retain_available_status():
+    snapshot={'generated_at':1000,'api_data':{'connections':[
+        {'id':'Marketaux','status':'available','missing':[]},
+        {'id':'SEC','status':'configuration_required','missing':['SEC_USER_AGENT']},
+        {'id':'TradingView','status':'display_only','missing':[]}]},'resources':[]}
+    api().connection_status(snapshot)
+    assert [row['status'] for row in snapshot['api_data']['connections']] == [
+        'not_verified','configuration_required','display_only']
+
+
+@pytest.mark.parametrize('resource,expected',[
+    ({'fetched_at':950,'attempted_at':950,'status':'ok','error':''},'available'),
+    ({'fetched_at':900,'attempted_at':900,'status':'ok','error':''},'stale'),
+    ({'fetched_at':950,'attempted_at':990,'status':'ok','error':'Provider unavailable'},'stale'),
+    ({'fetched_at':1100,'attempted_at':1100,'status':'ok','error':''},'not_verified'),
+])
+def test_connection_status_uses_success_age_and_failure_evidence(resource,expected):
+    snapshot={'generated_at':800,'api_refreshed_at':1000,
+        'api_data':{'connections':[{'id':'Kraken','status':'not_verified','missing':[]}]},
+        'resources':[dict(resource,id='Kraken:quotes',max_age_seconds=60)]}
+    api().connection_status(snapshot)
+    connection=snapshot['api_data']['connections'][0]
+    assert connection['status']==expected
+    assert connection['resources_total']==1
+    assert connection['resources_ok']==(1 if expected=='available' else 0)
+
+
+def test_connection_status_reports_partial_current_coverage_and_dated_evidence():
+    snapshot={'generated_at':1000,'api_data':{'connections':[{'id':'RSS','status':'not_verified','missing':[]}]},
+        'resources':[
+            {'id':'Feed:a','status':'ok','fetched_at':950,'attempted_at':950,'max_age_seconds':60},
+            {'id':'Feed:b','status':'ok','fetched_at':900,'attempted_at':900,'max_age_seconds':60},
+            {'id':'Feed:c','status':'unavailable','fetched_at':0,'attempted_at':990,'max_age_seconds':60}]}
+    api().connection_status(snapshot)
+    row=snapshot['api_data']['connections'][0]
+    assert row['status']=='partial'
+    assert (row['resources_total'],row['resources_ok'],row['resources_stale'],row['resources_unavailable'])==(3,1,1,1)
+    assert (row['last_success_at'],row['last_attempt_at'])==(950,990)
+
+
+@pytest.mark.parametrize('ttl',[None,0,-60])
+def test_legacy_or_invalid_resource_lifetime_cannot_certify_current_provider(ttl):
+    snapshot={'generated_at':1000,'api_data':{'connections':[{'id':'Kraken','status':'available','missing':[]}]},
+        'resources':[{'id':'Kraken:quotes','status':'ok','fetched_at':950,'attempted_at':950}]}
+    if ttl is not None:
+        snapshot['resources'][0]['max_age_seconds']=ttl
+    api().connection_status(snapshot)
+    connection=snapshot['api_data']['connections'][0]
+    assert connection['status']=='not_verified'
+    assert connection['resources_ok']==0
+    assert connection['resources_unverified']==1
+    assert connection['resources_unavailable']==0

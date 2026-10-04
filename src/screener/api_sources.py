@@ -352,15 +352,37 @@ def merge(snapshot, supplemental):
     return snapshot
 
 
-def connection_status(snapshot):
+def connection_status(snapshot, now=None):
+    """Describe verified resource coverage, not merely configured credentials."""
+    if now is None:
+        now=max(finite(snapshot.get(key)) or 0 for key in ('generated_at','api_refreshed_at'))
+    def resource_status(resource):
+        status=resource.get('status','unavailable')
+        fetched=finite(resource.get('fetched_at')) or 0
+        ttl=finite(resource.get('max_age_seconds'))
+        if status=='ok':
+            if fetched<=0 or fetched>now or ttl is None or ttl<=0:
+                return 'unverified'
+            if resource.get('error') or now-fetched>=ttl:
+                return 'stale'
+        return status
     for connection in snapshot.get('api_data',{}).get('connections',[]):
         if connection['status'] in ('configuration_required','display_only'):
             continue
         prefix='Feed' if connection['id']=='RSS' else connection['id']
         resources=[r for r in snapshot.get('resources',[]) if r['id'].startswith(prefix+':')]
+        statuses=[resource_status(r) for r in resources]
+        connection.update(resources_total=len(resources),resources_ok=statuses.count('ok'),
+            resources_stale=statuses.count('stale'),
+            resources_unverified=statuses.count('unverified'),
+            resources_unavailable=sum(status not in ('ok','stale','unverified') for status in statuses),
+            last_success_at=max((r.get('fetched_at') for r in resources
+                if 0<(finite(r.get('fetched_at')) or 0)<=now),default=None),
+            last_attempt_at=max((r.get('attempted_at') for r in resources
+                if 0<(finite(r.get('attempted_at')) or 0)<=now),default=None))
+        connection['status']='not_verified'
         if resources:
-            statuses={r['status'] for r in resources}
-            connection['status']='available' if statuses=={'ok'} else 'partial' if 'ok' in statuses else 'stale' if 'stale' in statuses else 'unavailable'
+            connection['status']='available' if set(statuses)=={'ok'} else 'partial' if 'ok' in statuses else 'stale' if 'stale' in statuses else 'not_verified' if 'unverified' in statuses else 'unavailable'
 
 
 def refresh_sources(store,settings,now):

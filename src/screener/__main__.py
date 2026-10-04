@@ -41,12 +41,16 @@ def main(argv=None):
     parser.add_argument('--symbols',help='Comma-separated override for --market')
     parser.add_argument('--bundle',type=Path,help='Replay input or export output file')
     parser.add_argument('--notify',action='store_true',help='Send fresh transitions to configured Telegram recipients')
+    parser.add_argument('--rebaseline-inactive', action='store_true',
+                        help='Archive revised inactive signals and start at latest candles; refuses unresolved exposure')
     args = parser.parse_args(argv)
     mode = 'demo' if args.command in ('demo','research-demo') else 'replay' if args.command=='replay' else 'live'
     state_dir = args.state_dir or Path('.screener')/mode
     out = args.out or state_dir/'public'
     if args.notify and args.command not in ('once','tick'):
         parser.error('--notify is only available for live once/tick commands')
+    if args.rebaseline_inactive and args.command not in ('once', 'tick'):
+        parser.error('--rebaseline-inactive is only available for live once/tick commands')
     if args.symbols and not args.market:
         parser.error('--symbols requires --market')
     if args.command in ('export','replay') and not args.bundle:
@@ -108,7 +112,8 @@ def main(argv=None):
                         replay(store,bundle,config['strategy'],config['paper'])
                         store.put('replay_id',ident)
                 else:
-                    _, errors = scan(store,config,now,scheduled=args.command=='tick',only=args.market)
+                    _, errors = scan(store,config,now,scheduled=args.command=='tick',only=args.market,
+                                     rebaseline_inactive=args.rebaseline_inactive)
                     if args.notify:
                         try:
                             notify(store,now)

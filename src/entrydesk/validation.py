@@ -11,25 +11,40 @@ STRATEGY_ID = 'trend-breakout-v2'
 COSTS = {'stocks': .0005, 'crypto': .0015, 'commodities': .001}
 
 
+def pattern_evidence(bars, factors):
+    """Measured predicates for the same fixed rule used by live and replay paths."""
+    prior, last = bars[-21:-1], bars[-1]
+    median = statistics.median(b['volume'] for b in prior)
+    upper, lower = max(b['high'] for b in prior), min(b['low'] for b in prior)
+    side = 'LONG' if last['close'] > upper else 'SHORT' if last['close'] < lower else None
+    tm = factors.get('trend_momentum', {}) if isinstance(factors, dict) else {}
+    tm = tm if isinstance(tm, dict) else {}
+    adx, rsi, hist = (tm.get(k) for k in ('adx_1h', 'rsi_1h', 'macd_hist'))
+    valid = lambda value: not isinstance(value, bool) and isinstance(value, (int, float)) and math.isfinite(value)
+    ratio = last['volume'] / median if median > 0 else None
+    checks = [
+        dict(id='breakout', label='20-bar breakout', passed=side is not None,
+             value=last['close'], requirement='close > prior high or < prior low'),
+        dict(id='volume', label='Breakout volume', passed=median > 0 and last['volume'] >= 1.5 * median,
+             value=ratio, requirement='>= 1.5 x prior 20-bar median'),
+        dict(id='adx', label='Hourly trend strength', passed=valid(adx) and 22 <= adx <= 100,
+             value=adx if valid(adx) else None, requirement='ADX >= 22'),
+        dict(id='momentum', label='Directional RSI / MACD',
+             passed=valid(rsi) and valid(hist) and 0 <= rsi <= 100 and
+                 ((side == 'LONG' and rsi >= 50 and hist > 0) or (side == 'SHORT' and rsi <= 50 and hist < 0)),
+             value=side, requirement='long: RSI >= 50, MACD > 0; short: RSI <= 50, MACD < 0'),
+    ]
+    return dict(close=last['close'], breakout_high=upper, breakout_low=lower, volume_ratio=ratio,
+                adx=adx if valid(adx) else None, rsi=rsi if valid(rsi) else None,
+                macd_hist=hist if valid(hist) else None, price_side=side, checks=checks)
+
+
 def pattern(bars, factors=None):
     if len(bars) < 60:
         return None
-    prior, last = bars[-21:-1], bars[-1]
-    median = statistics.median(b['volume'] for b in prior)
-    if median <= 0 or last['volume'] < 1.5 * median:
-        return None
-    side = 'LONG' if last['close'] > max(b['high'] for b in prior) else 'SHORT' if last['close'] < min(b['low'] for b in prior) else None
-    if side is None or factors is None:
-        return side
-    if not isinstance(factors,dict) or not isinstance(factors.get('trend_momentum'),dict):
-        return None
-    tm=factors['trend_momentum']
-    adx,rsi,hist=(tm.get(k) for k in ('adx_1h','rsi_1h','macd_hist'))
-    if any(isinstance(v,bool) or not isinstance(v,(int,float)) or not math.isfinite(v) for v in (adx,rsi,hist)):
-        return None
-    if not 22<=adx<=100 or not 0<=rsi<=100:
-        return None
-    return side if (side=='LONG' and hist>0 and rsi>=50) or (side=='SHORT' and hist<0 and rsi<=50) else None
+    evidence = pattern_evidence(bars, factors)
+    checks = evidence['checks'] if factors is not None else evidence['checks'][:2]
+    return evidence['price_side'] if all(check['passed'] for check in checks) else None
 
 
 def confirmation(bars, bars_15m, side):

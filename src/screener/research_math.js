@@ -74,12 +74,20 @@ const ResearchMath = (() => {
   function calendarRows(records,type,window,today) {
     const current=new Date(today+'T00:00:00Z'),day=86400000,monday=current.getTime()-((current.getUTCDay()+6)%7)*day;
     let start=current.getTime(),end=start+7*day;
-    if(window==='week'){start=monday;end=start+7*day;}else if(window==='next'){start=monday+7*day;end=start+7*day;}else if(window==='later'){start=monday+14*day;end=start+90*day;}else if(window==='month'){end=start+30*day;}else if(window==='past'){end=start;start-=30*day;}
-    return records.filter(r=>r.type===type&&typeof r.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(r.date)&&Date.parse(r.date+'T00:00:00Z')>=start&&Date.parse(r.date+'T00:00:00Z')<end).sort((a,b)=>a.date.localeCompare(b.date)||String(a.symbol||'').localeCompare(String(b.symbol||'')));
+    if(window==='week'){start=monday;end=start+7*day;}else if(window==='next'){start=monday+7*day;end=start+7*day;}else if(window==='later'){start=monday+14*day;end=start+90*day;}else if(window==='upcoming'){end=start+90*day;}else if(window==='month'){end=start+30*day;}else if(window==='past'){end=start;start-=30*day;}
+    const valid=d=>typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(Date.parse(d+'T00:00:00Z'))&&new Date(d+'T00:00:00Z').toISOString().slice(0,10)===d;
+    return records.filter(r=>r.type===type&&valid(r.date)&&Date.parse((valid(r.date_end)&&r.date_end>=r.date?r.date_end:r.date)+'T00:00:00Z')>=start&&Date.parse(r.date+'T00:00:00Z')<end).sort((a,b)=>a.date.localeCompare(b.date)||String(a.symbol||'').localeCompare(String(b.symbol||'')));
+  }
+  function resourceStatus(resource,now=Date.now()/1000) {
+    if(!resource)return 'unverified';
+    if(resource.status!=='ok')return resource.status||'unverified';
+    if(resource.error)return 'stale';
+    if(!numeric(resource.fetched_at)||resource.fetched_at<=0||resource.fetched_at>now||!numeric(resource.max_age_seconds)||resource.max_age_seconds<=0)return 'unverified';
+    return now-resource.fetched_at>=resource.max_age_seconds?'stale':'ok';
   }
   function newsRows(records,filters={}) {
     return records.filter(r=>(!filters.category||r.category===filters.category)&&(!filters.ticker||(r.tickers||[]).includes(filters.ticker))&&(!filters.longform||r.longform)&&(!filters.query||`${r.title} ${r.excerpt||''} ${r.publisher}`.toLowerCase().includes(filters.query.toLowerCase()))).sort((a,b)=>(Date.parse(b.published)||0)-(Date.parse(a.published)||0));
   }
-  return {numeric,filterInstruments,validateScreen,compareHistory,fundOverlap,presetLists,validatePortfolio,portfolioExposure,marketSummary,calendarRows,newsRows};
+  return {numeric,filterInstruments,validateScreen,compareHistory,fundOverlap,presetLists,validatePortfolio,portfolioExposure,marketSummary,calendarRows,newsRows,resourceStatus};
 })();
 if (typeof module !== 'undefined') module.exports = ResearchMath;

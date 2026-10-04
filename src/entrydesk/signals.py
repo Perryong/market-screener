@@ -1,6 +1,6 @@
 """Candidate pattern and fail-closed paper readiness gates."""
 import math
-from .validation import COSTS, STRATEGY_ID, confirmation, pattern, readiness, target_price
+from .validation import COSTS, STRATEGY_ID, confirmation, pattern, readiness, target_price, pattern_evidence
 
 
 def evaluate(bundle, now, validation=None):
@@ -26,6 +26,22 @@ def evaluate(bundle, now, validation=None):
         factors = build_factors(bars, confirm[-96:])
         result['signal_time']=bars[-1]['end']
         result.update(factors=factors, score=factors.get('composite_alpha_score'))
+        evidence = pattern_evidence(bars, factors)
+        quote = bundle.get('quote') or {}
+        entry, observed = quote.get('price'), quote.get('time')
+        quote_fresh = all(not isinstance(x, bool) and isinstance(x, (int, float)) and math.isfinite(x)
+                          for x in (entry, observed)) and entry > 0 and 0 <= now - observed <= 120
+        evidence.update(hourly_end=bars[-1]['end'], quote_time=observed if isinstance(observed, (int, float)) and not isinstance(observed, bool) and math.isfinite(observed) else None)
+        evidence['checks'].extend([
+            dict(id='confirmation', label='Completed 15-minute confirmation',
+                 passed=confirmation(bars, confirm, evidence['price_side']), value=None,
+                 requirement='15m close confirms direction at the hourly signal time'),
+            dict(id='hourly_fresh', label='Hourly signal freshness',
+                 passed=now - bars[-1]['end'] <= 75 * 60, value=now - bars[-1]['end'], requirement='<= 4500 seconds'),
+            dict(id='quote_fresh', label='Actual quote freshness', passed=quote_fresh,
+                 value=now - observed if evidence['quote_time'] is not None else None, requirement='<= 120 seconds'),
+        ])
+        result['setup_evidence'] = evidence
         side = pattern(bars, factors)
         if not side:
             reasons.append('fixed breakout/volume/ADX/RSI/MACD predicates not present')
@@ -39,14 +55,19 @@ def evaluate(bundle, now, validation=None):
         prior_atr = build_factors(bars[:-1], [])['volatility_channel'].get('atr_1h')
         if isinstance(prior_atr, (int, float)) and math.isfinite(prior_atr) and prior_atr > 0:
             reference = bars[-1]['close']
-            result['reference_levels'] = {'entry': reference, 'stop': reference - sign * prior_atr,
-                'target': target_price(reference, prior_atr, side, COSTS[bundle['asset_class']]),
-                'basis': 'completed hourly close; non-executable'}
+            cost = COSTS[bundle['asset_class']]
+            reference_stop = reference - sign * prior_atr
+            reference_target = target_price(reference, prior_atr, side, cost)
+            valid_reference, _, _ = validate_quote('BUY_LONG' if sign == 1 else 'SELL_SHORT', reference, reference_target, reference_stop)
+            if valid_reference:
+                result['reference_levels'] = {'entry': reference, 'stop': reference_stop,
+                    'target': reference_target,
+                    'net_rr': (sign * (reference_target - reference) - cost * (reference + reference_target)) / (prior_atr + cost * (reference + reference_stop)),
+                    'cost_per_side': cost, 'signal_time': bars[-1]['end'],
+                    'basis': 'completed hourly close; non-executable'}
         if not confirmation(bars,confirm,side):
             reasons.append('completed 15-minute breakout confirmation missing')
-        quote = bundle.get('quote') or {}
-        entry, observed = quote.get('price'), quote.get('time')
-        if any(isinstance(x, bool) or not isinstance(x, (int, float)) or not math.isfinite(x) for x in (entry, observed)) or entry <= 0 or not 0 <= now - observed <= 120:
+        if not quote_fresh:
             reasons.append('actual quote missing or older than 120 seconds')
         else:
             atr = factors['volatility_channel'].get('atr_1h')
