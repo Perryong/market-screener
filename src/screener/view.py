@@ -19,11 +19,22 @@ def number(value):
     return f'{value:,.{places}f}'.rstrip('0').rstrip('.')
 
 
+def display_price(value, currency):
+    """Keep source values intact; the combined desk formats these marked display nodes."""
+    if value is None:
+        return '—'
+    return f'<span data-usd-value="{e(value)}" data-usd-currency="{e(currency)}">{number(value)}</span>'
+
+
+def quote_currency(record):
+    return record.get('currency') or ('USDT' if record.get('market')=='crypto' else 'USD')
+
+
 def level(r, key):
     """Real level when the setup has one; otherwise the display-only plan, tagged as such."""
     if r.get(key) is not None or r.get('plan_'+key) is None:
-        return number(r.get(key))
-    return number(r['plan_'+key])+' <em class="plan">planned</em>'
+        return display_price(r.get(key),quote_currency(r))
+    return display_price(r['plan_'+key],quote_currency(r))+' <em class="plan">planned</em>'
 
 
 def side(r):
@@ -111,7 +122,7 @@ def record_panel(record):
         verdict = f'Not enough history to judge — {n} of {MIN_TRADES} trades'
     else:
         verdict = f'Win rate {record["win_rate"]:.0%} over {n} closed trades'
-    pnl = ', '.join(f'{number(v)} {e(c)}' for c,v in sorted(record['pnl'].items())) or '—'
+    pnl = ', '.join(f'{display_price(v,c)} <small>source {e(c)}</small>' for c,v in sorted(record['pnl'].items())) or '—'
     stats = (f'<section class="stats"><div class="stat"><strong>{n}</strong><span>Closed paper trades</span></div>'
              f'<div class="stat"><strong>{number(record["avg_r"])}</strong><span>Average R</span></div>'
              f'<div class="stat"><strong>{number(record["max_drawdown_r"]) if n else "—"}</strong><span>Max drawdown (R)</span></div>'
@@ -147,7 +158,7 @@ def chart(r):
     for v,names in sorted(grouped.items(),reverse=True):
         label_y = max(y(v)+4,label_y+13)
         items.append(f'<line x1="8" x2="635" y1="{y(v):.1f}" y2="{y(v):.1f}" stroke="#899aa9" stroke-dasharray="4 5"/>'
-                     f'<text x="640" y="{label_y:.1f}" fill="#d0d9e2" font-size="10">{e("/".join(names))} {number(v)}</text>')
+                     f'<text data-usd-value="{e(v)}" data-usd-currency="{e(quote_currency(r))}" data-usd-label="{e("/".join(names))}" x="640" y="{label_y:.1f}" fill="#d0d9e2" font-size="10">{e("/".join(names))} {number(v)}</text>')
     return '<svg viewBox="0 0 790 180" role="img" aria-label="Completed candles with setup levels">'+''.join(items)+'</svg>'
 
 
@@ -166,7 +177,7 @@ def render(payload):
         items = checks(r)
         details = checklist(items)+(f'<p>{e(r.get("source","Data unavailable"))} · Setup close {stamp(r.get("setup_close"))} · Hourly close {stamp(r.get("hourly_close"))}</p>'
                    f'<p>{e(reasons)}. {e(r.get("paper_note",""))} {e(r.get("quote_error") or "")}</p>'
-                   f'<p>Range {number(r.get("lower"))}–{number(r.get("upper"))} · ATR {number(r.get("atr"))} · '
+                   f'<p>Range {display_price(r.get("lower"),quote_currency(r))}–{display_price(r.get("upper"),quote_currency(r))} · ATR {display_price(r.get("atr"),quote_currency(r))} · '
                    f'Compression {number(r.get("compression"))} · Trigger {stamp(r.get("trigger"))}</p>'+chart(r))
         rows.append(f'''<tbody class="candidate {e((r.get('side') or '').lower())}" data-side="{e(r.get('side') or '')}" data-market="{e(r['market'])}" data-status="{e(state)}" data-regime="{e(r['regime'])}" data-symbol="{e(r['symbol'])}" data-time="{r['checked_at']}">
 <tr><td><a href="https://www.tradingview.com/chart/?symbol={quote(tv)}" target="_blank" rel="noopener noreferrer">{e(r['symbol'])} ↗</a><small>{e(r['market'])}</small></td>
@@ -175,7 +186,7 @@ def render(payload):
 <td>{level(r,'entry')}<small class="stop">Stop {level(r,'stop')}</small></td><td><span class="target">{level(r,'target')}</span><small>{rr}</small></td>
 <td>{number(r.get('score'))}</td></tr><tr class="detail"><td colspan="8"><details><summary>Evidence, levels & chart</summary>{details}</details></td></tr></tbody>''')
     trades = ''.join(f'<tr><td>{e(t["symbol"])}</td><td>{e(t["status"])}</td><td>{e(t["regime"])}</td>'
-                     f'<td>{number(t["entry"])}</td><td>{number(t.get("exit"))}</td><td>{number(t.get("pnl"))} {e(t["currency"])}</td>'
+                     f'<td>{display_price(t["entry"],t["currency"])}</td><td>{display_price(t.get("exit"),t["currency"])}</td><td>{display_price(t.get("pnl"),t["currency"])} <small>source {e(t["currency"])}</small></td>'
                      f'<td>{e(t.get("exit_reason","Awaiting completed execution bars"))}</td></tr>' for t in payload['trades'])
     counts = {s:sum(r['status']==s for r in results) for s in ('DEVELOPING','CONFIRMED','ENTRY_ELIGIBLE','DATA_UNAVAILABLE')}
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">

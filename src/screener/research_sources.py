@@ -332,6 +332,27 @@ def frame_records(frame):
     return records
 
 
+def financial_unit(metric, currency):
+    """Classify Yahoo statement labels using the statement's reporting currency.
+
+    Most statement values are monetary; EPS, share counts, tax rates and
+    explicitly named counts are exceptions. SEC/XBRL facts already supply units
+    and should retain them rather than going through this Yahoo label helper.
+    """
+    label=' '.join(str(metric or '').lower().split())
+    currency=str(currency or 'Unknown')
+    if re.search(r'\beps\b|\bper share\b',label):
+        return currency+'/share'
+    if (label in ('share issued','shares issued') or
+            re.search(r'\b(?:average shares|shares number|shares outstanding)\b',label)):
+        return 'shares'
+    if label=='tax rate for calcs' or re.search(r'\bratio\b',label):
+        return 'ratio'
+    if re.search(r'\b(?:number|count)\b',label):
+        return 'count'
+    return currency
+
+
 def discover(yf):
     records=[]
     for query in ('most_actives','day_gainers','day_losers'):
@@ -416,9 +437,8 @@ def collect_instrument(symbol,settings,now):
     if kind=='stock':
         def financials():
             return frame_records(ticker.income_stmt)+frame_records(ticker.balance_sheet)+frame_records(ticker.cashflow)
-        record['financials']=load('Yahoo:financials:'+symbol,86400,financials) or []
-        for row in record['financials']:
-            row['unit']=str(info.get('financialCurrency') or record['currency'])
+        record['financials']=[dict(row,unit=financial_unit(row.get('metric'),record['financial_currency']))
+                              for row in load('Yahoo:financials:'+symbol,86400,financials) or []]
         if region=='US' and os.environ.get('SEC_USER_AGENT'):
             sec=collect_sec(symbol,settings,now)
             record['financials']+=sec['facts']

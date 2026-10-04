@@ -62,3 +62,25 @@ def test_strategy_route_and_public_journal_are_safely_embedded():
     assert public['strategy_id']=='trend-breakout-v2'
     assert public['journal']['recent'][0]['outcome']['net_r']==2
     assert 'SECRET' not in html
+
+
+def test_usd_runtime_safe_idempotent_and_original_inputs_unchanged():
+    from copy import deepcopy
+    from screener.research_view import with_usd_display
+    source={'instruments':[{'symbol':'EURUSD=X','price':1.2,'as_of':'2026-10-02','source':'</script><script>bad</script>'}]}
+    original=deepcopy(source)
+    first=with_usd_display('<html><head></head><body></body></html>',source)
+    assert first==with_usd_display(first,source)
+    assert source==original
+    assert first.count('id="usd-display-runtime"')==1
+    assert '<script>bad</script>' not in first
+
+
+def test_breakout_marks_source_prices_without_changing_trade_inputs():
+    from screener.view import level
+    row={'market':'crypto','plan_entry':100,'score':75}
+    html=level(row,'entry')
+    assert 'data-usd-value="100"' in html
+    assert 'data-usd-currency="USDT"' in html
+    assert 'planned' in html
+    assert row=={'market':'crypto','plan_entry':100,'score':75}

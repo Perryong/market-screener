@@ -2,7 +2,8 @@
 import json
 from html import escape
 from pathlib import Path
-from screener.research_view import render_app
+from screener.research_view import render_app, with_usd_display
+from screener.research_sources import financial_unit
 from screener.shared import atomic_text
 
 ENTRY_FIELDS = ('strategy_id','signal_time','symbol','asset_class','source','as_of','state','side','entry','stop','target','net_rr','score','factors','reasons','validation','reference_levels')
@@ -42,12 +43,20 @@ def main(root=None):
         path = docs/name
         if path.exists():
             atomic_text(path, json.dumps(load(path), ensure_ascii=False, allow_nan=False, separators=(',', ':'))+'\n')
+    research=load(docs/'research.json')
+    if research:
+        for record in research.get('instruments',[]):
+            for row in record.get('financials',[]):
+                if str(row.get('source','')).startswith('Yahoo'):
+                    row['unit']=financial_unit(row.get('metric'),record.get('financial_currency') or record.get('currency','Unknown'))
+        atomic_text(docs/'research.json',json.dumps(research,ensure_ascii=False,allow_nan=False,separators=(',',':'))+'\n')
     technical = (docs/'technical.html').read_text()
     # Replace the previous embedded public snapshot, preserving the original application.
     import re
     technical = re.sub(r'<script id="technical-data".*?</script>', '', technical, flags=re.S)
     technical = technical.replace('window.__DATA__ ||', "JSON.parse(document.getElementById('technical-data').textContent) ||")
     technical = '<script id="technical-data" type="application/json">'+embedded(load(docs/'data.json'))+'</script>'+technical
+    technical=with_usd_display(technical,research)
     atomic_text(docs/'technical.html', technical)
     atomic_text(docs/'index.html', render(load(docs/'latest.json') or {}, load(docs/'research.json'), load(docs/'entries.json'), technical))
 

@@ -185,7 +185,11 @@ def refresh(store, settings, now):
             for field in ('financials','filings','holdings','holdings_as_of','calendar','distributions'):
                 snapshot['instruments'][i][field]=previous_instruments.get(symbol,{}).get(field,snapshot['instruments'][i].get(field))
             continue
-        snapshot['instruments'][i]=sources.collect_instrument(symbol,runtime_settings,now)
+        record=sources.collect_instrument(symbol,runtime_settings,now)
+        # The core pass may already have retained a dated cached record. A
+        # missing detailed quote must not discard that fallback or its date.
+        if record.get('price') is not None or snapshot['instruments'][i].get('price') is None:
+            snapshot['instruments'][i]=record
     if settings.get('api_sources'):
         api_sources.merge(snapshot,supplemental)
     snapshot['resources']+=list(resource_map.values())

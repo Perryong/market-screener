@@ -16,17 +16,41 @@ NAV = [('Research',[('screener','Stock screener'),('compare','Compare stocks'),(
        ('Data',[('coverage','API connections & coverage')])]
 
 
+def with_usd_display(html, snapshot):
+    """Install the same display converter in isolated native/third-party-free frames."""
+    import re
+    subset={'instruments':[{**r,'history':r.get('history',[])[-16:]} for r in (snapshot or {}).get('instruments',[]) if r.get('symbol','').endswith('=X')],
+            'resources':(snapshot or {}).get('resources',[]),
+            'api_data':{'crypto':[r for r in (snapshot or {}).get('api_data',{}).get('crypto',[]) if r.get('id')=='tether']}}
+    data=json.dumps(subset,ensure_ascii=False,allow_nan=False,separators=(',',':')).replace('&','\\u0026').replace('<','\\u003c').replace('>','\\u003e')
+    runtime=(Path(__file__).parent/'usd_display.js').read_text()
+    runtime+="""
+window.__USD_DISPLAY__=USDDisplay.create(JSON.parse(document.getElementById('usd-display-data').textContent));
+document.addEventListener('DOMContentLoaded',()=>{
+  for(const node of document.querySelectorAll('[data-usd-value]')){
+    const source=node.dataset.usdCurrency, value=Number(node.dataset.usdValue);
+    node.textContent=(node.dataset.usdLabel?node.dataset.usdLabel+' ':'')+USDDisplay.format(window.__USD_DISPLAY__.convert(value,source));
+    const rate=window.__USD_DISPLAY__.rates[source];
+    node.setAttribute('title',value+' '+source+' original · FX '+(rate?.date||'USD base / unavailable'));
+  }
+});
+"""
+    html=re.sub(r'<script id="usd-display-(?:data|runtime)".*?</script>','',html,flags=re.S)
+    scripts='<script id="usd-display-data" type="application/json">'+data+'</script><script id="usd-display-runtime">'+runtime+'</script>'
+    return html.replace('<head>','<head>'+scripts,1) if '<head>' in html else scripts+html
+
+
 def render_app(payload, snapshot):
     missing=not snapshot
     snapshot=snapshot or empty_snapshot(payload['mode'],payload['generated_at'])
     base=Path(__file__).parent
     css=(base/'research.css').read_text()
-    js=(base/'research_math.js').read_text()+'\n'+(base/'research.js').read_text()
+    js=(base/'research_math.js').read_text()+'\n'+(base/'usd_display.js').read_text()+'\n'+(base/'research.js').read_text()
     data=json.dumps(snapshot,ensure_ascii=False,allow_nan=False,separators=(',',':')).replace('&','\\u0026').replace('<','\\u003c').replace('>','\\u003e').replace('\u2028','\\u2028').replace('\u2029','\\u2029')
     strategy=json.dumps(payload,ensure_ascii=False,allow_nan=False,separators=(',',':')).replace('<','\\u003c').replace('&','\\u0026')
     navigation=''.join('<div class="nav-group"><p>'+name+'</p>'+''.join(
         f'<a href="#/{route}" data-route="{route}">{escape(label)}</a>' for route,label in links)+'</div>' for name,links in NAV)
-    breakout=escape(render_breakout(payload),quote=True)
+    breakout=escape(with_usd_display(render_breakout(payload).replace('<div class="notice">','<div class="notice">USD display at dated snapshot FX; source budgets and trading rules are unchanged.</div><div class="notice">',1),snapshot),quote=True)
     notice='<div class="banner">No research snapshot. Run <code>python -m screener research</code> to collect free-source data.</div>' if missing else ''
     if snapshot['mode']!='live':
         notice+='<div class="banner demo-banner">SYNTHETIC RESEARCH DEMO · prices, companies and stories below are examples, not market facts.</div>'
