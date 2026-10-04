@@ -10,6 +10,23 @@ from screener.runtime import Store
 
 
 class ResearchTest(unittest.TestCase):
+    def test_resource_expiry_metadata_survives_cache_and_failure(self):
+        research=self.module()
+        with tempfile.TemporaryDirectory() as directory:
+            store=Store(Path(directory)/'journal.sqlite3')
+            try:
+                first=research.cached_resource(store,'Feed:test',60,100,lambda:['headline'])
+                cached=research.cached_resource(store,'Feed:test',60,110,lambda: self.fail('fresh cache fetched again'))
+                def fail():
+                    raise ValueError('offline')
+                stale=research.cached_resource(store,'Feed:test',60,200,fail)
+                for row in (first,cached,stale):
+                    self.assertEqual(row.get('max_age_seconds'),60)
+                    self.assertEqual(row['fetched_at'],100)
+                self.assertEqual(stale['status'],'stale')
+            finally:
+                store.close()
+
     def module(self):
         self.assertIsNotNone(importlib.util.find_spec('screener.research'), 'Research collection must exist')
         return importlib.import_module('screener.research')

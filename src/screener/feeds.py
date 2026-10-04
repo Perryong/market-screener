@@ -2,6 +2,7 @@
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 import os
+import math
 
 from .shared import get_json, iso, timestamp
 from .shared import DataError
@@ -181,7 +182,15 @@ class MarketData:
             bars.append(saved['rows'])
         if daily:
             return bars[0]
-        r = get_json(BINANCE+'/ticker/24hr', {'symbol':symbol})
+        quote, quote_error = None, None
+        try:
+            r = get_json(BINANCE+'/ticker/24hr', {'symbol':symbol})
+            price, observed = float(r['lastPrice']), float(r['closeTime'])/1000
+            if not math.isfinite(price) or price <= 0 or not math.isfinite(observed) or observed <= 0:
+                raise DataError('Invalid crypto quote')
+            quote = dict(price=price, time=observed)
+        except (DataError, KeyError, TypeError, ValueError, OverflowError):
+            quote_error = 'Live quote unavailable; entries blocked'
         return dict(symbol=symbol, market='crypto', source='Binance spot / UTC',
-                    setup=bars[0], hourly=bars[1], quote=dict(price=float(r['lastPrice']), time=float(r['closeTime'])/1000),
+                    setup=bars[0], hourly=bars[1], quote=quote, quote_error=quote_error,
                     market_open=True)

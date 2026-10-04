@@ -37,7 +37,10 @@ def load_settings(path, stock_symbols):
                     feeds=[dict(name='CNBC Markets',url='https://www.cnbc.com/id/100003114/device/rss/rss.html',category='Markets'),
                            dict(name='CNBC Technology',url='https://www.cnbc.com/id/19854910/device/rss/rss.html',category='Tech & AI'),
                            dict(name='Federal Reserve',url='https://www.federalreserve.gov/feeds/press_all.xml',category='Economy'),
-                           dict(name='Federal Reserve Speeches',url='https://www.federalreserve.gov/feeds/speeches.xml',category='Economy',longform=True)])
+                           dict(name='Federal Reserve Speeches',url='https://www.federalreserve.gov/feeds/speeches.xml',category='Economy',longform=True),
+                           dict(name='Federal Reserve FEDS Notes',url='https://www.federalreserve.gov/feeds/feds_notes.xml',category='Economy',longform=True),
+                           dict(name='NY Fed Liberty Street Economics',url='https://libertystreeteconomics.newyorkfed.org/feed/',category='Economy',longform=True),
+                           dict(name='ECB Blog',url='https://www.ecb.europa.eu/rss/blog.html',category='Economy',longform=True)])
     supplied={}
     if path and Path(path).exists():
         supplied = json.loads(Path(path).read_text())
@@ -68,10 +71,10 @@ def load_settings(path, stock_symbols):
 
 def cached_resource(store, key, ttl, now, loader, force=False):
     saved = store.get('research-cache:'+key)
-    if not force and saved and now-saved['fetched_at'] < ttl and saved['data'] is not None and not saved.get('error'):
-        return dict(saved,status='ok',error='')
+    if not force and saved and 0 <= now-saved['fetched_at'] < ttl and saved['data'] is not None and not saved.get('error'):
+        return dict(saved,status='ok',error='',max_age_seconds=ttl)
     if not force and saved and now-saved.get('attempted_at',0) < 900 and saved.get('error') and 'budget' not in saved['error']:
-        return saved
+        return dict(saved,max_age_seconds=ttl)
     try:
         data = loader()
         json_text(data)  # Reject nonfinite values before persistence.
@@ -81,6 +84,7 @@ def cached_resource(store, key, ttl, now, loader, force=False):
         result = dict(saved or dict(id=key,data=None,source=key.split(':')[0],fetched_at=0,observation_at=None),
                       attempted_at=now,status='stale' if saved and saved.get('data') is not None else 'unavailable',
                       error=str(exc)[:160] if isinstance(exc,DataError) else 'Provider unavailable or invalid response')
+    result['max_age_seconds']=ttl
     store.put('research-cache:'+key,result)
     return result
 

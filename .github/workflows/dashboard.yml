@@ -34,6 +34,7 @@ jobs:
       BLS_API_KEY: ${{ secrets.BLS_API_KEY }}
       EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
       COINGECKO_DEMO_API_KEY: ${{ secrets.COINGECKO_DEMO_API_KEY }}
+      MARKETAUX_API_TOKEN: ${{ secrets.MARKETAUX_API_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -50,26 +51,31 @@ jobs:
           restore-keys: private-screener-${{ github.ref_name }}-
 
       - name: Collect snapshot
+        id: snapshot
         continue-on-error: true
         timeout-minutes: 20
         env:
-          MARKETAUX_API_TOKEN: ${{ secrets.MARKETAUX_API_TOKEN }}
           MARKETAUX_DAILY_BUDGET: "90"
         run: uv run python dashboard/collect.py ${{ inputs.tier && format('--tier {0}', inputs.tier) || '' }}
 
       - name: Collect breakout evidence
+        id: breakout
         if: always()
         continue-on-error: true
         timeout-minutes: 8
-        run: timeout 420 uv run python -m screener tick --state-dir .screener/live --out .screener/public
+        # Restart only inactive revised histories; archive evidence, preserve open exposure.
+        run: timeout 420 uv run python -m screener tick --rebaseline-inactive --state-dir .screener/live --out .screener/public
 
       - name: Collect research
+        id: research
         if: always()
         continue-on-error: true
-        timeout-minutes: 8
-        run: timeout 420 uv run python -m screener research --state-dir .screener/live --out .screener/public
+        # Allow the bounded 600s research collector to finish and publish.
+        timeout-minutes: 11
+        run: timeout 660 uv run python -m screener research --state-dir .screener/live --out .screener/public
 
       - name: Collect entry evidence
+        id: entry
         if: always()
         continue-on-error: true
         timeout-minutes: 8
@@ -103,3 +109,30 @@ jobs:
           # Another hourly run may have landed while this one was collecting.
           git pull --rebase --autostash origin ${{ github.ref_name }}
           git push
+
+      - name: Report collection health
+        if: always()
+        env:
+          SNAPSHOT_OUTCOME: ${{ steps.snapshot.outcome }}
+          BREAKOUT_OUTCOME: ${{ steps.breakout.outcome }}
+          RESEARCH_OUTCOME: ${{ steps.research.outcome }}
+          ENTRY_OUTCOME: ${{ steps.entry.outcome }}
+        run: |
+          {
+            echo '## Collection health'
+            echo '| Collector | Outcome |'
+            echo '| --- | --- |'
+            echo "| Technical snapshot | $SNAPSHOT_OUTCOME |"
+            echo "| Breakout evidence | $BREAKOUT_OUTCOME |"
+            echo "| Research | $RESEARCH_OUTCOME |"
+            echo "| Entry evidence | $ENTRY_OUTCOME |"
+            echo ''
+            echo 'Usable cached output is retained on collection errors. Check Data coverage and provider timestamps before relying on a snapshot.'
+            echo 'The hourly GitHub schedule is best effort; delayed or dropped triggers can leave longer gaps.'
+          } >> "$GITHUB_STEP_SUMMARY"
+          for outcome in "$SNAPSHOT_OUTCOME" "$BREAKOUT_OUTCOME" "$RESEARCH_OUTCOME" "$ENTRY_OUTCOME"; do
+            if [ "$outcome" != success ]; then
+              echo '::error::One or more collectors failed or did not run; published data may be partial or stale.'
+              exit 1
+            fi
+          done

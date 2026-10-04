@@ -2,6 +2,15 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 assert.ok(fs.existsSync('src/screener/research_math.js'), 'research math must exist');
 const M = require('../../src/screener/research_math.js');
+assert.equal(M.resourceStatus({status:'ok',fetched_at:100,max_age_seconds:60},160),'stale');
+assert.equal(M.resourceStatus({status:'ok',fetched_at:100,max_age_seconds:60},159),'ok');
+assert.equal(M.resourceStatus({status:'ok',fetched_at:200,max_age_seconds:60},100),'unverified');
+assert.equal(M.resourceStatus({status:'unavailable',fetched_at:100,max_age_seconds:60},110),'unavailable');
+assert.equal(M.resourceStatus({status:'ok',fetched_at:100},200),'unverified');
+assert.equal(M.resourceStatus({status:'ok',fetched_at:100,max_age_seconds:60,error:'failed refresh'},110),'stale');
+assert.deepEqual(M.calendarRows([{date:'2026-10-02',date_end:'2026-10-06',type:'earnings'}],'earnings','week','2026-10-05').map(r=>r.date),['2026-10-02']);
+assert.deepEqual(M.calendarRows([{date:'2026-02-30',type:'earnings'}],'earnings','week','2026-03-02'),[]);
+assert.deepEqual(M.calendarRows([{date:'2026-10-06',type:'earnings'},{date:'2027-06-01',type:'earnings'}],'earnings','upcoming','2026-10-05').map(r=>r.date),['2026-10-06']);
 const rows = [{symbol:'A',name:'Alpha',kind:'stock',region:'US',metrics:{pe:null}},
               {symbol:'B',name:'Beta',kind:'stock',region:'US',metrics:{pe:12}}];
 assert.deepEqual(M.filterInstruments(rows,{ranges:{pe:{max:20}}}).map(r=>r.symbol),['B']);

@@ -569,6 +569,10 @@ Open `docs/index.html` directly or serve `docs/`. Common navigation retains the 
 
 The hourly workflow independently bounds the public collectors and builds from available snapshots after provider failures. Only explicit public JSON/HTML files are committed. `.screener/` contains private SQLite journals, cached histories and state; it is ignored and stored in the workflow cache. Portfolio holdings remain in browser local storage. No commands here submit orders.
 
+If a provider revises an old candle, `uv run python -m screener once --market stocks --rebaseline-inactive --state-dir .screener/live --out .screener/public` can restart affected inactive setups from the latest completed bars. It archives the previous signal, bundle and result, preserves trade history, and never replays historical entries. Active signals and open or unscorable exposure still block recovery. The scheduled workflow opts into this limited recovery.
+
+GitHub's hourly schedule is best effort. Pages now show snapshot age and per-source expiry; reloading the page retrieves published data, rather than initiating collection. Collector failures are reported after usable output is published, so a degraded run can publish a partial snapshot and still fail its health check. API credentials remain private; optional connections without credentials remain explicitly unconfigured.
+
 Original project portions retain their MIT license. Imported Astra-derived portions have separate AGPL-3.0 and Commons Clause/addendum terms; see [Astra provenance](docs/astra-provenance.md) and the imported license. The complete corresponding source is available in this repository, including the vendored functions and adapters. This does not grant paid redistribution rights for imported portions.
 
 Recorded data, test evidence and remaining trading-readiness limits are in

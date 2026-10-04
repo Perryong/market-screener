@@ -6,7 +6,7 @@ from screener.research_view import render_app, with_usd_display
 from screener.research_sources import financial_unit
 from screener.shared import atomic_text
 
-ENTRY_FIELDS = ('strategy_id','signal_time','symbol','asset_class','source','as_of','state','side','entry','stop','target','net_rr','score','factors','reasons','validation','reference_levels')
+ENTRY_FIELDS = ('strategy_id','signal_time','symbol','asset_class','source','as_of','state','side','entry','stop','target','net_rr','score','factors','setup_evidence','reasons','validation','reference_levels')
 
 
 def embedded(value):
