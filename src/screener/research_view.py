@@ -32,8 +32,8 @@ def render_app(payload, snapshot):
         notice+='<div class="banner demo-banner">SYNTHETIC RESEARCH DEMO · prices, companies and stories below are examples, not market facts.</div>'
     return f'''<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Market Watch · Research, Markets & News</title><style>{css}</style></head><body>
-<a class="skip" href="#content">Skip to content</a><aside class="sidebar"><a class="brand" href="#/home"><span class="brand-mark">M<span>↗</span></span> MARKET WATCH</a>
-<p class="brand-sub">YOUR RESEARCH DESK</p><nav aria-label="Main navigation"><a class="home-link" href="#/home" data-route="home">Overview</a>{navigation}</nav>
+<a class="skip" href="#content">Skip to content</a><aside class="sidebar"><div class="sidebar-heading"><a class="brand" href="#/home"><span class="brand-mark">M<span>↗</span></span> MARKET WATCH</a><button id="nav-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">Menu</button></div>
+<p class="brand-sub">YOUR RESEARCH DESK</p><nav id="main-navigation" aria-label="Main navigation"><a class="home-link" href="#/home" data-route="home">Overview</a>{navigation}</nav>
 <div class="sidebar-bottom"><span class="status-dot"></span> Free sources. Facts first.<small>Read-only research · no orders</small></div></aside>
 <div class="workspace"><header class="topbar"><div class="topbar-title">Independent research <span>/</span> <b id="crumb">Overview</b></div>
 <form id="global-search" role="search"><label class="sr-only" for="global-symbol">Search companies and funds</label><input id="global-symbol" list="symbol-options" placeholder="Search ticker or company…" autocomplete="off"><datalist id="symbol-options"></datalist><button aria-label="Open searched instrument">↗</button></form>
