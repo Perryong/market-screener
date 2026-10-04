@@ -136,7 +136,7 @@
     try{rows=JSON.parse(document.getElementById('strategy-data').textContent).results.filter(r=>r.market==='crypto');}catch{}
     const coinGecko=(data.api_data?.connections||[]).find(r=>r.id==='CoinGecko');
     content.append(apiQuotes(true),section('CoinGecko market overview'),
-      coinGecko?.missing?.length?note('Market overview unavailable: configure '+coinGecko.missing.join(', ')+'. Binance candles and Kraken observations use separate free sources.'):null,
+      coinGecko?.missing?.length?note('Market overview unavailable: configure '+coinGecko.missing.join(', ')+'. Binance candles and Kraken observations use separate free sources.'):'',
       table(['Coin','Price USD','24h change','Market cap USD','Provider time'],(data.api_data?.crypto||[]).map(r=>[r.name,num(r.price,4),percent(r.change),money(r.market_cap,'USD'),stamp(r.observed_at)])),
       external('Data provided by CoinGecko ↗','https://www.coingecko.com/'),resourceNote('CoinGecko'),section('Binance strategy evidence'),
       note('Data unavailable means the collector could not verify the source candles. It is not a buy or sell signal. Checks and completed candles below retain their original times; reloading this page does not refresh the feeds.'),
