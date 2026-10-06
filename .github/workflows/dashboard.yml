@@ -1,10 +1,9 @@
 name: Market dashboard
 
 on:
-  schedule:
-    # :07 keeps it off the top-of-hour rush when GitHub's scheduler is busiest.
-    # The 00:07 UTC run also does the Yahoo tier (backtests, smart money, options).
-    - cron: "7 * * * *"
+  # Schedule disabled: the hourly snapshot now runs locally on the Raspberry Pi
+  # (Hermes cron -> market_screener_hourly.py -> collect/build/git push + Telegram).
+  # This workflow remains for manual workflow_dispatch runs only.
   workflow_dispatch:
     inputs:
       tier:
