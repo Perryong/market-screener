@@ -40,6 +40,21 @@ def test_technical_snapshot_is_safe_and_rebuild_is_idempotent(tmp_path):
     assert 'JSON.parse(document.getElementById' in first
 
 
+def test_legacy_nonfinite_metrics_do_not_break_public_build(tmp_path):
+    spec.loader.exec_module(build)
+    docs = tmp_path / 'docs'
+    docs.mkdir()
+    (docs / 'technical.html').write_text('<script>const S = window.__DATA__ || {};</script>')
+    (docs / 'data.json').write_text('{"ranking":[{"profit_factor":Infinity,"return":2.5}],"bad":[NaN,-Infinity,1e999]}')
+    build.main(tmp_path)
+    payload = json.loads((docs / 'data.json').read_text(), parse_constant=lambda x: (_ for _ in ()).throw(ValueError(x)))
+    assert payload == {'ranking': [{'profit_factor': None, 'return': 2.5}], 'bad': [None, None, None]}
+    assert (docs / 'index.html').exists()
+    first = (docs / 'technical.html').read_text()
+    build.main(tmp_path)
+    assert (docs / 'technical.html').read_text() == first
+
+
 def test_technical_is_isolated_and_tooltip_uses_text():
     spec.loader.exec_module(build)
     html = build.render({}, None, None, '<p>Desk Tape</p>')
