@@ -4,7 +4,7 @@ from html import escape
 from pathlib import Path
 from screener.research_view import render_app, with_usd_display
 from screener.research_sources import financial_unit
-from screener.shared import atomic_text
+from screener.shared import atomic_text, finite_json
 
 ENTRY_FIELDS = ('strategy_id','signal_time','symbol','asset_class','source','as_of','state','side','entry','stop','target','net_rr','score','factors','setup_evidence','reasons','validation','reference_levels')
 
@@ -32,13 +32,14 @@ def render(strategy, research, entries, technical):
 
 
 def load(path):
-    return json.loads(path.read_text()) if path.exists() else None
+    # Repair legacy public snapshots written with Python's Infinity/NaN tokens.
+    return finite_json(json.loads(path.read_text())) if path.exists() else None
 
 
 def main(root=None):
     root = Path(root) if root else Path(__file__).resolve().parents[1]
     docs = root/'docs'
-    # Compact public snapshots without changing any values or historical coverage.
+    # Compact snapshots, mapping non-finite numbers to missing values for JSON.
     for name in ('data.json', 'latest.json', 'research.json', 'entries.json'):
         path = docs/name
         if path.exists():

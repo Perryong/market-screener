@@ -88,6 +88,7 @@ jobs:
           key: private-screener-${{ github.ref_name }}-${{ github.run_id }}
 
       - name: Build public desk
+        id: build
         if: always()
         run: |
           for file in latest.json research.json; do
@@ -96,7 +97,8 @@ jobs:
           uv run python dashboard/build.py
 
       - name: Commit if changed
-        if: always()
+        # Never publish new JSON beside an old page after a failed build.
+        if: ${{ always() && steps.build.outcome == 'success' }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

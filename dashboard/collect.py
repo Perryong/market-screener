@@ -25,6 +25,8 @@ from pathlib import Path
 warnings.filterwarnings("ignore")
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
+from screener.shared import atomic_text, finite_json
+
 OUT = Path(__file__).resolve().parent.parent / "docs" / "data.json"
 
 # venues are tried in order: TradingView drops symbols from a venue without warning
@@ -395,7 +397,9 @@ def main() -> int:
     snap = merge(old, snap)
     snap["build_seconds"] = round(time.time() - t0, 1)
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(snap, indent=1, default=str))
+    # JSON has no Infinity/NaN; e.g. profit factor without losing trades is
+    # unbounded. Keep the calculation intact and publish a missing numeric value.
+    atomic_text(OUT, json.dumps(finite_json(snap), indent=1, default=str, allow_nan=False))
     secs = [s["sections"]["analysis"] for s in snap["symbols"].values()]
     fresh = sum(1 for a in secs if a["ok"] and not a.get("stale"))
     stale = sum(1 for a in secs if a.get("stale"))

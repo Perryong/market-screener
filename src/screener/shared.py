@@ -2,6 +2,7 @@
 Originally from the market-pivot-watch pivot_watch package; copied here so the screener stands alone."""
 import hashlib
 import json
+import math
 import re
 import ssl
 import time
@@ -34,6 +35,15 @@ def iso(value):
 
 def json_text(value):
     return json.dumps(value, indent=2, ensure_ascii=False, allow_nan=False) + "\n"
+
+
+def finite_json(value):
+    """Copy public data, representing undefined/unbounded numbers as missing."""
+    if isinstance(value, dict):
+        return {key: finite_json(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [finite_json(item) for item in value]
+    return None if isinstance(value, float) and not math.isfinite(value) else value
 
 
 def atomic_text(path, content):
