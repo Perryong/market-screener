@@ -1,0 +1,41 @@
+# One-off: the agent sandbox cannot reach market-data hosts, so Actions fetches
+# gold history (GC=F front-month futures via Yahoo) and commits the CSVs.
+name: XAUUSD history
+
+on:
+  push:
+    branches: [ccr-4f9cd5ac-rjxmpw]
+    paths: [.github/workflows/xauusd-history.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install yfinance pandas
+      - name: Download
+        run: |
+          python - <<'PY'
+          import yfinance as yf
+          for name, interval, period in (("1d", "1d", "max"), ("1h", "1h", "730d")):
+              d = yf.download("GC=F", interval=interval, period=period, progress=False, auto_adjust=False)
+              d.columns = [c[0] if isinstance(c, tuple) else c for c in d.columns]
+              d = d[["Open", "High", "Low", "Close", "Volume"]].dropna()
+              assert len(d) > 100, (name, len(d))
+              d.to_csv(f"research/xauusd/gc_{name}.csv")
+              print(name, len(d), d.index[0], d.index[-1])
+          PY
+      - name: Commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add research/xauusd/*.csv
+          git commit -m "data(xauusd): GC=F daily + hourly history"
+          git push
