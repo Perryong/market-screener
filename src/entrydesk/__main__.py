@@ -116,9 +116,9 @@ def main(argv=None):
                     if remaining <= 0:
                         raise ValueError('validation deadline reached')
                     script = ('import json,sys; from entrydesk.validation import backtest; '
-                              'b=json.load(sys.stdin); print(json.dumps(backtest(b[0],b[1],b[2]),allow_nan=False))')
+                              'b=json.load(sys.stdin); print(json.dumps(backtest(*b),allow_nan=False))')
                     completed = subprocess.run([sys.executable, '-c', script],
-                        input=json.dumps([bundle.get('bars_1h', []), asset_class,bundle.get('bars_15m',[])], allow_nan=False),
+                        input=json.dumps([bundle.get('bars_1h', []), asset_class,bundle.get('bars_15m',[]),symbol], allow_nan=False),
                         capture_output=True, text=True, timeout=remaining, check=True)
                     report = json.loads(completed.stdout)
                 except (ValueError, TypeError, KeyError, subprocess.SubprocessError) as exc:

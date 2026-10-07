@@ -1,9 +1,30 @@
 """Candidate pattern and fail-closed paper readiness gates."""
 import math
-from .validation import COSTS, STRATEGY_ID, confirmation, pattern, readiness, target_price, pattern_evidence
+from .phases import charts, phases
+from .validation import (COSTS, FUTURES_PROXIES, STRATEGY_ID, confirmation, futures_unverified, pattern,
+                         readiness, target_price, pattern_evidence)
 
 
 def evaluate(bundle, now, validation=None):
+    result = _evaluate(bundle, now, validation)
+    evidence = result.get('setup_evidence') or {}
+    bars = bundle.get('bars_1h') if isinstance(bundle.get('bars_1h'), list) else []
+    try:
+        result['phases'] = phases(bars, evidence.get('checks', []), result.get('side'),
+                                    result.get('entry') is not None and (result.get('net_rr') or 0) >= 2)
+    except (ValueError, TypeError, KeyError, OverflowError) as exc:
+        result['phases'] = dict(error=str(exc))
+    if bundle.get('symbol') in FUTURES_PROXIES:
+        result['label'] = FUTURES_PROXIES[bundle['symbol']]
+        quarter = bundle.get('bars_15m') if isinstance(bundle.get('bars_15m'), list) else []
+        try:
+            result['charts'] = charts(bars, quarter, result)
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            result['charts'] = dict(error=str(exc))
+    return result
+
+
+def _evaluate(bundle, now, validation=None):
     from .factors import build_factors, validate_bars, validate_quote
     result = {key: bundle.get(key) for key in ('symbol', 'asset_class', 'source')}
     result.update(strategy_id=STRATEGY_ID,as_of=now, state='WATCHING', side=None, entry=None, stop=None, target=None,
@@ -91,7 +112,7 @@ def evaluate(bundle, now, validation=None):
                     reasons.append('valid spread unavailable or wider than 0.5%')
         if bundle.get('asset_class') == 'stocks' and bundle.get('market_open') is not True:
             reasons.append('regular equity market closed or unknown')
-        if bundle.get('asset_class') == 'commodities':
+        if futures_unverified(bundle.get('asset_class'), bundle.get('symbol')):
             reasons.append('continuous futures lack dated contract/roll/point-value economics')
         if bundle.get('stale') or bundle.get('errors'):
             reasons.append('provider errors or stale cached observations')

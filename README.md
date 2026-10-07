@@ -565,7 +565,7 @@ uv run pytest tests/unit tests/screener -q
 node tests/screener/research_math_check.js
 ```
 
-Open `docs/index.html` directly or serve `docs/`. Common navigation retains the original breakout research and Desk Tape technical analysis. The entry desk exposes stock, crypto and commodity candidates, factors, veto reasons and validation. Missing snapshots render empty; synthetic demos must be generated explicitly and are labeled. Scores are not probabilities. Paper readiness requires chronological holdout and forward paper evidence; continuous futures remain exploratory.
+Open `docs/index.html` directly or serve `docs/`. Common navigation retains the original breakout research and Desk Tape technical analysis. The entry desk exposes stock, crypto and commodity candidates, factors, veto reasons and validation. Missing snapshots render empty; synthetic demos must be generated explicitly and are labeled. Scores are not probabilities. Paper readiness requires chronological holdout and forward paper evidence; continuous futures remain exploratory, except gold (GC=F, shown as XAUUSD) which is evaluated as a spot proxy. Each candidate shows its 15m execution, 1h setup and 4h context phases; the 4h phase is context, not an entry rule.
 
 The hourly workflow independently bounds the public collectors and builds from available snapshots after provider failures. Only explicit public JSON/HTML files are committed. `.screener/` contains private SQLite journals, cached histories and state; it is ignored and stored in the workflow cache. Portfolio holdings remain in browser local storage. No commands here submit orders.
 

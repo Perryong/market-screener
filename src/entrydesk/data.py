@@ -4,6 +4,8 @@ from functools import lru_cache
 import math
 from numbers import Real
 
+from .validation import futures_unverified
+
 
 def finite(value):
     return isinstance(value, Real) and not isinstance(value, bool) and math.isfinite(value)
@@ -110,7 +112,7 @@ def collect_symbol(symbol, asset_class, now):
             out['quote']=dict(price=float(price),time=float(observed),bid=None,ask=None)
         else:
             out['errors'].append('quote: missing actual regularMarketTime/price')
-        if asset_class=='commodities':
+        if futures_unverified(asset_class,symbol):
             out['errors'].append('continuous futures: dated contract, roll, point value and market session unverified')
     except Exception as exc:
         out['errors'].append(f'collector: {type(exc).__name__}: {exc}')

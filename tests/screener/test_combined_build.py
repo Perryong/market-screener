@@ -99,3 +99,23 @@ def test_breakout_marks_source_prices_without_changing_trade_inputs():
     assert 'data-usd-currency="USDT"' in html
     assert 'planned' in html
     assert row=={'market':'crypto','plan_entry':100,'score':75}
+
+
+def test_entry_desk_publishes_gold_label_and_timeframe_phases():
+    spec.loader.exec_module(build)
+    phases = {'h4': {'phase': 'RANGE', 'position': 'INSIDE'}, 'h1': {'phase': 'NO_SETUP', 'passed': 1, 'total': 4},
+              'm15': {'phase': 'WAIT'}}
+    html = build.render({}, None, {'candidates': [{'symbol': 'GC=F', 'label': 'XAUUSD (GC=F proxy)', 'phases': phases}]}, '')
+    block = re.search(r'<script id="entry-data" type="application/json">(.*?)</script>', html, re.S).group(1)
+    row = json.loads(block)['candidates'][0]
+    assert row['label'] == 'XAUUSD (GC=F proxy)' and row['phases'] == phases
+    assert '15m · 1h · 4h' in html
+
+
+def test_entry_desk_embeds_gold_timeframe_charts():
+    spec.loader.exec_module(build)
+    charts = {k: {'times': [0, 900], 'close': [1, 2], 'levels': {}} for k in ('m15', 'h1', 'h4')}
+    html = build.render({}, None, {'candidates': [{'symbol': 'GC=F', 'charts': charts}]}, '')
+    block = re.search(r'<script id="entry-data" type="application/json">(.*?)</script>', html, re.S).group(1)
+    assert json.loads(block)['candidates'][0]['charts'] == charts
+    assert 'timeframes' in html
