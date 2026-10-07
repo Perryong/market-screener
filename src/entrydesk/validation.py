@@ -9,6 +9,12 @@ from datetime import datetime, timezone
 STRATEGY_ID = 'trend-breakout-v2'
 
 COSTS = {'stocks': .0005, 'crypto': .0015, 'commodities': .001}
+# Gold futures stand in for spot XAUUSD; other continuous futures stay research-only.
+FUTURES_PROXIES = {'GC=F': 'XAUUSD (GC=F proxy)'}
+
+
+def futures_unverified(asset_class, symbol):
+    return asset_class == 'commodities' and symbol not in FUTURES_PROXIES
 
 
 def pattern_evidence(bars, factors):
@@ -202,7 +208,7 @@ def readiness(validation, now=None):
     return not reasons, reasons
 
 
-def backtest(bars, asset_class, bars_15m=None):
+def backtest(bars, asset_class, bars_15m=None, symbol=None):
     from .factors import build_factors, validate_bars
     from .data import validate_interval
     if asset_class not in COSTS:
@@ -258,7 +264,7 @@ def backtest(bars, asset_class, bars_15m=None):
         short_research=dict(train=metrics([t for t in trades if t['side']=='SHORT' and t['entry_time']<boundary]),
             holdout=metrics([t for t in trades if t['side']=='SHORT' and t['entry_time']>=boundary]),
             note='Research only; borrow, financing and contract economics are not validated'),
-        forward_paper=dict(closed_trades=[]),exploratory=asset_class=='commodities')
+        forward_paper=dict(closed_trades=[]),exploratory=futures_unverified(asset_class,symbol))
     result['holdout']['uncertainty']=grouped_expectancy(result['holdout']['trade_log'])
     result['ready'],result['reasons']=readiness(result)
     if result['exploratory']:

@@ -117,7 +117,7 @@ def test_collect_wires_confirmed_replay_and_journal_but_demo_is_isolated(tmp_pat
     history=tmp_path/'history';out=tmp_path/'entries.json'
     cli.main(['collect','--symbols','BTC-USD','--history-dir',str(history),'--output',str(out)])
     payload=json.loads(out.read_text())
-    assert len(calls[0])==3 and calls[0][2]==bundle['bars_15m']
+    assert len(calls[0])==4 and calls[0][2]==bundle['bars_15m'] and calls[0][3]=='BTC-USD'
     assert payload['journal']['observations']==1
     before=(history/'observations.sqlite3').stat().st_mtime_ns
     cli.main(['demo','--history-dir',str(history),'--output',str(tmp_path/'demo.json')])
