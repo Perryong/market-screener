@@ -22,6 +22,7 @@ jobs:
       - run: pip install yfinance pandas
       - name: Download
         run: |
+          mkdir -p research/xauusd
           python - <<'PY'
           import yfinance as yf
           for name, interval, period in (("1d", "1d", "max"), ("1h", "1h", "730d")):
