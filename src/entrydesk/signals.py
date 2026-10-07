@@ -1,14 +1,12 @@
 """Candidate pattern and fail-closed paper readiness gates."""
 import math
-from .phases import phases
+from .phases import charts, phases
 from .validation import (COSTS, FUTURES_PROXIES, STRATEGY_ID, confirmation, futures_unverified, pattern,
                          readiness, target_price, pattern_evidence)
 
 
 def evaluate(bundle, now, validation=None):
     result = _evaluate(bundle, now, validation)
-    if bundle.get('symbol') in FUTURES_PROXIES:
-        result['label'] = FUTURES_PROXIES[bundle['symbol']]
     evidence = result.get('setup_evidence') or {}
     bars = bundle.get('bars_1h') if isinstance(bundle.get('bars_1h'), list) else []
     try:
@@ -16,6 +14,13 @@ def evaluate(bundle, now, validation=None):
                                     result.get('entry') is not None and (result.get('net_rr') or 0) >= 2)
     except (ValueError, TypeError, KeyError, OverflowError) as exc:
         result['phases'] = dict(error=str(exc))
+    if bundle.get('symbol') in FUTURES_PROXIES:
+        result['label'] = FUTURES_PROXIES[bundle['symbol']]
+        quarter = bundle.get('bars_15m') if isinstance(bundle.get('bars_15m'), list) else []
+        try:
+            result['charts'] = charts(bars, quarter, result)
+        except (ValueError, TypeError, KeyError, OverflowError) as exc:
+            result['charts'] = dict(error=str(exc))
     return result
 
 

@@ -110,3 +110,12 @@ def test_entry_desk_publishes_gold_label_and_timeframe_phases():
     row = json.loads(block)['candidates'][0]
     assert row['label'] == 'XAUUSD (GC=F proxy)' and row['phases'] == phases
     assert '15m · 1h · 4h' in html
+
+
+def test_entry_desk_embeds_gold_timeframe_charts():
+    spec.loader.exec_module(build)
+    charts = {k: {'times': [0, 900], 'close': [1, 2], 'levels': {}} for k in ('m15', 'h1', 'h4')}
+    html = build.render({}, None, {'candidates': [{'symbol': 'GC=F', 'charts': charts}]}, '')
+    block = re.search(r'<script id="entry-data" type="application/json">(.*?)</script>', html, re.S).group(1)
+    assert json.loads(block)['candidates'][0]['charts'] == charts
+    assert 'timeframes' in html

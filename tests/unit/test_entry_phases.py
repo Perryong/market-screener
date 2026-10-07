@@ -75,3 +75,38 @@ def test_evaluate_publishes_phases_and_gold_label():
     assert gold['label'] == 'XAUUSD (GC=F proxy)'
     assert set(gold['phases']) == {'h4', 'h1', 'm15'}
     assert not any('continuous futures' in r for r in gold['reasons'])
+
+
+def m15(t, c):
+    return dict(start=t, end=t + 900, open=c, high=c + .5, low=c - .5, close=c, volume=10)
+
+
+def test_charts_cap_lengths_and_use_completed_bars_only():
+    from entrydesk.phases import charts
+    hourly = [bar(i * H, 1000 + i) for i in range(402)]  # last 4h bucket unfinished
+    quarter = [m15(i * 900, 1000 + i / 4) for i in range(402 * 4)]
+    c = charts(hourly, quarter, {})
+    assert (len(c['m15']['close']), len(c['h1']['close']), len(c['h4']['close'])) == (96, 120, 90)
+    assert c['h1']['times'][-1] == hourly[-1]['end'] and c['m15']['times'][-1] == quarter[-1]['end']
+    assert c['h4']['times'][-1] == 400 * H
+    assert len(c['h4']['ema20']) == 90
+
+
+def test_chart_levels_match_phases_and_trade_levels():
+    from entrydesk.phases import charts
+    hourly = [bar(i * H, 1000 + i) for i in range(240)]
+    c = charts(hourly, [], dict(entry=1240, stop=1230, target=1265))
+    h4 = phases(hourly, checks(), 'LONG', True)['h4']
+    assert c['h4']['levels'] == dict(range_high=h4['range_high'], range_low=h4['range_low'])
+    prior = hourly[-21:-1]
+    assert c['h1']['levels'] == dict(range_high=max(b['high'] for b in prior), range_low=min(b['low'] for b in prior))
+    assert c['m15']['levels'] == dict(c['h1']['levels'], entry=1240, stop=1230, target=1265)
+
+
+def test_only_gold_carries_charts():
+    bars = [bar(i * H, 1000 + i) for i in range(80)]
+    now = bars[-1]['end'] + 60
+    gold = evaluate(dict(symbol='GC=F', asset_class='commodities', source='yahoo', bars_1h=bars, bars_15m=[]), now)
+    spy = evaluate(dict(symbol='SPY', asset_class='stocks', source='yahoo', bars_1h=bars, bars_15m=[]), now)
+    assert set(gold['charts']) == {'m15', 'h1', 'h4'}
+    assert 'charts' not in spy
