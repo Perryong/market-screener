@@ -58,7 +58,7 @@ def context(daily, index):
     ctx['week_bear'] = week_bear.reindex(ctx.index, method='ffill')
     # Map each bar to the latest daily row strictly before its own calendar day.
     pos = ctx.index.searchsorted(index.normalize(), side='left') - 1
-    out = ctx.iloc[np.clip(pos, 0, None)].fillna(False).astype(bool)
+    out = ctx.iloc[np.clip(pos, 0, None)].astype('boolean').fillna(False).astype(bool)
     out.index = index
     out.loc[pos < 0] = False
     return out
@@ -180,7 +180,7 @@ def plot(h4, res_h4, split_h4, daily, res_d, split_d, path):
     p.set_ylabel('USD/oz')
     p.legend(loc='upper left', frameon=False, ncol=4)
     for a_, res, split, title in ((ax[1], res_h4, split_h4, 'H4 strategy: cumulative R after costs (last ~2 years)'),
-                                  (ax[2], res_d, split_d, 'Same rules on daily bars: cumulative R after costs')):
+                                  (ax[2], res_d, split_d, 'Same rules on daily bars since 2020: cumulative R after costs')):
         for v in VARIANTS:
             t = res[v]
             if t.empty:
@@ -214,7 +214,8 @@ if __name__ == '__main__':
     h4 = h4[h4.Volume > 0]
     print(f'H4 {h4.index[0]:%Y-%m-%d} → {h4.index[-1]:%Y-%m-%d}, {len(h4)} bars')
     res_h4, split_h4 = run(h4, daily, retest=6, hold=30)
-    d = daily[daily.index >= '2005-01-01']
+    # Yahoo's GC=F daily volume is only real from 2020 (median ~100 contracts/day before).
+    d = daily[daily.index >= '2020-01-01']
     print(f'Daily {d.index[0]:%Y-%m-%d} → {d.index[-1]:%Y-%m-%d}, {len(d)} bars')
     res_d, split_d = run(d, daily, retest=5, hold=20)
     pd.concat({v: t for v, t in res_h4.items()}).to_csv(HERE / 'trades_h4.csv')
