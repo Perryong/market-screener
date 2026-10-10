@@ -27,6 +27,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from screener.shared import atomic_text, finite_json
 
+import oanda  # OANDA practice-API fallback for throttled commodity feeds (same dir)
+
 OUT = Path(__file__).resolve().parent.parent / "docs" / "data.json"
 
 # venues are tried in order: TradingView drops symbols from a venue without warning
@@ -298,6 +300,14 @@ def collect(tier: str) -> dict:
             "analysis": first_venue("coin_analysis", sym, "1D"),
             "volume":   first_venue("volume_confirmation_analysis", sym, "1D"),
         }
+        # Gold and oil have no real TradingView fallback venue — both their
+        # configured venues resolve to the same throttled CFD feed (TVC:GOLD /
+        # TVC:USOIL). Pull a live read from OANDA's separate upstream instead of
+        # leaving the summary on a multi-day-old stale snapshot.
+        if sym["key"] in ("XAUUSD", "USOIL") and not sec["analysis"].get("ok"):
+            fb = oanda.analysis(sym["key"])
+            if fb:
+                sec["analysis"] = fb
         if sym["key"] in MACRO or daily:
             sec["mtf"] = first_venue("multi_timeframe_analysis", sym)
             sec["agents"] = first_venue("multi_agent_analysis", sym, "1D")
